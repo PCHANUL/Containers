@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/06 14:25:51 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/06 15:11:52 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,18 @@ private:
 
 	/* data */
 public:
-	typedef T											value_type;
-	typedef Alloc										allocator_type;
-	typedef allocator_type::reference					reference;
-	typedef allocator_type::const_reference				const_reference;
-	typedef allocator_type::pointer						pointer;
-	typedef allocator_type::const_pointer				const_pointer;
-	typedef 											iterator;
-	typedef 											const_iterator;
-	typedef reverse_iterator<iterator>              	reverse_iterator;
-	typedef reverse_iterator<const_iterator>        	const_reverse_iterator;
-	typedef 											difference_type;
-	typedef 											size_type;
+	typedef T												value_type;
+	typedef Alloc											allocator_type;
+	typedef allocator_type::reference						reference;
+	typedef allocator_type::const_reference					const_reference;
+	typedef allocator_type::pointer							pointer;
+	typedef allocator_type::const_pointer					const_pointer;
+	typedef ft::iterator									iterator;
+	typedef ft::iterator									const_iterator;
+	typedef reverse_iterator<iterator>              		reverse_iterator;
+	typedef reverse_iterator<const_iterator>        		const_reverse_iterator;
+	typedef ft::iterator_traits<iterator>::difference_type	difference_type;
+	typedef ft::iterator_traits<iterator>::size_type		size_type;
 
 	explicit vector (const allocator_type& alloc = allocator_type());
 	explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
@@ -54,39 +54,39 @@ public:
 	reverse_iterator 		rend();
 	const_reverse_iterator 	rend() const;
 
-	size_type	size() const;
-	size_type	max_size() const;
-	void		resize (size_type n, value_type val = value_type());
-	size_type	capacity() const;
-	bool		empty() const;
-	void		reserve (size_type n);
+	size_type				size() const;
+	size_type				max_size() const;
+	void					resize (size_type n, value_type val = value_type());
+	size_type				capacity() const;
+	bool					empty() const;
+	void					reserve (size_type n);
 
-	reference 			operator[] (size_type n);
-	const_reference 	operator[] (size_type n) const;
-	reference 			at (size_type n);
-	const_reference 	at (size_type n) const;
-	reference 			front();
-	const_reference 	front() const;
-	reference 			back();
-	const_reference 	back() const;
-	value_type* 		data() noexcept;
-	const value_type* 	data() const noexcept;
+	reference 				operator[] (size_type n);
+	const_reference 		operator[] (size_type n) const;
+	reference 				at (size_type n);
+	const_reference 		at (size_type n) const;
+	reference 				front();
+	const_reference 		front() const;
+	reference 				back();
+	const_reference 		back() const;
+	value_type* 			data() noexcept;
+	const value_type* 		data() const noexcept;
 
 	template <class InputIterator> 
-	void		assign (InputIterator first, InputIterator last);
-	void		assign (size_type n, const value_type& val);
-	void		push_back (const value_type& val);
-	void		pop_back();
-	iterator	insert (iterator position, const value_type& val);
-    void		insert (iterator position, size_type n, const value_type& val);
+	void					assign (InputIterator first, InputIterator last);
+	void					assign (size_type n, const value_type& val);
+	void					push_back (const value_type& val);
+	void					pop_back();
+	iterator				insert (iterator position, const value_type& val);
+    void					insert (iterator position, size_type n, const value_type& val);
 	template <class InputIterator> 
-	void		insert (iterator position, InputIterator first, InputIterator last);
-	iterator	erase (iterator position);
-	iterator	erase (iterator first, iterator last);
-	void		swap (vector& x);
-	void		clear();
+	void					insert (iterator position, InputIterator first, InputIterator last);
+	iterator				erase (iterator position);
+	iterator				erase (iterator first, iterator last);
+	void					swap (vector& x);
+	void					clear();
 
-	allocator_type get_allocator() const;
+	allocator_type			get_allocator() const;
 
 	template <class T, class Alloc>  bool operator == (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 	template <class T, class Alloc>  bool operator != (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
@@ -95,8 +95,6 @@ public:
 	template <class T, class Alloc>  bool operator >  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 	template <class T, class Alloc>  bool operator >= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 
-
-	
 };
 
 template<class T, class Alloc>
@@ -268,7 +266,7 @@ ft::vector<T, Alloc>::reserve (size_type n)
 
 template<class T, class Alloc>
 typename ft::vector<T, Alloc>::reference
-operator[] (size_type n)
+operator [] (size_type n)
 {
 	// vector 컨테이너의 n위치에 있는 요소에 대한 참조를 반환한다.
 	// vector::at과 다르게 범위를 벗어난 경우에 out_of_range를 throw하지 않는다.
@@ -276,7 +274,7 @@ operator[] (size_type n)
 
 template<class T, class Alloc>
 typename ft::vector<T, Alloc>::const_reference 
-operator[] (size_type n) const
+operator [] (size_type n) const
 {
 	// 
 }
@@ -500,3 +498,5 @@ operator >= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 
 
 } // namespace ft
+
+#endif // __VECTOR_HPP__
