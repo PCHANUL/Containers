@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/05 16:20:59 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/06 14:25:51 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,39 @@ public:
 	bool		empty() const;
 	void		reserve (size_type n);
 
+	reference 			operator[] (size_type n);
+	const_reference 	operator[] (size_type n) const;
+	reference 			at (size_type n);
+	const_reference 	at (size_type n) const;
+	reference 			front();
+	const_reference 	front() const;
+	reference 			back();
+	const_reference 	back() const;
+	value_type* 		data() noexcept;
+	const value_type* 	data() const noexcept;
+
+	template <class InputIterator> 
+	void		assign (InputIterator first, InputIterator last);
+	void		assign (size_type n, const value_type& val);
+	void		push_back (const value_type& val);
+	void		pop_back();
+	iterator	insert (iterator position, const value_type& val);
+    void		insert (iterator position, size_type n, const value_type& val);
+	template <class InputIterator> 
+	void		insert (iterator position, InputIterator first, InputIterator last);
+	iterator	erase (iterator position);
+	iterator	erase (iterator first, iterator last);
+	void		swap (vector& x);
+	void		clear();
+
+	allocator_type get_allocator() const;
+
+	template <class T, class Alloc>  bool operator == (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator != (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator <  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator <= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator >  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator >= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 
 
 	
@@ -221,15 +254,248 @@ template<class T, class Alloc>
 bool
 ft::vector<T, Alloc>::empty() const
 {
-	
+	// vector가 비어있는지 반환한다.
 }
 
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::reserve (size_type n)
 {
-	
+	// vector 용량이 최소한 n개의 요소를 포함할 수 있도록 한다.
+	// 만약에 n이 현재 vector 용량보다 크다면 저장공간을 재할당하여 용량을 n또는 그 이상으로 늘린다.
+	// 아니라면 재할당을 하지 않으며 vector 용량에 영향을 주지 않는다. 
 }
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reference
+operator[] (size_type n)
+{
+	// vector 컨테이너의 n위치에 있는 요소에 대한 참조를 반환한다.
+	// vector::at과 다르게 범위를 벗어난 경우에 out_of_range를 throw하지 않는다.
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reference 
+operator[] (size_type n) const
+{
+	// 
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reference 
+at (size_type n)
+{
+	// vector의 n위치에 있는 요소에 대한 참조를 반환한다. 
+	// n이 vector의 유효한 요소 범위 내에 있는지 여부를 확인하고 그렇지 않은 경우 out_of_range 예외를 throw한다.
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reference 
+at (size_type n) const
+{
+	// 객체가 const로 한정된 경우 함수는 const_reference를 반환한다.
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reference 
+front()
+{
+	// vector의 첫번째 요소에 대한 참조를 반환한다.
+	// vector::begin과 달리 직접 참조를 반환한다. 
+	// 빈 컨테이너에어 함수를 호출하면 정의되지 않은 동작이 발생한다.
+
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reference 
+front() const
+{
+
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reference 
+back()
+{
+	// vector의 마지막 요소에 대한 참조를 반환한다. 
+	// vector::end와 달리 직접 참조를 반환한다.
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reference 
+back() const
+{
+
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::value_type* 
+data() noexcept
+{
+	// vector가 소유한 요소를 저장하기 위해 내부적으로 사용하는 메모리 배열에 대한 직접 포인터를 반환한다.
+	// 내부적으로 사용하는 배열의 첫 번째 요소에 대한 포인터를 반환한다.
+}
+
+template<class T, class Alloc>
+const typename ft::vector<T, Alloc>::value_type*
+data() const noexcept
+{
+	// 객체가 const로 한정된 경우 함수는 const value_type에 대한 포인터를 반환한다.
+}
+
+
+template <class InputIterator> 
+void 
+assign (InputIterator first, InputIterator last)
+{
+	// vector에 새 내용을 할당하고 현재 내용을 바꾸고 그에 따라 크기를 수정한다.
+	// 재할당이 발생되면 내부 할당자를 사용하여 필요한 저장공간이 할당된다.
+	// first와 last 사이의 범위에 있는 각 요소에서 동일한 순서로 구성된 요소이다.
+}
+
+
+void 
+assign (size_type n, const value_type& val)
+{
+	// vector에 새 내용을 할당하고 현재 내용을 바꾸고 그에 따라 크기를 수정한다.
+	// 재할당이 발생되면 내부 할당자를 사용하여 필요한 저장공간이 할당된다.
+	// n개의 요소가 val의 복사본으로 초기화된다. 
+}
+
+void 
+push_back (const value_type& val)
+{
+	// vector의 마지막 요소 다음에 세 요소를 추가한다.
+	// val의 내용이 새 요소로 복사 또는 이동된다.
+	// 현재 벡터 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
+}
+
+void 
+pop_back()
+{
+	// vector의 마지막 요소를 제거하고 컨테이너 크기 1을 효과적으로 줄인다. 제거된 요소는 파괴된다.
+}
+
+template<class T, class Alloc>
+ft::vector<T, Alloc>::iterator 
+insert (iterator position, const value_type& val)
+{
+	// 지정된 위치의 요소 앞에 새 요소를 삽입하여 확장한다.
+	// 새 vector의 크기가 현재 vector의 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
+	// val은 복사 또는 이동되어 삽입될 요소이다. 
+}
+
+void 
+insert (iterator position, size_type n, const value_type& val)
+{
+	// n은 삽입할 요소의 수이다.
+	// 각각의 요소는 val의 복사본이다. 
+}
+
+
+template <class InputIterator> 
+void 
+insert (iterator position, InputIterator first, InputIterator last)
+{
+	// first와 last 범위에 있는 요소의 복사본이 동일한 순서로 position에 삽입된다. 
+	// 
+}
+
+template<class T, class Alloc>
+ft::vector<T, Alloc>::iterator 
+erase (iterator position)
+{
+	// vector에서 position에 있는 요소를 제거한다.
+	// 제거된 요소의 수만큼 컨테이너 크기를 효과적으로 줄여 파괴한다.
+	// vector 끝이 아닌 위치에서 요소를 지우면 컨테이너가 세그먼트가 지워진 후 새 위치로 모든 요소를 재배치하게 된다.
+}
+
+template<class T, class Alloc>
+ft::vector<T, Alloc>::iterator 
+erase (iterator first, iterator last)
+{
+	// vector에서 first와 last 범위에 있는 요소를 제거한다.
+	// 제거된 요소의 수만큼 컨테이너 크기를 효과적으로 줄여 파괴한다.
+	// vector 끝이 아닌 위치에서 요소를 지우면 컨테이너가 세그먼트가 지워진 후 새 위치로 모든 요소를 재배치하게 된다.
+}
+
+void 
+swap (vector& x)
+{
+	// 동일한 유형의 다른 vector 객체인 x의 내용으로 컨테이너 내용을 교환한다.
+	// 크기가 다를 수 있다.
+	// 모든 반복자, 참조 및 포인터는 교환된 개체에 대해 유효한 상태로 유지된다.
+}
+
+void
+clear()
+{
+	// vector의 모든 요소를 제거하고 컨테이너의 크기를 0으로 유지한다.
+	// 재할당이 보장되지 않으며 vector 용량이 변경된다는 보장이 없다. 
+	// 
+
+}
+
+template<class T, class Alloc>
+ft::vector<T, Alloc>::allocator_type
+get_allocator() const
+{
+	// vector와 관련된 allocator의 복사본을 반환한다.
+
+}
+
+// 관계 연산자
+// vector 컨테이너 lhs 및 rhs 간에 적절한 비교 작업을 수행한다.
+// 순차적으로 요소를 비교하고, 첫 번째 불일치에서 중지한다.
+
+template <class T, class Alloc>  
+bool 
+operator == (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
+template <class T, class Alloc>  
+bool 
+operator != (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
+template <class T, class Alloc>  
+bool 
+operator <  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
+template <class T, class Alloc>  
+bool 
+operator <= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
+template <class T, class Alloc>  
+bool 
+operator >  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
+template <class T, class Alloc>  
+bool 
+operator >= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	// 
+}
+
+
 
 
 
