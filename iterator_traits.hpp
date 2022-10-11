@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 15:12:08 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/10 14:50:40 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/11 17:04:39 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ struct iterator_traits<T*>
 	typedef	ft::random_access_iterator_tag	iterator_category;
 };
 
-
 template <class T> 
 struct iterator_traits<const T*>
 {
@@ -52,8 +51,6 @@ struct iterator_traits<const T*>
 	typedef const T&						reference;
 	typedef	ft::random_access_iterator_tag	iterator_category;
 };
-
-
 
 } // namespace ft
 #endif // __ITERATOR_TRAITS_HPP__

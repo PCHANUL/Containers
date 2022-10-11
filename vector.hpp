@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/10 20:31:55 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/11 19:05:41 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ public:
 	typedef typename allocator_type::const_reference		const_reference;
 	typedef typename allocator_type::pointer				pointer;
 	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::iterator									iterator;
-	typedef ft::iterator									const_iterator;
+	typedef ft::v_iter										iterator;
+	typedef ft::v_iter										const_iterator;
 	typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	typedef typename allocator_type::difference_type		difference_type;

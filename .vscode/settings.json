@@ -70,6 +70,8 @@
         "compare": "cpp",
         "variant": "cpp",
         "concepts": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "__bits": "cpp",
+        "clocale": "cpp"
     }
 }
