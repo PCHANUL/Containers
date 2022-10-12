@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/11 19:35:11 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/12 14:52:18 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,66 @@ protected:
 	pointer	__i;
 
 public:
-	v_iter(pointer x) : __i(x) {}
-	v_iter(const v_iter& iter) : __i(iter.__i) {}
-	v_iter& 	operator ++ () { ++__i; return *this; }
-	v_iter		operator ++ (int) { v_iter tmp(*this); operator++(); return tmp; }
-	bool		operator == (const v_iter& rhs) const { return __i == rhs.__i; }
-	bool		operator !=	(const v_iter& rhs) const { return __i != rhs.__i; }
-	reference	operator * () { return *__i; }
-
+	v_iter();
+	v_iter(const v_iter& __x);
+	v_iter&		operator =	(const v_iter& __x);
+	reference	operator *	() const;
+	pointer		operator ->	() const;
+	v_iter& 	operator ++	();
+	v_iter		operator ++	(int);
+	v_iter&		operator -- ();
+	v_iter		operator -- (int);
+	v_iter		operator +	(difference_type n) const;
+	v_iter		operator +=	(difference_type n);
+	v_iter		operator -	(difference_type n) const;
+	v_iter		operator -=	(difference_type n);
+	reference	operator []	(difference_type n) const;
+	bool		operator ==	(const v_iter& rhs) const;
+	bool		operator !=	(const v_iter& rhs) const;
+	bool		operator <	(const v_iter& rhs) const;
+	bool		operator <=	(const v_iter& rhs) const;
+	bool		operator >	(const v_iter& rhs) const;
+	bool		operator >=	(const v_iter& rhs) const;
 };
+
+template <class T>
+ft::v_iter<T>::v_iter(const ft::v_iter<T>& __x) : __i(__x.__i)
+{
+}
+
+template <class T>
+ft::v_iter<T>&
+ft::v_iter<T>::operator = (const ft::v_iter<T>& __x)
+{
+	if (__x.__i != __i)
+		__i = __x.__i;
+	return (*this);
+}
+
+// template <class T>
+// T&
+// ft::v_iter<T>::operator * () const
+// {
+// 	return (reference);
+// }
+
+// template <class T>
+// T*
+// ft::v_iter<T>::operator -> () const
+// {
+// 	return (pointer);
+// }
+
+
+
+
+// v_iter& 	operator ++	() { ++__i; return *this; }
+// 	v_iter		operator ++	(int) { v_iter tmp(*this); operator++(); return tmp; }
+// 	v_iter&		operator -- ();
+// 	bool		operator ==	(const v_iter& rhs) const { return __i == rhs.__i; }
+// 	bool		operator !=	(const v_iter& rhs) const { return __i != rhs.__i; }
+
+
 
 } // namespace ft
 
