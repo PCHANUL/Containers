@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/12 18:14:29 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/13 19:34:54 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,31 @@
 
 #include "vector.hpp"
 
-// std::vector와 비교하며 구현
-
 int main(void) {
     {   
-        ft::vector<int> nums(10, 1);
-        
+        ft::vector<int> nums(10, 5);
+
+        ft::vector<int>::iterator from = nums.begin();
+        ft::vector<int>::iterator until = nums.end();
+
+        for (ft::vector<int>::iterator it=from; it!=until; it++)
+            std::cout << *it << ' ';
+        std::cout << '\n';
     }
     {
-        std::vector<int> nums(10);
-        // nums.push_back(10);
-        // nums.push_back(20);
-        // nums.push_back(30);
-        // nums.push_back(40);
-        // nums.push_back(50);
+        ft::vector<int> nums(10, 1);
+        
+        ft::vector<int>::iterator from = nums.begin();
+        ft::vector<int>::iterator until = nums.end();
+        
+        for (ft::vector<int>::iterator it=from; it!=until; it++)
+            std::cout << *it << ' ';
+        std::cout << '\n';
 
-        
-        std::vector<int>::iterator from = nums.begin();
-        std::vector<int>::iterator until = nums.end();
-        
-        for (std::vector<int>::iterator it=from; it!=until; it++)
+        ft::vector<int> __nums(from, until - 5);
+        ft::vector<int>::iterator __from = __nums.begin();
+        ft::vector<int>::iterator __until = __nums.end();
+        for (ft::vector<int>::iterator it=__from; it!=__until; it++)
             std::cout << *it << ' ';
         std::cout << '\n';
     }

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/12 18:15:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/13 19:37:53 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,22 @@ template <class T, class Alloc = std::allocator<T> >
 class vector 
 {
 
+protected:
+	typedef std::allocator_traits<Alloc>					__alloc_traits;
+
 public:
 	typedef T												value_type;
 	typedef Alloc											allocator_type;
-	typedef typename allocator_type::reference				reference;
-	typedef typename allocator_type::const_reference		const_reference;
-	typedef typename allocator_type::pointer				pointer;
-	typedef typename allocator_type::const_pointer			const_pointer;
+	typedef value_type&										reference;
+	typedef const value_type&								const_reference;
+	typedef typename __alloc_traits::pointer				pointer;
+	typedef typename __alloc_traits::const_pointer			const_pointer;
 	typedef ft::v_iter<T>									iterator;
 	typedef ft::v_iter<T>									const_iterator;
 	// typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	// typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-	typedef typename allocator_type::difference_type		difference_type;
-	typedef typename allocator_type::size_type				size_type;
+	typedef typename __alloc_traits::difference_type		difference_type;
+	typedef typename __alloc_traits::size_type				size_type;
 
 protected:
 	pointer													__begin;
@@ -93,12 +96,12 @@ public:
 
 	allocator_type			get_allocator() const;
 
-	bool					operator ==	(vector& rhs);
-	bool					operator !=	(vector& rhs);
-	bool					operator <	(vector& rhs);
-	bool					operator <=	(vector& rhs);
-	bool					operator >	(vector& rhs);
-	bool					operator >=	(vector& rhs);
+	bool					operator ==	(vector& rhs) const;
+	bool					operator !=	(vector& rhs) const;
+	bool					operator <	(vector& rhs) const;
+	bool					operator <=	(vector& rhs) const;
+	bool					operator >	(vector& rhs) const;
+	bool					operator >=	(vector& rhs) const;
 
 };
 
@@ -111,32 +114,44 @@ ft::vector<T, Alloc>::vector(const allocator_type& alloc)
 }
 
 template<class T, class Alloc>
-ft::vector<T, Alloc>::vector(size_type n, const value_type& val, const allocator_type& alloc)
+ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_type& alloc) : __alloc(alloc)
 {
 	// Constructs a container with n elements. Each element is a copy of val.
 	// n개의 요소 가 있는 컨테이너를 생성합니다. 각 요소는 val 의 복사본입니다.
-	this->__alloc = alloc;
 	this->__begin = this->__alloc.allocate(n);
 	this->__end = this->__begin + n;
 
-	std::cout << val << std::endl;
-
 	for (int i=0; i<n; i++)
-		this->__begin[i] = val;
+	{
+		const_pointer __new_end = this->__begin + i;
+		__alloc_traits::construct(this->__alloc, __new_end, val);
+	}
 	std::cout << "fill vector" << std::endl;
 }
 
+// InputIterator가 iterator인지 확인한다.
+
 template<class T, class Alloc>
 template <class InputIterator,
-			typename ft::enable_if<ft::iterator_traits<InputIterator>::iterator_category, InputIterator>::type*>
-ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type& alloc)
+			typename ft::enable_if<ft::iterator_traits<InputIterator>::iterator_category, InputIterator>::type*> 
+ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type& alloc) : __alloc(alloc)
 {
 	// Constructs a container with as many elements as the range [first,last), 
 	// with each element constructed from its corresponding element in that range, in the same order.
 	// [first,last) 범위만큼 많은 요소가 있는 컨테이너를 구성하고 , 각 요소는 해당 범위의 해당 요소에서 동일한 순서로 구성됩니다.
 	// - first, last : 범위의 처음과 마지막 위치이다. first는 첫 요소를 가리키지만 last는 마지막 요소를 가리키지 않는다. 
 
-	std::cout << "iterator" << std::endl;
+	size_type	n = std::distance(first, last);
+	this->__begin = this->__alloc.allocate(n);
+	this->__end = this->__begin + n;
+
+	for (int i=0; i<n; i++)
+	{
+		const_pointer __new_end = this->__begin + i;
+		__alloc_traits::construct(this->__alloc, __new_end, *__new_end);
+	}
+
+	std::cout << "Input vector" << std::endl;
 }
 
 template<class T, class Alloc>
@@ -168,7 +183,8 @@ typename ft::vector<T, Alloc>::iterator
 ft::vector<T, Alloc>::begin()
 {
 	// Returns an iterator pointing to the first element in the vector.
-	// 벡터 의 첫 번째 요소를 가리키는 반복자를 반환합니다 . 
+	// 벡터의 첫 번째 요소를 가리키는 반복자를 반환합니다 . 
+	return (iterator(__begin));
 }
 
 template<class T, class Alloc>
@@ -177,6 +193,7 @@ ft::vector<T, Alloc>::begin() const
 {
 	// If the vector object is const-qualified, the function returns a const_iterator. Otherwise, it returns an iterator.
 	// 객체가 const로 한정된 경우 함수는 const_iterator 를 반환합니다 . 그렇지 않으면 iterator 를 반환합니다 . 멤버 유형 iterator 및 const_iterator 는 임의 액세스 반복기 유형입니다(각각 요소 및 const 요소를 가리킴).
+	// T가 const인지 확인하고, 반환한다.
 }
 
 template<class T, class Alloc>
@@ -188,6 +205,8 @@ ft::vector<T, Alloc>::end()
 
 	// past-the-end 요소는 벡터의 마지막 요소 뒤에 오는 이론적 요소이다. 어떤 요소도 가리키지 않으므로 역참조되지 않는다.
 	// 만약에 컨테이너가 비어있다면 함수는 vector::begin과 같은 값을 반환한다.
+
+	return (iterator(__end));
 }
 
 template<class T, class Alloc>
@@ -471,7 +490,7 @@ ft::vector<T, Alloc>::get_allocator() const
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator == (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator == (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
@@ -479,7 +498,7 @@ ft::vector<T, Alloc>::operator == (ft::vector<T, Alloc>& rhs)
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator != (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator != (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
@@ -487,7 +506,7 @@ ft::vector<T, Alloc>::operator != (ft::vector<T, Alloc>& rhs)
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator <  (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator <  (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
@@ -495,7 +514,7 @@ ft::vector<T, Alloc>::operator <  (ft::vector<T, Alloc>& rhs)
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator <= (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator <= (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
@@ -503,7 +522,7 @@ ft::vector<T, Alloc>::operator <= (ft::vector<T, Alloc>& rhs)
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator >  (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator >  (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
@@ -511,7 +530,7 @@ ft::vector<T, Alloc>::operator >  (ft::vector<T, Alloc>& rhs)
 
 template <class T, class Alloc>  
 bool 
-ft::vector<T, Alloc>::operator >= (ft::vector<T, Alloc>& rhs)
+ft::vector<T, Alloc>::operator >= (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
