@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/13 19:37:53 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/14 16:41:50 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define __VECTOR_HPP__
 #include <memory>
 #include "type_traits.hpp"
+#include <iterator>
 
 namespace ft {
 	
@@ -46,8 +47,27 @@ protected:
 public:
 	explicit vector (const allocator_type& alloc = allocator_type());
 	explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
-	template <class InputIterator, typename ft::enable_if<ft::iterator_traits<InputIterator>::iterator_category, InputIterator>::type*> 
-			vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
+
+	// InputIterator가 iterator인지 확인해야한다.
+	// is_converable_iter
+
+	template <class InputIterator> 
+	vector(InputIterator first, 
+			typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type last, 
+			const allocator_type& alloc = allocator_type())
+			{
+				size_type	n = 5;
+				this->__alloc = alloc;
+				this->__begin = this->__alloc.allocate(n);
+				this->__end = this->__begin + n;
+
+				for (int i=0; i<n; i++)
+				{
+					const_pointer __new_end = this->__begin + i;
+					__alloc_traits::construct(this->__alloc, __new_end, *__new_end);
+				}
+				std::cout << "Input vector" << std::endl;
+			}
 	vector (const vector& x);
 	~vector();
 	
@@ -129,12 +149,12 @@ ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_t
 	std::cout << "fill vector" << std::endl;
 }
 
-// InputIterator가 iterator인지 확인한다.
-
+/*
 template<class T, class Alloc>
-template <class InputIterator,
-			typename ft::enable_if<ft::iterator_traits<InputIterator>::iterator_category, InputIterator>::type*> 
-ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type& alloc) : __alloc(alloc)
+template <class InputIterator> 
+ft::vector<T, Alloc>::vector(InputIterator first, 
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last, 
+			const allocator_type& alloc);
 {
 	// Constructs a container with as many elements as the range [first,last), 
 	// with each element constructed from its corresponding element in that range, in the same order.
@@ -142,6 +162,7 @@ ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allo
 	// - first, last : 범위의 처음과 마지막 위치이다. first는 첫 요소를 가리키지만 last는 마지막 요소를 가리키지 않는다. 
 
 	size_type	n = std::distance(first, last);
+	this->__alloc = alloc;
 	this->__begin = this->__alloc.allocate(n);
 	this->__end = this->__begin + n;
 
@@ -153,6 +174,7 @@ ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allo
 
 	std::cout << "Input vector" << std::endl;
 }
+*/
 
 template<class T, class Alloc>
 ft::vector<T, Alloc>::vector (const vector& x)

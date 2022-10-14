@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/13 19:01:36 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/14 15:22:57 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ public:
 	v_iter&		operator -- ();
 	v_iter		operator -- (int);
 	v_iter		operator +	(difference_type n) const;
-	v_iter		operator +=	(difference_type n);
+	v_iter&		operator +=	(difference_type n);
 	v_iter		operator -	(difference_type n) const;
-	v_iter		operator -=	(difference_type n);
+	v_iter&		operator -=	(difference_type n);
 	reference	operator []	(difference_type n) const;
 	bool		operator ==	(const v_iter& rhs) const;
 	bool		operator !=	(const v_iter& rhs) const;
@@ -132,6 +132,40 @@ ft::v_iter<T>::operator --	(int)
 	v_iter tmp(*this);
 	operator--();
 	return (tmp);
+}
+
+template<class T>
+ft::v_iter<T>
+ft::v_iter<T>::operator +	(difference_type n) const
+{ 
+	v_iter tmp(*this);
+	tmp += n;
+	return (tmp);
+}
+
+template<class T>
+ft::v_iter<T>&
+ft::v_iter<T>::operator +=	(difference_type n)
+{ 
+	__i += n;
+	return (*this);
+}
+
+template<class T>
+ft::v_iter<T>
+ft::v_iter<T>::operator -	(difference_type n) const
+{ 
+	v_iter tmp(*this);
+	tmp -= n;
+	return (tmp);
+}
+
+template<class T>
+ft::v_iter<T>&
+ft::v_iter<T>::operator -=	(difference_type n)
+{ 
+	__i -= n;
+	return (*this);
 }
 
 template<class T>
