@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/14 15:35:38 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/15 23:56:45 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int main(void) {
             std::cout << *it << ' ';
         std::cout << '\n';
 
-        ft::vector<int> __nums;
+        ft::vector<int> __nums(from, until - 5);
         ft::vector<int>::iterator __from = __nums.begin();
         ft::vector<int>::iterator __until = __nums.end();
         
