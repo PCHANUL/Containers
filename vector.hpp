@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/14 16:41:50 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/16 18:25:44 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #define __VECTOR_HPP__
 #include <memory>
 #include "type_traits.hpp"
-#include <iterator>
 
 namespace ft {
 	
@@ -48,23 +47,20 @@ public:
 	explicit vector (const allocator_type& alloc = allocator_type());
 	explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 
-	// InputIterator가 iterator인지 확인해야한다.
-	// is_converable_iter
-
-	template <class InputIterator> 
-	vector(InputIterator first, 
+	template <class InputIterator>
+	vector(InputIterator first,
 			typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type last, 
 			const allocator_type& alloc = allocator_type())
 			{
-				size_type	n = 5;
+				difference_type	n = ft::distance(first, last);
+				
 				this->__alloc = alloc;
 				this->__begin = this->__alloc.allocate(n);
 				this->__end = this->__begin + n;
 
 				for (int i=0; i<n; i++)
 				{
-					const_pointer __new_end = this->__begin + i;
-					__alloc_traits::construct(this->__alloc, __new_end, *__new_end);
+					__alloc_traits::construct(this->__alloc, this->__begin + i, *(first + i));
 				}
 				std::cout << "Input vector" << std::endl;
 			}

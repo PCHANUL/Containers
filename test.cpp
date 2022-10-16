@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/15 23:56:45 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/16 18:26:33 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,19 @@
 #include "vector.hpp"
 
 int main(void) {
-    {   
-        ft::vector<int> nums(10, 5);
+    std::cout << "vector" << std::endl;
+    // {   
+    //     ft::vector<int> nums(10, 5);
 
-        ft::vector<int>::iterator from = nums.begin();
-        ft::vector<int>::iterator until = nums.end();
+    //     ft::vector<int>::iterator from = nums.begin();
+    //     ft::vector<int>::iterator until = nums.end();
 
-        for (ft::vector<int>::iterator it=from; it!=until; it++)
-            std::cout << *it << ' ';
-        std::cout << '\n';
-    }
+    //     for (ft::vector<int>::iterator it=from; it!=until; it++)
+    //         std::cout << *it << ' ';
+    //     std::cout << '\n';
+    // }
     {
-        ft::vector<int> nums(10, 1);
+        ft::vector<int> nums(10, 5);
         
         ft::vector<int>::iterator from = nums.begin();
         ft::vector<int>::iterator until = nums.end();
@@ -40,11 +41,11 @@ int main(void) {
             std::cout << *it << ' ';
         std::cout << '\n';
 
-        ft::vector<int> __nums(from, until - 5);
-        ft::vector<int>::iterator __from = __nums.begin();
-        ft::vector<int>::iterator __until = __nums.end();
+        ft::vector<int> new_nums(nums.begin(), nums.end() - 5);
+        ft::vector<int>::iterator new_from = new_nums.begin();
+        ft::vector<int>::iterator new_until = new_nums.end();
         
-        for (ft::vector<int>::iterator it=__from; it!=__until; it++)
+        for (ft::vector<int>::iterator it=new_from; it!=new_until; it++)
             std::cout << *it << ' ';
         std::cout << '\n';
     }

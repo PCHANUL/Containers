@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 15:12:08 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/15 23:57:08 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/16 18:12:59 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,18 @@ template <>			struct __ft_is_iterator<bidirectional_iterator_tag>		: public true
 template <>			struct __ft_is_iterator<random_access_iterator_tag>		: public true_type {};
 
 
-struct two { char c[2]; };
-template <class T> two test(...);
-template <class T> char test(typename T::iterator_category*);
-
 template <class T>
-struct is_iterator	: std::integral_constant<bool, sizeof(test<T>(0)) == 1>
-{};
+struct is_iterator
+{
+
+private:
+	struct __two { char c[2]; };
+	template <class __T> static __two __test(...);
+	template <class __T> static char __test(typename __T::iterator_category* = 0);
+public:
+	static const bool value = sizeof(__test<T>(0)) == 1;
+
+};
 
 
 } // namespace ft
