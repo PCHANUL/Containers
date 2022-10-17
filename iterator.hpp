@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/16 18:23:56 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/17 19:33:28 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define __ITERATOR_HPP__
 #include <cstddef>
 #include "iterator_traits.hpp"
+#include "ftexcept.hpp"
 
 namespace ft
 {
@@ -47,6 +48,8 @@ public:
 	v_iter();
 	v_iter(T* __i);
 	v_iter(const v_iter& __x);
+
+	pointer		base() const;
 	v_iter&		operator =	(const v_iter& __x);
 	reference	operator *	() const;
 	pointer		operator ->	() const;
@@ -75,6 +78,13 @@ ft::v_iter<T>::v_iter(T* __i) : __i(__i)
 template<class T>
 ft::v_iter<T>::v_iter(const ft::v_iter<T>& __x) : __i(__x.__i)
 {
+}
+
+template<class T>
+typename ft::v_iter<T>::pointer		
+ft::v_iter<T>::base() const
+{
+	return (this->__i);
 }
 
 template<class T>
@@ -172,15 +182,17 @@ template<class T>
 bool
 ft::v_iter<T>::operator ==	(const v_iter& rhs) const
 {
-	return (__i == rhs.__i);
+	return (this->__i == rhs.__i);
 }
 
 template<class T>
 bool
 ft::v_iter<T>::operator !=	(const v_iter& rhs) const
 {
-	return (__i != rhs.__i);
+	return (this->__i != rhs.__i);
 }
+
+// first 메모리 주소가 last보다 크다면 exception (ft::lenth_error: vector)
 
 template<class InputIterator>  
 typename iterator_traits<InputIterator>::difference_type    
@@ -188,6 +200,10 @@ distance (InputIterator first, InputIterator last)
 {
 	typename iterator_traits<InputIterator>::difference_type result = 0;
 
+	if (first.base() > last.base())
+	{
+		throw ft::length_error("vector");
+	}
 	while (first++ != last)
 		result += 1;
 	return (result);
