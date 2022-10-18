@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/17 19:33:28 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/18 18:41:42 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,18 +192,18 @@ ft::v_iter<T>::operator !=	(const v_iter& rhs) const
 	return (this->__i != rhs.__i);
 }
 
-// first 메모리 주소가 last보다 크다면 exception (ft::lenth_error: vector)
-
+// first와 last의 거리를 반환
+// - Exception : first 메모리 주소가 last보다 크다면 ft::lenth_error: vector
 template<class InputIterator>  
 typename iterator_traits<InputIterator>::difference_type    
-distance (InputIterator first, InputIterator last)
+distance (InputIterator first, 
+			typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
+			InputIterator>::type last)
 {
 	typename iterator_traits<InputIterator>::difference_type result = 0;
 
 	if (first.base() > last.base())
-	{
 		throw ft::length_error("vector");
-	}
 	while (first++ != last)
 		result += 1;
 	return (result);

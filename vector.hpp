@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/17 19:15:07 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/18 19:38:44 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,28 +41,17 @@ public:
 protected:
 	pointer													__begin;
 	pointer													__end;
+	pointer													__end_mem;
 	allocator_type											__alloc;
 
 public:
-	explicit vector (const allocator_type& alloc = allocator_type());
-	explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
+	vector (const allocator_type& alloc = allocator_type());
+	vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 
 	template <class InputIterator>
 	vector(InputIterator first,
 			typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type last, 
-			const allocator_type& alloc = allocator_type())
-			{
-				difference_type	n = ft::distance(first, last);
-				
-				this->__alloc = alloc;
-				this->__begin = this->__alloc.allocate(n);
-				this->__end = this->__begin + n;
-
-				for (int i=0; i<n; i++)
-				{
-					__alloc_traits::construct(this->__alloc, this->__begin + i, *(first + i));
-				}
-			}
+			const allocator_type& alloc = allocator_type());
 	vector (const vector& x);
 	~vector();
 	
@@ -127,6 +116,7 @@ ft::vector<T, Alloc>::vector(const allocator_type& alloc)
 {
 	this->__begin = 0;
 	this->__end = 0;
+	this->__end_mem = 0;
 	this->__alloc = alloc;
 }
 
@@ -137,6 +127,7 @@ ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_t
 {
 	this->__begin = this->__alloc.allocate(n);
 	this->__end = this->__begin + n;
+	this->__end_mem = this->__end;
 
 	for (int i=0; i<n; i++)
 	{
@@ -145,40 +136,48 @@ ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_t
 	}
 }
 
-/*
+// Constructs a container with as many elements as the range [first,last), 
+// with each element constructed from its corresponding element in that range, in the same order.
+// [first,last) 범위만큼 많은 요소가 있는 컨테이너를 구성하고 , 각 요소는 해당 범위의 해당 요소에서 동일한 순서로 구성됩니다.
+// - first, last : 범위의 처음과 마지막 위치이다. first는 첫 요소를 가리키지만 last는 마지막 요소를 가리키지 않는다. 
+// - exception : first의 메모리 주소가 last보다 뒤에 있다면 ft::length_error : vector
 template<class T, class Alloc>
-template <class InputIterator> 
-ft::vector<T, Alloc>::vector(InputIterator first, 
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last, 
-			const allocator_type& alloc);
+template <class InputIterator>
+ft::vector<T, Alloc>::vector(InputIterator first,
+							typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
+							InputIterator>::type last, 
+							const allocator_type& alloc)
 {
-	// Constructs a container with as many elements as the range [first,last), 
-	// with each element constructed from its corresponding element in that range, in the same order.
-	// [first,last) 범위만큼 많은 요소가 있는 컨테이너를 구성하고 , 각 요소는 해당 범위의 해당 요소에서 동일한 순서로 구성됩니다.
-	// - first, last : 범위의 처음과 마지막 위치이다. first는 첫 요소를 가리키지만 last는 마지막 요소를 가리키지 않는다. 
-
-	size_type	n = std::distance(first, last);
+	difference_type	n = ft::distance(first, last);
+	
 	this->__alloc = alloc;
 	this->__begin = this->__alloc.allocate(n);
 	this->__end = this->__begin + n;
+	this->__end_mem = this->__end;
 
 	for (int i=0; i<n; i++)
-	{
-		const_pointer __new_end = this->__begin + i;
-		__alloc_traits::construct(this->__alloc, __new_end, *__new_end);
-	}
-
-	std::cout << "Input vector" << std::endl;
+		__alloc_traits::construct(this->__alloc, this->__begin + i, *(first + i));
 }
-*/
 
 // Constructs a container with a copy of each of the elements in x, in the same order.
 // 동일한 순서로 x 의 각 요소 복사본을 사용하여 컨테이너를 생성합니다.
+// 인자의 데이터 크기만큼의 메모리 크기를 가집니다.
 template<class T, class Alloc>
 ft::vector<T, Alloc>::vector (const vector& x)
 {
-}
+	size_type	size = x.size();
+	this->__alloc = x.__alloc;
+	this->__begin = this->__alloc.allocate(size);
+	this->__end = this->__begin + size;
+	this->__end_mem = this->__end;
 
+	for (int i=0; i<size; i++)
+	{
+		const_pointer __new_end = this->__begin + i;
+		const_pointer __x_end = x.__begin + i;
+		__alloc_traits::construct(this->__alloc, __new_end, *__x_end);
+	}
+}
 
 // This destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator.
 // 이것은 모든 컨테이너 요소를 파괴하고 할당자를 사용하여 벡터에 의해 할당된 모든 저장 용량 을 할당 해제 합니다 .
@@ -275,6 +274,7 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::size_type
 ft::vector<T, Alloc>::size() const
 {
+	return (this->__end - this->__begin);
 }
 
 // vector가 가질 수 있는 최대 요소의 갯수을 반환한다.
@@ -301,6 +301,7 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::size_type
 ft::vector<T, Alloc>::capacity() const
 {
+	return (this->__end_mem - this->__begin);
 }
 
 // vector가 비어있는지 반환한다.

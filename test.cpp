@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/17 19:36:26 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/18 19:38:38 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,11 @@ int main(void) {
 		const int val = 5;
 		const int len = 10;
 		const int offset = 3;
-		std::vector<int> nums(len, val);
-		std::vector<int> other(10, 7);
-		std::vector<int>::iterator begin = nums.begin();
-		std::vector<int>::iterator end = nums.end() - offset;
-		std::vector<int>::iterator other_end = other.end();
+		ft::vector<int> nums(len, val);
+		ft::vector<int> other(10, 7);
+		ft::vector<int>::iterator begin = nums.begin();
+		ft::vector<int>::iterator end = nums.end() - offset;
+		ft::vector<int>::iterator other_end = other.end();
 
 		{
 			ft::vector<int> range_nums(begin, end);
@@ -107,6 +107,25 @@ int main(void) {
 			{
 				then(std::string(e.what()) == "vector");
 			}
+		}
+	}
+
+	std::cout << "- Copy constructor : ";
+	{
+		ft::vector<int>			v(5, 5);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		
+		ft::vector<int>			v_copy(v);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size();
+
+		ft::vector<int>::iterator it = v_copy.begin();
+		ft::vector<int>::iterator range_end = v_copy.end();
+		int	idx = 0;
+		
+		for (; it!=range_end; it++, idx++)
+		{
+			std::cout << *it << ' ';
 		}
 	}
 
