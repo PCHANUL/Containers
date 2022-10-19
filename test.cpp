@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/18 19:38:38 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/19 10:33:58 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,14 +110,30 @@ int main(void) {
 		}
 	}
 
+
+class Test
+{
+
+public:
+	Test() { std::cout << "constructed\n"; }
+	Test(const Test& x) { std::cout << "copy constructor\n"; }
+	~Test() { std::cout << "destroyed\n"; }
+	
+};
+
 	std::cout << "- Copy constructor : ";
 	{
 		ft::vector<int>			v(5, 5);
 		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		
+		ft::vector<int>::iterator begin = v.begin();
+		v.push_back(10);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		v.push_back(10);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+
 		ft::vector<int>			v_copy(v);
 		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size();
+		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size() << '\n';
 
 		ft::vector<int>::iterator it = v_copy.begin();
 		ft::vector<int>::iterator range_end = v_copy.end();
@@ -127,6 +143,23 @@ int main(void) {
 		{
 			std::cout << *it << ' ';
 		}
+	}
+	{
+		Test						a;
+		std::vector<Test>			v(5, a);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		std::vector<Test>::iterator begin = v.begin();
+		v.push_back(a);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		v.push_back(a);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+
+		std::vector<Test>			v_copy(v);
+		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size() << '\n';
+
+		std::vector<Test>::iterator it = v_copy.begin();
+		std::vector<Test>::iterator range_end = v_copy.end();
 	}
 
 	return 0;

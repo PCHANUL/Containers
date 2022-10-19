@@ -6,13 +6,14 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/18 19:38:44 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/19 10:28:16 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __VECTOR_HPP__
 #define __VECTOR_HPP__
 #include <memory>
+#include <limits>
 #include "type_traits.hpp"
 
 namespace ft {
@@ -107,6 +108,9 @@ public:
 	bool					operator >	(vector& rhs) const;
 	bool					operator >=	(vector& rhs) const;
 
+private:
+	size_type	__calc_new_size(size_type new_size) const;
+
 };
 
 // Constructs an empty container, with no elements.
@@ -184,6 +188,13 @@ ft::vector<T, Alloc>::vector (const vector& x)
 template<class T, class Alloc>
 ft::vector<T, Alloc>::~vector()
 {
+	difference_type	idx = 0;
+	while (this->__begin + idx != this->__end)
+	{
+		__alloc_traits::destroy(this->__alloc, this->__begin + idx);
+		idx += 1;
+	}
+	__alloc_traits::deallocate(this->__alloc, this->__begin, this->size());
 }
 
 // Copies all the elements from x into the container.
@@ -284,6 +295,23 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::size_type
 ft::vector<T, Alloc>::max_size() const
 {
+	size_type		max = __alloc_traits::max_size(this->__alloc);
+	size_type	diff_max = std::numeric_limits<difference_type>::max();
+
+	return (max < diff_max ? max : diff_max);
+}
+
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::size_type
+ ft::vector<T, Alloc>::__calc_new_size(size_type new_size) const
+{
+	size_type	max = max_size();
+	if (new_size > max)
+		throw ft::length_error("vector");
+	size_type	cap = capacity();
+	if (cap >= max / 2)
+		return (max);
+	return (cap * 2 > new_size ? cap * 2 : new_size);
 }
 
 // 컨테이너가 n개의 요소를 포함하도록 크기를 조정한다.
@@ -416,13 +444,39 @@ ft::vector<T, Alloc>::assign (size_type n, const value_type& val)
 	// n개의 요소가 val의 복사본으로 초기화된다. 
 }
 
+// vector의 마지막 요소 다음에 요소를 추가한다.
+// val의 내용이 새 요소로 복사 또는 이동된다.
+// 현재 벡터 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
 template<class T, class Alloc>
 void 
 ft::vector<T, Alloc>::push_back (const value_type& val)
-{
-	// vector의 마지막 요소 다음에 세 요소를 추가한다.
-	// val의 내용이 새 요소로 복사 또는 이동된다.
-	// 현재 벡터 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
+{	
+	if (size() < capacity())
+	{
+		__alloc_traits::construct(this->__alloc, this->__end, val);
+		this->__end += 1;
+	}
+	else
+	{
+		size_type	old_size = this->size();
+		size_type	new_size = __calc_new_size(old_size + 1);
+		pointer		new_begin = this->__alloc.allocate(new_size);
+		pointer		new_end = new_begin + new_size;
+
+		difference_type	idx = 0;
+		while (this->__begin + idx != this->__end)
+		{
+			__alloc_traits::construct(this->__alloc, new_begin + idx, *(this->__begin + idx));
+			__alloc_traits::destroy(this->__alloc, this->__begin + idx);
+			idx += 1;
+		}
+		__alloc_traits::construct(this->__alloc, new_begin + idx, val);
+
+		__alloc_traits::deallocate(this->__alloc, this->__begin, old_size);
+		this->__begin = new_begin;
+		this->__end = this->__begin + old_size + 1;
+		this->__end_mem = this->__begin + new_size;
+	}
 }
 
 template<class T, class Alloc>
