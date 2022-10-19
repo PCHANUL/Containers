@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/19 10:33:58 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/19 12:52:56 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,22 @@ void then(bool is_succeed)
 		std::cout << "\033[1;31mFailed\033[0m\n";
 }
 
-int main(void) {
+class Test
+{
+
+private:
+	int*	__p;
+
+public:
+	Test(int* p) : __p(p) { *(__p) += 1; }
+	Test(const Test& x) : __p(x.__p) { *(__p) += 1; }
+	~Test() { *(__p) -= 1; }
+	
+};
+
+int main(void) 
+{
+	
 	std::cout << "< vector >" << std::endl;
 
 	std::cout << "- Default constructor : ";
@@ -110,57 +125,54 @@ int main(void) {
 		}
 	}
 
-
-class Test
-{
-
-public:
-	Test() { std::cout << "constructed\n"; }
-	Test(const Test& x) { std::cout << "copy constructor\n"; }
-	~Test() { std::cout << "destroyed\n"; }
-	
-};
-
 	std::cout << "- Copy constructor : ";
 	{
-		ft::vector<int>			v(5, 5);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		ft::vector<int>::iterator begin = v.begin();
-		v.push_back(10);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		v.push_back(10);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		int					val = 1;
+		ft::vector<int>		v(3, val);
+		v.push_back(val);
 
-		ft::vector<int>			v_copy(v);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size() << '\n';
-
-		ft::vector<int>::iterator it = v_copy.begin();
-		ft::vector<int>::iterator range_end = v_copy.end();
-		int	idx = 0;
+		ft::vector<int>				v_copy(v);
+		ft::vector<int>::iterator	it = v_copy.begin();
+		ft::vector<int>::iterator	range_end = v_copy.end();
 		
-		for (; it!=range_end; it++, idx++)
+		for (; it!=range_end; it++)
 		{
-			std::cout << *it << ' ';
+			if (*it != val)
+				break ;
 		}
+
+		then(it == range_end 
+			&& v_copy.capacity() == v.size()
+			&& v_copy.size() == v.size());
 	}
+
+	std::cout << "- Destructor : ";
 	{
-		Test						a;
-		std::vector<Test>			v(5, a);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		std::vector<Test>::iterator begin = v.begin();
-		v.push_back(a);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		v.push_back(a);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
+		int	num = 0;
+		{
+			ft::vector<Test>	tests;
+			Test				obj(&num);
 
-		std::vector<Test>			v_copy(v);
-		std::cout << '\n' << v.capacity() << ' ' << v.size();
-		std::cout << '\n' << v_copy.capacity() << ' ' << v_copy.size() << '\n';
-
-		std::vector<Test>::iterator it = v_copy.begin();
-		std::vector<Test>::iterator range_end = v_copy.end();
+			tests.push_back(obj);
+			tests.push_back(obj);
+			std::cout << "vector size(" << tests.size() << ") ";
+		}
+		then(num == 0);
 	}
+
+	std::cout << "- Copy assginment : ";
+	{
+		int					a_size = 10;
+		int 				b_size = 20;
+		std::vector<int>	a(a_size, 1);
+		std::vector<int>	b(b_size, 1);
+
+		b = a;
+
+		then(b.capacity() == b_size);
+	}
+
+
 
 	return 0;
 }
