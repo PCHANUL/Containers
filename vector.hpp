@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/19 17:43:47 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/20 16:20:33 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,51 +18,6 @@
 
 namespace ft {
 
-// 새로운 컨테이너를 생성하여 임시로 저장하는 클래스이다.
-// 생성자로 원하는 크기의 저장 공간이 생긴다.
-// 컨테이너의 요소를 객체로 옮기며, 새로운 요소를 추가한다.
-// 새로 추가된 데이터가 있는 저장 공간을 컨테이너가 가져간다.
-// 객체는 소멸되며 할당된 메모리 공간이 해제된다.
-class _TmpVector
-{
-
-public:
-	_TmpVector(vector& v, size_type n);
-	~_TmpVector();
-
-private:
-	_TmpVector(const _TmpVector& x);
-	_TmpVector& operator =	(const _TmpVector& x);
-
-	pointer			__begin;
-	pointer			__end;
-	pointer 		__end_mem;
-	allocator_type	__alloc;
-};
-
-template<class T, class Alloc>
-ft::vector<T, Alloc>::_TmpVector::_TmpVector(vector& v, size_type n) 
-	: __begin(v.__begin), __end(v.__end), __end_mem(v.__end_mem), __alloc(v.__alloc)
-{
-	
-}
-
-template<class T, class Alloc>
-ft::vector<T, Alloc>::_TmpVector::~_TmpVector()
-{
-	pointer	__p = this->__end;
-
-	while (__p-- != this->__begin)
-		__alloc_traits::destroy(this->__alloc, __p);
-	__alloc_traits::deallocate(this->__alloc, this->begin, this->end - this->begin);
-}
-
-
-
-
-
-
-	
 template <class T, class Alloc = std::allocator<T> >
 class vector 
 {
@@ -163,16 +118,77 @@ private:
 								InputIterator first,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
 								InputIterator>::type last);
-	template <class InputIterator>
-	void					__move(
-								InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
-	template <class InputIterator>
-	void					__move_construct(
-								InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+
+	class _TmpVector
+	{
+
+	private:
+		_TmpVector(const _TmpVector& x) {}
+		_TmpVector& operator =	(const _TmpVector& x) {}
+
+		pointer			__begin;
+		pointer			__end;
+		pointer 		__end_mem;
+		allocator_type	__alloc;
+
+	public:
+		_TmpVector(allocator_type& alloc, size_type n)
+		{
+			this->__alloc = alloc;
+			this->__begin = __alloc_traits::allocate(this->__alloc, n);
+			this->__end_mem = this->__begin + n;
+			this->__end = this->__begin;
+		}
+
+		~_TmpVector()
+		{
+			pointer	__p = this->__end;
+			
+			while (__p-- != this->__begin)
+				__alloc_traits::destroy(this->__alloc, __p);
+			if (size() != 0)
+				__alloc_traits::deallocate(this->__alloc, this->__begin, this->__end - this->__begin);
+		}
+
+		size_type	size() { return (this->__end - this->__begin); }
+		size_type	capacity() { return (this->__end_mem - this->__begin); }
+
+		void	insert_end(value_type val)
+		{
+			if (size() >= capacity())
+				return ;
+			*(this->__end) = val;
+			this->__end += 1;
+		}
+
+		template<class InputIterator>
+		void	insert_end(InputIterator first, 
+							typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
+							InputIterator>::type last)
+		{
+			size_type	n = ft::distance(first, last);
+
+			if (size() + n >= capacity())
+				return ;
+			for (InputIterator iter=first; iter!=last; iter++, this->__end++)
+				__alloc_traits::construct(this->__alloc, this->__end, *iter);
+		}
+
+		void	swap(pointer& p1, pointer& p2)
+		{
+			pointer	tmp = p1;
+			p1 = p2;
+			p2 = tmp;
+		}
+
+		void	move(vector& __v)
+		{
+			swap(this->__begin, __v.__begin);
+			swap(this->__end, __v.__end);
+			swap(this->__end_mem, __v.__end_mem);
+		}
+	};
+	
 };
 
 // Constructs an empty container, with no elements.
@@ -203,9 +219,9 @@ ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_t
 template<class T, class Alloc>
 template <class InputIterator>
 ft::vector<T, Alloc>::vector(InputIterator first,
-							typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-							InputIterator>::type last, 
-							const allocator_type& alloc)
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
+								InputIterator>::type last, 
+								const allocator_type& alloc)
 {
 	this->__alloc = alloc;
 	__construct_end(first, last);
@@ -231,7 +247,7 @@ ft::vector<T, Alloc>::__construct_end(InputIterator first,
 {
 	difference_type	n = ft::distance(first, last);
 	
-	this->__begin = this->__alloc.allocate(n);
+	this->__begin = __alloc_traits::allocate(this->__alloc, n);
 	this->__end = this->__begin + n;
 	this->__end_mem = this->__end;
 
@@ -244,7 +260,7 @@ template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::__construct_end(size_type n, const_reference val)
 {
-	this->__begin = this->__alloc.allocate(n);
+	this->__begin = __alloc_traits::allocate(this->__alloc, n);
 	this->__end = this->__begin + n;
 	this->__end_mem = this->__end;
 
@@ -290,6 +306,8 @@ ft::vector<T, Alloc>::operator = (const vector& x)
 	{
 		// 데이터 재할당 후 옮기고, 해제하기
 	}
+
+	return (*this);
 }
 
 // Returns an iterator pointing to the first element in the vector.
@@ -533,14 +551,6 @@ ft::vector<T, Alloc>::assign (size_type n, const value_type& val)
 	// n개의 요소가 val의 복사본으로 초기화된다. 
 }
 
-template<class T, class Alloc>
-ft::_SwapMemory<T, Alloc>::~_SwapMemory()
-{
-
-};
-
-
-
 // vector의 마지막 요소 다음에 요소를 추가한다.
 // val의 내용이 새 요소로 복사 또는 이동된다.
 // 현재 벡터 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
@@ -555,28 +565,11 @@ ft::vector<T, Alloc>::push_back (const value_type& val)
 	}
 	else
 	{
-		_TmpVector	tmp_vec(this, n);
+		_TmpVector	tmp(this->__alloc, __calc_new_size(size() + 1));
 
-		
-
-		size_type	old_size = this->size();
-		size_type	new_size = __calc_new_size(old_size + 1);
-		pointer		new_begin = this->__alloc.allocate(new_size);
-		pointer		new_end = new_begin + new_size;
-
-		difference_type	idx = 0;
-		while (this->__begin + idx != this->__end)
-		{
-			__alloc_traits::construct(this->__alloc, new_begin + idx, *(this->__begin + idx));
-			__alloc_traits::destroy(this->__alloc, this->__begin + idx);
-			idx += 1;
-		}
-		__alloc_traits::construct(this->__alloc, new_begin + idx, val);
-
-		__alloc_traits::deallocate(this->__alloc, this->__begin, old_size);
-		this->__begin = new_begin;
-		this->__end = this->__begin + old_size + 1;
-		this->__end_mem = this->__begin + new_size;
+		tmp.insert_end(begin(), end());
+		tmp.insert_end(val);
+		tmp.move(*this);
 	}
 }
 
@@ -709,10 +702,6 @@ ft::vector<T, Alloc>::operator >= (ft::vector<T, Alloc>& rhs) const
 {
 	// 
 }
-
-
-
-
 
 } // namespace ft
 

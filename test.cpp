@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/19 12:52:56 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/20 16:04:40 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,6 @@
 
 #include "vector.hpp"
 
-void then(bool is_succeed)
-{
-	if (is_succeed)
-		std::cout << "\033[1;32mSucceed\033[0m\n";
-	else
-		std::cout << "\033[1;31mFailed\033[0m\n";
-}
-
 class Test
 {
 
@@ -37,24 +29,82 @@ public:
 	Test(int* p) : __p(p) { *(__p) += 1; }
 	Test(const Test& x) : __p(x.__p) { *(__p) += 1; }
 	~Test() { *(__p) -= 1; }
-	
+	Test&	operator =	(const Test& x) { this->__p = x.__p; *(__p) += 1; return (*this); }
 };
+
+class Testing
+{
+
+private:
+	bool			__result_main;
+	bool			__result_sub;
+	std::string		__msg_main;
+	std::string		__msg_sub;
+
+	void __print(bool is_succeed) {
+		if (is_succeed)
+			std::cout << "\033[1;32mSucceed\033[0m" << std::endl;
+		else
+			std::cout << "\033[1;31mFailed\033[0m" << std::endl; 
+	}
+
+public:
+
+	Testing() { 
+		__result_main = true; 
+		__result_sub = true;
+		__msg_main = "";
+		__msg_sub = "";
+	}
+
+	void main(std::string str) { 
+		__msg_main = str;
+		__result_main = true;
+	}
+	void main_end() {
+		std::cout << "- " << __msg_main << " : ";
+		__print(__result_main);
+	}
+	void main_then(bool is_true) {
+		if (__result_main)
+			__result_main = is_true;
+	}
+
+	void sub(std::string str) { 
+		__msg_sub = str; 
+		__result_sub = true;
+	}
+	void sub_end() {
+		std::cout << "-- " << __msg_sub << " : ";
+		__print(__result_sub);
+	}
+	void sub_then(bool is_true) {
+		if (__result_sub)
+			__result_sub = is_true;
+	}
+};
+
+
+
+
 
 int main(void) 
 {
-	
+	Testing	test;
+
 	std::cout << "< vector >" << std::endl;
 
-	std::cout << "- Default constructor : ";
+	test.main("Default constructor");
 	{
 		ft::vector<int> ft_empty;
 		ft::vector<int>::iterator ft_begin = ft_empty.begin();
 		ft::vector<int>::iterator ft_end = ft_empty.end();
 
-		then(ft_begin == ft_end);
+		test.main_then(ft_begin == ft_end);
+		test.main_end();
 	}
 
-	std::cout << "- Fill constructor (without val) : ";
+	test.main("Fill constructor (without val)");
 	{
 		int len = 10;
 		ft::vector<int> ft_filled(len);
@@ -64,10 +114,11 @@ int main(void)
 
 		for (; it!=ft_end; it++, len--);
 
-		then(ft_begin != ft_end && len == 0);
+		test.main_then(ft_begin != ft_end && len == 0);
+		test.main_end();
 	}
 
-	std::cout << "- Fill constructor (with val) : ";
+	test.main("Fill constructor (with val)");
 	{
 		int val = 5;
 		int len = 10;
@@ -82,10 +133,11 @@ int main(void)
 				break ;
 		}
 
-		then(it == ft_end && len == 0);
+		test.main_then(it == ft_end && len == 0);
+		test.main_end();
 	} 
 	
-	std::cout << "- Range constructor : ";
+	test.main("Range constructor");
 	{
 		const int val = 5;
 		const int len = 10;
@@ -109,23 +161,25 @@ int main(void)
 					break ;
 			}
 			
-			then(it == range_end && idx == len - offset);
+			test.main_then(it == range_end && idx == len - offset);
 		}
 		{
-			std::cout << "-- Exception : first가 last보다 뒤에 있는 경우(ft::length_error : vector) : ";
+			test.sub("Exception : first가 last보다 뒤에 있는 경우(ft::length_error : vector)");
 			try
 			{
 				ft::vector<int> range_nums(end, begin);
-				then(false);
+				test.sub_then(false);
 			}
 			catch(const ft::length_error& e)
 			{
-				then(std::string(e.what()) == "vector");
+				test.sub_then(std::string(e.what()) == "vector");
 			}
+			test.sub_end();
 		}
+		test.main_end();
 	}
 
-	std::cout << "- Copy constructor : ";
+	test.main("Copy constructor");
 	{
 		int					val = 1;
 		ft::vector<int>		v(3, val);
@@ -141,12 +195,13 @@ int main(void)
 				break ;
 		}
 
-		then(it == range_end 
+		test.main_then(it == range_end 
 			&& v_copy.capacity() == v.size()
 			&& v_copy.size() == v.size());
+		test.main_end();
 	}
 
-	std::cout << "- Destructor : ";
+	test.main("Destructor");
 	{
 		int	num = 0;
 		{
@@ -155,24 +210,55 @@ int main(void)
 
 			tests.push_back(obj);
 			tests.push_back(obj);
-			std::cout << "vector size(" << tests.size() << ") ";
 		}
-		then(num == 0);
+		test.main_then(num == 0);
+		test.main_end();
 	}
 
-	std::cout << "- Copy assginment : ";
+	test.main("Copy assginment");
 	{
 		int					a_size = 10;
 		int 				b_size = 20;
-		std::vector<int>	a(a_size, 1);
-		std::vector<int>	b(b_size, 1);
+		ft::vector<int>	a(a_size, 1);
+		ft::vector<int>	b(b_size, 1);
 
 		b = a;
 
-		then(b.capacity() == b_size);
+		test.main_then(b.capacity() == b_size);
+		test.main_end();
+	}
+	
+	test.main("push_back");
+	{
+		ft::vector<int>	vec;
+
+		test.main_then(vec.size() == 0 && vec.capacity() == 0);
+
+		vec.push_back(10);
+		test.main_then(vec.size() == 1 && vec.capacity() == 1);
+
+		vec.push_back(10);
+		test.main_then(vec.size() == 2 && vec.capacity() == 2);
+
+		vec.push_back(10);
+		test.main_then(vec.size() == 3 && vec.capacity() == 4);
+
+		vec.push_back(10);
+		test.main_then(vec.size() == 4 && vec.capacity() == 4);
+		
+		vec.push_back(10);
+		test.main_then(vec.size() == 5 && vec.capacity() == 8);
+
+		test.main_end();
 	}
 
+	test.main("erase");
+	{
+		std::vector<int>	vec(100, 1);
+		std::vector<int>	vec2(10, 1);
 
+		vec.swap(vec2);
+	}
 
 	return 0;
 }
