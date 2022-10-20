@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/20 16:20:33 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/20 18:28:44 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ public:
 			const allocator_type& alloc = allocator_type());
 	vector (const vector& x);
 	~vector();
-	
-	vector& operator = (const vector& x);
 
 	iterator 				begin();
 	const_iterator 			begin() const;
@@ -102,6 +100,7 @@ public:
 
 	allocator_type			get_allocator() const;
 
+	vector&					operator = (const vector& x);
 	bool					operator ==	(vector& rhs) const;
 	bool					operator !=	(vector& rhs) const;
 	bool					operator <	(vector& rhs) const;
@@ -111,6 +110,7 @@ public:
 
 private:
 	size_type				__calc_new_size(size_type new_size) const;
+	void					__allocate(size_type n, const allocator_type& alloc);
 	void					__destroy_end(pointer new_end);
 	void					__construct_end(size_type n, const_reference val);
 	template <class InputIterator>
@@ -161,6 +161,14 @@ private:
 			this->__end += 1;
 		}
 
+		void	insert_end(size_type n, value_type val)
+		{
+			if (size() >= capacity())
+				return ;
+			for (size_type i=0; i<n; i++, this->__end++)
+				__alloc_traits::construct(this->__alloc, this->__end, val);
+		}
+
 		template<class InputIterator>
 		void	insert_end(InputIterator first, 
 							typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
@@ -196,10 +204,7 @@ private:
 template<class T, class Alloc>
 ft::vector<T, Alloc>::vector(const allocator_type& alloc)
 {
-	this->__begin = 0;
-	this->__end = 0;
-	this->__end_mem = 0;
-	this->__alloc = alloc;
+	__allocate(0, alloc);
 }
 
 // Constructs a container with n elements. Each element is a copy of val.
@@ -207,7 +212,7 @@ ft::vector<T, Alloc>::vector(const allocator_type& alloc)
 template<class T, class Alloc>
 ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_type& alloc)
 {
-	this->__alloc = alloc;
+	__allocate(n, alloc);
 	__construct_end(n, val);
 }
 
@@ -223,7 +228,7 @@ ft::vector<T, Alloc>::vector(InputIterator first,
 								InputIterator>::type last, 
 								const allocator_type& alloc)
 {
-	this->__alloc = alloc;
+	__allocate(ft::distance(first, last), alloc);
 	__construct_end(first, last);
 }
 
@@ -233,51 +238,48 @@ ft::vector<T, Alloc>::vector(InputIterator first,
 template<class T, class Alloc>
 ft::vector<T, Alloc>::vector (const vector& x)
 {
-	this->__alloc = x.__alloc;
+	__allocate(x.size(), x.__alloc);
 	__construct_end(x.begin(), x.end());
 }
 
-// 새로운 공간을 할당 first부터 last까지 객체를 복사
 template<class T, class Alloc>
-template <class InputIterator>
+void
+ft::vector<T, Alloc>::__allocate(size_type n, const allocator_type& alloc)
+{
+	this->__alloc = alloc;
+	this->__begin = __alloc_traits::allocate(this->__alloc, n);
+	this->__end = this->__begin;
+	this->__end_mem = this->__end + n;
+}
+
+// 새로운 공간을 할당하고, first부터 last까지 객체를 복사
+template<class T, class Alloc>
+template<class InputIterator>
 void
 ft::vector<T, Alloc>::__construct_end(InputIterator first,
 										typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
 										InputIterator>::type last)
 {
-	difference_type	n = ft::distance(first, last);
-	
-	this->__begin = __alloc_traits::allocate(this->__alloc, n);
-	this->__end = this->__begin + n;
-	this->__end_mem = this->__end;
-
-	for (int i=0; i<n; i++)
-		__alloc_traits::construct(this->__alloc, this->__begin + i, *(first + i));
+	for (InputIterator	iter=first; iter!=last; iter++, this->__end++)
+		__alloc_traits::construct(this->__alloc, this->__end, *iter);
 }
 
-// 새로운 공간을 할당 n개의 val을 생성
+// 새로운 공간을 할당하고, n개의 val을 생성
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::__construct_end(size_type n, const_reference val)
 {
-	this->__begin = __alloc_traits::allocate(this->__alloc, n);
-	this->__end = this->__begin + n;
-	this->__end_mem = this->__end;
-
-	for (int i=0; i<n; i++)
-		__alloc_traits::construct(this->__alloc, this->__begin + i, val);
+	for (int i=0; i<n; i++, this->__end++)
+		__alloc_traits::construct(this->__alloc, this->__end, val);
 }
 
 // new_end까지의 개체를 제거한다.
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::__destroy_end(pointer new_end)
-{
-	pointer old_end = this->__end;
-	
-	while (old_end-- != new_end)
-		__alloc_traits::destroy(this->__alloc, old_end);
-	this->__end = new_end;
+{	
+	while (this->__end != new_end && this->__end != this->__begin && this->__end--)
+		__alloc_traits::destroy(this->__alloc, this->__end);
 }
 
 // This destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator.
@@ -287,27 +289,6 @@ ft::vector<T, Alloc>::~vector()
 {
 	__destroy_end(this->__begin);
 	__alloc_traits::deallocate(this->__alloc, this->__begin, this->capacity());
-}
-
-// Copies all the elements from x into the container.
-// The container preserves its current allocator, which is used to allocate storage in case of reallocation.
-// x 의 모든 요소를 ​​컨테이너에 복사합니다. 컨테이너 는 재할당의 경우 스토리지를 할당하는 데 사용되는 현재 할당자를 유지합니다.
-template<class T, class Alloc>
-ft::vector<T, Alloc>& 
-ft::vector<T, Alloc>::operator = (const vector& x)
-{
-	__destroy_end(this->__begin);
-
-	if (x.size() < this->capacity())
-	{
-		// 데이터 옮기기
-	}
-	else
-	{
-		// 데이터 재할당 후 옮기고, 해제하기
-	}
-
-	return (*this);
 }
 
 // Returns an iterator pointing to the first element in the vector.
@@ -401,7 +382,7 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::size_type
 ft::vector<T, Alloc>::max_size() const
 {
-	size_type		max = __alloc_traits::max_size(this->__alloc);
+	size_type	max = __alloc_traits::max_size(this->__alloc);
 	size_type	diff_max = std::numeric_limits<difference_type>::max();
 
 	return (max < diff_max ? max : diff_max);
@@ -428,6 +409,17 @@ template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::resize (size_type n, value_type val)
 {
+	if (capacity() < n)
+	{
+		_TmpVector	tmp(this->__alloc, __calc_new_size(n));
+
+		tmp.insert_end(begin(), end());
+		tmp.move(*this);
+	}
+	if (n > size())
+		__construct_end(n - size(), val);
+	else
+		__destroy_end(__begin + n);
 }
 
 // vector에 할당된 저장공간을 반환한다. 
@@ -650,6 +642,27 @@ ft::vector<T, Alloc>::get_allocator() const
 {
 	// vector와 관련된 allocator의 복사본을 반환한다.
 
+}
+
+// Copies all the elements from x into the container.
+// The container preserves its current allocator, which is used to allocate storage in case of reallocation.
+// x 의 모든 요소를 ​​컨테이너에 복사합니다. 컨테이너 는 재할당의 경우 스토리지를 할당하는 데 사용되는 현재 할당자를 유지합니다.
+template<class T, class Alloc>
+ft::vector<T, Alloc>& 
+ft::vector<T, Alloc>::operator = (const vector& x)
+{
+	__destroy_end(this->__begin);
+
+	if (x.size() < this->capacity())
+	{
+		// 데이터 옮기기
+	}
+	else
+	{
+		// 데이터 재할당 후 옮기고, 해제하기
+	}
+
+	return (*this);
 }
 
 // 관계 연산자

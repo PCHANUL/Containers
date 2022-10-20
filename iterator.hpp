@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/18 18:41:42 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/20 17:58:10 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,34 @@ bool
 ft::v_iter<T>::operator !=	(const v_iter& rhs) const
 {
 	return (this->__i != rhs.__i);
+}
+
+template<class T>
+bool
+ft::v_iter<T>::operator <	(const v_iter& rhs) const
+{
+	return (this->__i < rhs.__i);
+}
+
+template<class T>
+bool
+ft::v_iter<T>::operator <=	(const v_iter& rhs) const
+{
+	return (this->__i <= rhs.__i);
+}
+
+template<class T>
+bool
+ft::v_iter<T>::operator >	(const v_iter& rhs) const
+{
+	return (this->__i > rhs.__i);
+}
+
+template<class T>
+bool
+ft::v_iter<T>::operator >=	(const v_iter& rhs) const
+{
+	return (this->__i >= rhs.__i);
 }
 
 // first와 last의 거리를 반환

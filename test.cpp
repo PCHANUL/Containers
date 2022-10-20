@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/20 16:04:40 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/20 18:28:43 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ private:
 	}
 
 public:
-
 	Testing() { 
 		__result_main = true; 
 		__result_sub = true;
@@ -81,6 +80,16 @@ public:
 	void sub_then(bool is_true) {
 		if (__result_sub)
 			__result_sub = is_true;
+	}
+
+	template<class Iterator>
+	void print_vector(Iterator begin, 
+						typename ft::enable_if<ft::is_iterator<Iterator>::value, 
+						Iterator>::type end)
+	{
+		for (; begin!=end; begin++)
+			std::cout << *begin << ' ';
+		std::cout << '\n';
 	}
 };
 
@@ -228,6 +237,21 @@ int main(void)
 		test.main_end();
 	}
 	
+	test.main("resize");
+	{
+		ft::vector<int>	vec(10, 1);
+
+		vec.resize(5, 10);
+		test.print_vector(vec.begin(), vec.end());
+		std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
+
+		vec.resize(20, 7);
+		test.print_vector(vec.begin(), vec.end());
+		std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
+
+		test.main_end();
+	}
+
 	test.main("push_back");
 	{
 		ft::vector<int>	vec;
@@ -252,12 +276,14 @@ int main(void)
 		test.main_end();
 	}
 
+
 	test.main("erase");
 	{
 		std::vector<int>	vec(100, 1);
 		std::vector<int>	vec2(10, 1);
 
 		vec.swap(vec2);
+		test.main_end();
 	}
 
 	return 0;
