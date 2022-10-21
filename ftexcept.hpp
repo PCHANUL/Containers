@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 18:53:26 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/17 19:33:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/21 11:49:32 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ class length_error : public logic_error
 {
 public:
 	length_error(const char* str) : logic_error(str) {}
+};
+
+class out_of_range : public logic_error
+{
+public:
+	out_of_range(const char* str) : logic_error(str) {}
 };
 
 };

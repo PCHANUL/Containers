@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/20 18:28:43 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/21 18:13:44 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,16 @@ public:
 	void main(std::string str) { 
 		__msg_main = str;
 		__result_main = true;
+		std::cout << " " << __msg_main << " --> ";
 	}
 	void main_end() {
-		std::cout << "- " << __msg_main << " : ";
 		__print(__result_main);
 	}
 	void main_then(bool is_true) {
+		if (is_true)
+			std::cout << "✓" << ' ';
+		else
+			std::cout << "✕" << ' ';
 		if (__result_main)
 			__result_main = is_true;
 	}
@@ -72,9 +76,9 @@ public:
 	void sub(std::string str) { 
 		__msg_sub = str; 
 		__result_sub = true;
+		std::cout << "\t" << __msg_sub << " --> ";
 	}
 	void sub_end() {
-		std::cout << "-- " << __msg_sub << " : ";
 		__print(__result_sub);
 	}
 	void sub_then(bool is_true) {
@@ -83,14 +87,55 @@ public:
 	}
 
 	template<class Iterator>
-	void print_vector(Iterator begin, 
-						typename ft::enable_if<ft::is_iterator<Iterator>::value, 
-						Iterator>::type end)
+	void print_iter(Iterator begin, 
+					typename ft::enable_if<ft::is_iterator<Iterator>::value, 
+					Iterator>::type end)
 	{
 		for (; begin!=end; begin++)
 			std::cout << *begin << ' ';
 		std::cout << '\n';
 	}
+
+	template<class T>
+	void print_std(std::vector<T> std_v)
+	{
+		print_iter(std_v.begin(), std_v.end());
+	}
+
+	template<class T>
+	void print_ft(ft::vector<T> ft_v)
+	{
+		print_iter(ft_v.begin(), ft_v.end());
+	}
+
+	template<class Iter1, class Iter2>
+	bool compare_iter(Iter1 a_begin, typename ft::enable_if<ft::is_iterator<Iter1>::value, Iter1>::type a_end, 
+					Iter2 b_begin, typename ft::enable_if<ft::is_iterator<Iter2>::value, Iter2>::type b_end)
+	{
+		if (a_begin > a_end || b_begin > b_end)
+			return (false);
+		for (; a_begin!=a_end; a_begin++, b_begin++)
+		{
+			if (*a_begin != *b_begin)
+				return (false);
+		}
+		if (b_begin != b_end)
+			return (false);
+		return (true);
+	}
+
+	template<class T>
+	bool compare_vector(std::vector<T> std_v, ft::vector<T> ft_v)
+	{
+		return (compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+	}
+
+	template<class T>
+	bool compare_size(std::vector<T> std_v, ft::vector<T> ft_v)
+	{
+		return (std_v.size() == ft_v.size() && std_v.capacity() == ft_v.capacity());
+	}
+
 };
 
 
@@ -239,16 +284,130 @@ int main(void)
 	
 	test.main("resize");
 	{
-		ft::vector<int>	vec(10, 1);
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
 
-		vec.resize(5, 10);
-		test.print_vector(vec.begin(), vec.end());
-		std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
+		std_v.resize(5, 10);
+		ft_v.resize(5, 10);
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(std_v.capacity() == ft_v.capacity());
 
-		vec.resize(20, 7);
-		test.print_vector(vec.begin(), vec.end());
-		std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
+		std_v.resize(21, 7);
+		ft_v.resize(21, 7);
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(std_v.capacity() == ft_v.capacity());
 
+		test.main_end();
+	}
+
+	test.main("reserve");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+
+		std_v.reserve(11);
+		ft_v.reserve(11);
+		test.main_then(test.compare_size(std_v, ft_v)); 
+
+		std_v.reserve(20);
+		ft_v.reserve(20);
+		test.main_then(test.compare_size(std_v, ft_v)); 
+			
+		std_v.reserve(1);
+		ft_v.reserve(1);
+		test.main_then(test.compare_size(std_v, ft_v)); 
+
+		test.main_end();
+	}
+
+	test.main("operator []");
+	{
+		const std::vector<int> 	std_v(10, 1);
+		const ft::vector<int>	ft_v(10, 1);
+
+		test.main_then(std_v[0] == ft_v[0]);
+		test.main_then(std_v[9] == ft_v[9]);
+
+		try
+		{
+			ft_v[10];
+		}
+		catch(const std::exception& e)
+		{
+			test.main_then(false);
+		}
+
+		test.main_end();
+	}
+
+	test.main("at");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+
+		test.main_then(std_v.at(0) == ft_v.at(0));
+		test.main_then(std_v.at(9) == ft_v.at(9));
+
+		try
+		{
+			ft_v.at(10);
+		}
+		catch(const std::exception& e)
+		{
+			test.main_then(std::string(e.what()) == "vector");
+		}
+		
+		test.main_end();
+	}
+
+	test.main("assign(iterator)");
+	{
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_under(2, 3);
+		std::vector<int>	std_over(33, 7);
+		
+		ft::vector<int>		ft_v(10, 1);
+		std::vector<int>	ft_under(2, 3);
+		ft::vector<int>		ft_over(33, 7);
+
+		std_v.assign(std_under.begin(), std_under.end());
+		ft_v.assign(ft_under.begin(), ft_under.end());
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		std_v.assign(std_over.begin(), std_over.end());
+		ft_v.assign(ft_over.begin(), ft_over.end());
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_end();
+	}
+
+	test.main("assign(size, value)");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+
+		std_v.assign(2, 3);
+		ft_v.assign(2, 3);
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		std_v.assign(20, 7);
+		ft_v.assign(20, 7);
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		try
+		{
+			ft_v.assign(-10, 1);
+			test.main_then(false);
+		}
+		catch(const std::exception& e)
+		{
+			test.main_then(std::string(e.what()) == "vector");
+		}
+		
 		test.main_end();
 	}
 
@@ -276,15 +435,145 @@ int main(void)
 		test.main_end();
 	}
 
-
-	test.main("erase");
+	test.main("pop_back");
 	{
-		std::vector<int>	vec(100, 1);
-		std::vector<int>	vec2(10, 1);
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
 
-		vec.swap(vec2);
+		std_v.pop_back();
+		ft_v.pop_back();
+
+		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
+		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
 	}
+
+	test.main("insert(a value)");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+
+		std::vector<int>::iterator	std_iter = std_v.insert(std_v.end() - 5, 7);
+		ft::vector<int>::iterator	ft_iter = ft_v.insert(ft_v.end() - 5, 7);
+
+		test.main_then(*std_iter == *ft_iter);
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+		
+		std_iter = std_v.insert(std_v.begin(), 9);
+		ft_iter = ft_v.insert(ft_v.begin(), 9);
+
+		test.main_then(*std_iter == *ft_iter);
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		test.main_end();
+	}
+
+	test.main("insert(size, value)");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		
+		std_v.insert(std_v.end() - 5, 2, 7);
+		ft_v.insert(ft_v.end() - 5, 2, 7);
+
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+		
+		std_v.insert(std_v.begin(), 10, 9);
+		ft_v.insert(ft_v.begin(), 10, 9);
+
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		test.main_end();
+	}
+
+	test.main("insert(iterator)");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		std::vector<int>	tmp1(20, 7);
+		
+		std_v.insert(std_v.end() - 5, tmp1.begin(), tmp1.end());
+		ft_v.insert(ft_v.end() - 5, tmp1.begin(), tmp1.end());
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		std_v.insert(std_v.begin(), tmp1.begin(), tmp1.end());
+		ft_v.insert(ft_v.begin(), tmp1.begin(), tmp1.end());
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+
+		test.main_end();
+	}
+
+	test.main("erase(a value)");
+	{
+		std::vector<int>	std_v(99, 1);
+		ft::vector<int>		ft_v(99, 1);
+
+		std_v.insert(std_v.begin() + 30, 2, 99);
+		ft_v.insert(ft_v.begin() + 30, 2, 99);
+
+		std::vector<int>::iterator std_iter = std_v.erase(std_v.begin() + 30);
+		ft::vector<int>::iterator ft_iter = ft_v.erase(ft_v.begin() + 30);
+
+		test.main_then(test.compare_iter(std_iter, std_v.end(), ft_iter, ft_v.end()));
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_end();
+	}
+
+	test.main("erase(iterator)");
+	{
+		std::vector<int>	std_v(99, 1);
+		ft::vector<int>		ft_v(99, 1);
+
+		std_v.insert(std_v.begin() + 30, 5, 99);
+		ft_v.insert(ft_v.begin() + 30, 5, 99);
+
+		std::vector<int>::iterator std_iter = std_v.erase(std_v.begin() + 30, std_v.begin() + 33);
+		ft::vector<int>::iterator ft_iter = ft_v.erase(ft_v.begin() + 30, ft_v.begin() + 33);
+
+		test.main_then(test.compare_iter(std_iter, std_v.end(), ft_iter, ft_v.end()));
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_end();
+	}
+
+	test.main("swap");
+	{
+		std::cout << std::endl;
+		ft::vector<int>	ft_v(10, 1);
+		ft::vector<int>	tmp(20, 8);
+
+		ft::vector<int>::iterator	iter1 = ft_v.begin();
+
+
+		test.print_ft(ft_v);
+		test.print_ft(tmp);
+		std::cout << iter1.base() << std::endl;
+		std::cout << *iter1 << std::endl;
+		std::cout << *(ft_v.begin()) << std::endl;
+		std::cout << ft_v.size() << ' ' << ft_v.capacity() << std::endl;
+		std::cout << tmp.size() << ' ' << tmp.capacity() << std::endl;
+		
+		ft_v.swap(tmp);
+
+		test.print_ft(ft_v);
+		test.print_ft(tmp);
+		std::cout << iter1.base() << std::endl;
+		std::cout << *iter1 << std::endl;
+		std::cout << *(ft_v.begin()) << std::endl;
+		std::cout << ft_v.size() << ' ' << ft_v.capacity() << std::endl;
+		std::cout << tmp.size() << ' ' << tmp.capacity() << std::endl;
+
+	}
+
+
+
 
 	return 0;
 }
