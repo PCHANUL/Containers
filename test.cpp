@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/21 18:13:44 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/22 23:52:05 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -545,35 +545,54 @@ int main(void)
 
 	test.main("swap");
 	{
-		std::cout << std::endl;
-		ft::vector<int>	ft_v(10, 1);
-		ft::vector<int>	tmp(20, 8);
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(20, 8);
+		ft::vector<int>		ft_v(10, 1);
+		ft::vector<int>		ft_tmp(20, 8);
 
-		ft::vector<int>::iterator	iter1 = ft_v.begin();
-
-
-		test.print_ft(ft_v);
-		test.print_ft(tmp);
-		std::cout << iter1.base() << std::endl;
-		std::cout << *iter1 << std::endl;
-		std::cout << *(ft_v.begin()) << std::endl;
-		std::cout << ft_v.size() << ' ' << ft_v.capacity() << std::endl;
-		std::cout << tmp.size() << ' ' << tmp.capacity() << std::endl;
+		std::vector<int>::iterator	std_iter = std_v.begin();
+		ft::vector<int>::iterator	ft_iter = ft_v.begin();
 		
-		ft_v.swap(tmp);
-
-		test.print_ft(ft_v);
-		test.print_ft(tmp);
-		std::cout << iter1.base() << std::endl;
-		std::cout << *iter1 << std::endl;
-		std::cout << *(ft_v.begin()) << std::endl;
-		std::cout << ft_v.size() << ' ' << ft_v.capacity() << std::endl;
-		std::cout << tmp.size() << ' ' << tmp.capacity() << std::endl;
-
+		std_v.swap(std_tmp);
+		ft_v.swap(ft_tmp);
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_vector(std_tmp, ft_tmp));
+		test.main_then(*std_iter == *ft_iter);
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_then(test.compare_size(std_tmp, ft_tmp));
+		test.main_end();
 	}
 
+	test.main("clear");
+	{
+		std::vector<int>	std_v(10, 1);
+		ft::vector<int>		ft_v(10, 1);
 
+		std_v.clear();
+		ft_v.clear();
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_end();
+	}
 
+	test.main("operator =");
+	{
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(20, 8);
+		ft::vector<int>		ft_v(10, 1);
+		ft::vector<int>		ft_tmp(20, 8);
+
+		std_tmp.push_back(10);
+		ft_tmp.push_back(10);
+
+		std_v = std_tmp;
+		ft_v = ft_tmp;
+
+		test.main_then(test.compare_vector(std_v, ft_v));
+		test.main_then(test.compare_vector(std_tmp, ft_tmp));
+		test.main_then(test.compare_size(std_v, ft_v));
+		test.main_end();
+	}
 
 	return 0;
 }

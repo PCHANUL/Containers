@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/21 18:13:26 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/22 23:49:16 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -797,47 +797,50 @@ template<class T, class Alloc>
 void 
 ft::vector<T, Alloc>::swap (vector& x)
 {
+	allocator_type	alloc = x.__alloc;
+
+	x.__alloc = this->__alloc;
+	this->__alloc = alloc;
 	__swap_ptr(this->__begin, x.__begin);
 	__swap_ptr(this->__end, x.__end);
 	__swap_ptr(this->__end_mem, x.__end_mem);
 }
 
+// vector의 모든 요소를 제거하고 컨테이너의 크기를 0으로 유지한다.
+// 재할당이 보장되지 않으며 vector 용량이 변경된다는 보장이 없다. 
+// 
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::clear()
 {
-	// vector의 모든 요소를 제거하고 컨테이너의 크기를 0으로 유지한다.
-	// 재할당이 보장되지 않으며 vector 용량이 변경된다는 보장이 없다. 
-	// 
-
+	__destroy_end(__begin);
 }
 
+// vector와 관련된 allocator의 복사본을 반환한다.
 template<class T, class Alloc>
 typename ft::vector<T, Alloc>::allocator_type
 ft::vector<T, Alloc>::get_allocator() const
 {
-	// vector와 관련된 allocator의 복사본을 반환한다.
-
+	return (__alloc);
 }
 
 // Copies all the elements from x into the container.
 // The container preserves its current allocator, which is used to allocate storage in case of reallocation.
 // x 의 모든 요소를 ​​컨테이너에 복사합니다. 컨테이너 는 재할당의 경우 스토리지를 할당하는 데 사용되는 현재 할당자를 유지합니다.
+// 인자 컨테이너 size가 더 큰 경우에 size만큼 재할당합니다.
 template<class T, class Alloc>
 ft::vector<T, Alloc>& 
 ft::vector<T, Alloc>::operator = (const vector& x)
 {
-	__destroy_end(this->__begin);
-
-	if (x.size() < this->capacity())
+	__destroy_end(__begin);
+	if (x.size() > this->capacity())
 	{
-		// 데이터 옮기기
+		_TmpVector	tmp(this->__alloc, x.size());
+		tmp.insert_end(x.begin(), x.end());
+		tmp.move(*this);
 	}
 	else
-	{
-		// 데이터 재할당 후 옮기고, 해제하기
-	}
-
+		__construct_end(x.begin(), x.end());
 	return (*this);
 }
 
