@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/22 23:52:05 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/23 14:54:06 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -593,6 +593,19 @@ int main(void)
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
 	}
+
+	test.main("operator ==");
+	{
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		ft::vector<int>		ft_tmp(10, 1);
+
+		std::cout << (std_v == std_tmp) << std::endl;
+		std::cout << (ft_v == ft_tmp) << std::endl;
+
+	}
+
 
 	return 0;
 }

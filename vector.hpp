@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/22 23:49:16 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/23 14:55:57 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,14 @@ private:
 	void					__move_end_forward(pointer start, size_type n);
 	void					__move_end_backward(pointer start, size_type n);
 	void					__swap_ptr(pointer& p1, pointer& p2);
-
+	template<class Iter1, class Iter2>
+	bool 					__compare_vector(
+								Iter1 a_begin, 
+								typename ft::enable_if<ft::is_iterator<Iter1>::value, 
+								Iter1>::type a_end, 
+								Iter2 b_begin, 
+								typename ft::enable_if<ft::is_iterator<Iter2>::value, 
+								Iter2>::type b_end);
 	class _TmpVector
 	{
 
@@ -844,15 +851,32 @@ ft::vector<T, Alloc>::operator = (const vector& x)
 	return (*this);
 }
 
+template<class T, class Alloc>
+template<class Iter1, class Iter2>
+bool 
+ft::vector<T, Alloc>::__compare_vector(Iter1 a_begin, typename ft::enable_if<ft::is_iterator<Iter1>::value, Iter1>::type a_end, 
+										Iter2 b_begin, typename ft::enable_if<ft::is_iterator<Iter2>::value, Iter2>::type b_end)
+{
+	if (a_begin > a_end || b_begin > b_end)
+		return (false);
+	for (; a_begin!=a_end; a_begin++, b_begin++)
+	{
+		if (*a_begin != *b_begin)
+			return (false);
+	}
+	if (b_begin != b_end)
+		return (false);
+	return (true);
+}
+
 // 관계 연산자
 // vector 컨테이너 lhs 및 rhs 간에 적절한 비교 작업을 수행한다.
 // 순차적으로 요소를 비교하고, 첫 번째 불일치에서 중지한다.
-
 template <class T, class Alloc>  
 bool 
 ft::vector<T, Alloc>::operator == (ft::vector<T, Alloc>& rhs) const
 {
-	// 
+	return (__compare_vector(begin(), end(), rhs.begin(), rhs.end()));
 }
 
 
@@ -860,7 +884,7 @@ template <class T, class Alloc>
 bool 
 ft::vector<T, Alloc>::operator != (ft::vector<T, Alloc>& rhs) const
 {
-	// 
+	return (!__compare_vector(begin(), end(), rhs.begin(), rhs.end()));
 }
 
 
