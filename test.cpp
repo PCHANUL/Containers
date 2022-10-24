@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/23 14:54:06 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/24 19:16:30 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "vector.hpp"
+#include "ftalgorithm.hpp"
 
 class Test
 {
@@ -594,16 +595,68 @@ int main(void)
 		test.main_end();
 	}
 
-	test.main("operator ==");
+	test.main("equal");
 	{
+		bool				std_result;
+		bool				ft_result;
 		std::vector<int>	std_v(10, 1);
 		std::vector<int>	std_tmp(10, 1);
+		std_tmp.push_back(8);
+		
+		std_result = std::equal(std_v.begin(), std_v.end(), std_tmp.begin());
+		ft_result = ft::equal(std_v.begin(), std_v.end(), std_tmp.begin());
+		test.main_then(std_result == ft_result);
+
+		std_result = std::equal(std_tmp.begin(), std_tmp.end(), std_v.begin());
+		ft_result = ft::equal(std_tmp.begin(), std_tmp.end(), std_v.begin());
+		test.main_then(std_result == ft_result);
+		test.main_end();
+	}
+
+	test.main("operator ==, !=");
+	{
 		ft::vector<int>		ft_v(10, 1);
 		ft::vector<int>		ft_tmp(10, 1);
 
-		std::cout << (std_v == std_tmp) << std::endl;
-		std::cout << (ft_v == ft_tmp) << std::endl;
+		test.main_then(ft_v == ft_tmp);
+		ft_tmp.push_back(1);
+		test.main_then(ft_v != ft_tmp);
+		ft_tmp.pop_back();
+		test.main_then(ft_v == ft_tmp);
+		test.main_end();
+	}
 
+	test.main("lexicographical_compare");
+	{
+		bool				std_result;
+		bool				ft_result;
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(10, 1);
+		std_tmp.push_back(8);
+		
+		std_result = std::equal(std_v.begin(), std_v.end(), std_tmp.begin());
+		ft_result = ft::equal(std_v.begin(), std_v.end(), std_tmp.begin());
+		test.main_then(std_result == ft_result);
+
+		std_result = std::equal(std_tmp.begin(), std_tmp.end(), std_v.begin());
+		ft_result = ft::equal(std_tmp.begin(), std_tmp.end(), std_v.begin());
+		test.main_then(std_result == ft_result);
+		test.main_end();
+	}
+
+	#include <algorithm>
+	test.main("operator <");
+	{
+		std::vector<int>	ft_v(10, 1);
+		std::vector<int>	ft_tmp(10, 1);
+
+		std::cout << (ft_v < ft_tmp) << std::endl;
+		ft_tmp.pop_back();
+		ft_tmp.push_back(11);
+		std::cout << (ft_v < ft_tmp) << std::endl;
+
+
+		test.main_end();
 	}
 
 

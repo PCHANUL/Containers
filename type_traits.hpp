@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/12 18:04:49 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/16 18:10:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/24 17:33:08 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ namespace ft
 template <class T, T v>
 struct integral_constant 
 {
-	static const T value = v;
 	typedef T value_type;
 	typedef integral_constant<T, v> type;
 	operator T() { return v; }
@@ -27,7 +26,6 @@ struct integral_constant
 
 typedef integral_constant<bool, true> true_type;
 typedef integral_constant<bool, false> false_type;
-
 
 template <class T>	struct __ft_is_integral				: public false_type {};
 template <>			struct __ft_is_integral<int> 		: public true_type {};

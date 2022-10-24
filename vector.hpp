@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/23 14:55:57 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/24 19:29:12 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,8 @@ public:
 	vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 
 	template <class InputIterator>
-	vector(InputIterator first,
-			typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-			InputIterator>::type last, 
-			const allocator_type& alloc = allocator_type());
+	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	vector (const vector& x);
 	~vector();
 
@@ -85,21 +83,16 @@ public:
 	const value_type* 		data() const;
 
 	template <class InputIterator> 
-	void					assign (
-								InputIterator first, 
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+	void					assign (InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	void					assign (size_type n, const value_type& val);
 	void					push_back (const value_type& val);
 	void					pop_back();
 	iterator				insert (iterator position, const value_type& val);
     void					insert (iterator position, size_type n, const value_type& val);
 	template <class InputIterator> 
-	void					insert (
-								iterator position, 
-								InputIterator first, 
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+	void					insert (iterator position, InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	iterator				erase (iterator position);
 	iterator				erase (iterator first, iterator last);
 	void					swap (vector& x);
@@ -120,34 +113,23 @@ private:
 	void					__allocate(size_type n, const allocator_type& alloc);
 	void					__destroy_end(pointer new_end);
 	template <class InputIterator>
-	void					__destroy_mid(
-								InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+	void					__destroy_mid(InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	void					__construct_end(size_type n, const_reference val);
 	template <class InputIterator>
-	void					__construct_end(
-								InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+	void					__construct_end(InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	void					__construct_mid(pointer position, size_type n, const_reference val);
 	template <class InputIterator>
-	void					__construct_mid(
-								pointer position,
-								InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last);
+	void					__construct_mid(pointer position, InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	void					__move_end_forward(pointer start, size_type n);
 	void					__move_end_backward(pointer start, size_type n);
 	void					__swap_ptr(pointer& p1, pointer& p2);
 	template<class Iter1, class Iter2>
-	bool 					__compare_vector(
-								Iter1 a_begin, 
-								typename ft::enable_if<ft::is_iterator<Iter1>::value, 
-								Iter1>::type a_end, 
-								Iter2 b_begin, 
-								typename ft::enable_if<ft::is_iterator<Iter2>::value, 
-								Iter2>::type b_end);
+	bool 					__compare_vector(Iter1 a_begin, Iter1 a_end, Iter2 b_begin, Iter2 b_end,
+								typename ft::enable_if<ft::is_iterator<Iter1>::value, Iter1>::type* = 0,
+								typename ft::enable_if<ft::is_iterator<Iter2>::value, Iter2>::type* = 0) const;
 	class _TmpVector
 	{
 
@@ -199,9 +181,8 @@ private:
 		}
 
 		template<class InputIterator>
-		void	insert_end(InputIterator first, 
-							typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-							InputIterator>::type last)
+		void	insert_end(InputIterator first, InputIterator last,
+							typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0)
 		{
 			size_type	n = ft::distance(first, last);
 
@@ -255,10 +236,8 @@ ft::vector<T, Alloc>::vector(size_type n, const_reference val, const allocator_t
 // - exception : first의 메모리 주소가 last보다 뒤에 있다면 ft::length_error : vector
 template<class T, class Alloc>
 template <class InputIterator>
-ft::vector<T, Alloc>::vector(InputIterator first,
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last, 
-								const allocator_type& alloc)
+ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type& alloc,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	__allocate(ft::distance(first, last), alloc);
 	__construct_end(first, last);
@@ -299,9 +278,8 @@ ft::vector<T, Alloc>::__destroy_end(pointer new_end)
 template<class T, class Alloc>
 template <class InputIterator>
 void
-ft::vector<T, Alloc>::__destroy_mid(InputIterator first,
-									typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-									InputIterator>::type last)
+ft::vector<T, Alloc>::__destroy_mid(InputIterator first, InputIterator last,
+									typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {	
 	for (InputIterator	iter=first; iter!=last; iter++)
 		__alloc_traits::destroy(this->__alloc, iter.base());
@@ -311,9 +289,8 @@ ft::vector<T, Alloc>::__destroy_mid(InputIterator first,
 template<class T, class Alloc>
 template<class InputIterator>
 void
-ft::vector<T, Alloc>::__construct_end(InputIterator first,
-										typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-										InputIterator>::type last)
+ft::vector<T, Alloc>::__construct_end(InputIterator first, InputIterator last,
+										typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	for (InputIterator	iter=first; iter!=last; iter++, this->__end++)
 		__alloc_traits::construct(this->__alloc, this->__end, *iter);
@@ -331,9 +308,8 @@ ft::vector<T, Alloc>::__construct_end(size_type n, const_reference val)
 template<class T, class Alloc>
 template<class InputIterator>
 void
-ft::vector<T, Alloc>::__construct_mid(pointer position, InputIterator first,
-										typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-										InputIterator>::type last)
+ft::vector<T, Alloc>::__construct_mid(pointer position, InputIterator first, InputIterator last,
+										typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	for (InputIterator	iter=first; iter!=last; iter++, position++)
 		__alloc_traits::construct(this->__alloc, position, *iter);
@@ -640,9 +616,8 @@ ft::vector<T, Alloc>::data() const
 template<class T, class Alloc>
 template <class InputIterator> 
 void 
-ft::vector<T, Alloc>::assign (InputIterator first, 
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last)
+ft::vector<T, Alloc>::assign (InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	size_type	n = ft::distance(first, last);
 	
@@ -743,9 +718,8 @@ ft::vector<T, Alloc>::insert (iterator position, size_type n, const value_type& 
 template<class T, class Alloc>
 template <class InputIterator> 
 void 
-ft::vector<T, Alloc>::insert (iterator position, InputIterator first, 
-								typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-								InputIterator>::type last)
+ft::vector<T, Alloc>::insert (iterator position, InputIterator first, InputIterator last,
+								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	size_type	n = ft::distance(first, last);
 	
@@ -851,24 +825,6 @@ ft::vector<T, Alloc>::operator = (const vector& x)
 	return (*this);
 }
 
-template<class T, class Alloc>
-template<class Iter1, class Iter2>
-bool 
-ft::vector<T, Alloc>::__compare_vector(Iter1 a_begin, typename ft::enable_if<ft::is_iterator<Iter1>::value, Iter1>::type a_end, 
-										Iter2 b_begin, typename ft::enable_if<ft::is_iterator<Iter2>::value, Iter2>::type b_end)
-{
-	if (a_begin > a_end || b_begin > b_end)
-		return (false);
-	for (; a_begin!=a_end; a_begin++, b_begin++)
-	{
-		if (*a_begin != *b_begin)
-			return (false);
-	}
-	if (b_begin != b_end)
-		return (false);
-	return (true);
-}
-
 // 관계 연산자
 // vector 컨테이너 lhs 및 rhs 간에 적절한 비교 작업을 수행한다.
 // 순차적으로 요소를 비교하고, 첫 번째 불일치에서 중지한다.
@@ -876,15 +832,14 @@ template <class T, class Alloc>
 bool 
 ft::vector<T, Alloc>::operator == (ft::vector<T, Alloc>& rhs) const
 {
-	return (__compare_vector(begin(), end(), rhs.begin(), rhs.end()));
+	return (size() == rhs.size() && equal(begin(), end(), rhs.begin()));
 }
-
 
 template <class T, class Alloc>  
 bool 
 ft::vector<T, Alloc>::operator != (ft::vector<T, Alloc>& rhs) const
 {
-	return (!__compare_vector(begin(), end(), rhs.begin(), rhs.end()));
+	return (size() != rhs.size() || !equal(begin(), end(), rhs.begin()));
 }
 
 
@@ -892,31 +847,83 @@ template <class T, class Alloc>
 bool 
 ft::vector<T, Alloc>::operator <  (ft::vector<T, Alloc>& rhs) const
 {
-	// 
+	return (lexicographical_compare(begin(), end(), rhs.begin(), rhs.end()));
 }
-
-
-template <class T, class Alloc>  
-bool 
-ft::vector<T, Alloc>::operator <= (ft::vector<T, Alloc>& rhs) const
-{
-	// 
-}
-
 
 template <class T, class Alloc>  
 bool 
 ft::vector<T, Alloc>::operator >  (ft::vector<T, Alloc>& rhs) const
 {
-	// 
+	return (lexicographical_compare(rhs.begin(), rhs.end(), begin(), end()));
 }
 
+template <class T, class Alloc>  
+bool 
+ft::vector<T, Alloc>::operator <= (ft::vector<T, Alloc>& rhs) const
+{
+	return (!lexicographical_compare(rhs.begin(), rhs.end(), begin(), end()));
+}
 
 template <class T, class Alloc>  
 bool 
 ft::vector<T, Alloc>::operator >= (ft::vector<T, Alloc>& rhs) const
 {
-	// 
+	return (!lexicographical_compare(begin(), end(), rhs.begin(), rhs.end()));
+}
+
+// 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
+// 범위 안의 요소가 모두 같은 경우에 true를 반환합니다.
+template <class InputIterator1, class InputIterator2>  
+bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2,
+			typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
+			typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
+{
+	for (; first1 != last1; ++first1, ++first2)
+		if (!(*first1 == *first2))
+			return (false);
+	return (true);
+}
+
+template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred,
+			typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
+			typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
+{
+	for (; first1 != last1; ++first1, ++first2)
+		if (!pred(*first1, *first2))
+			return (false);
+	return (true);
+}
+
+// [first1,last1) 범위가 사전순으로 [first2,last2) 범위보다 작으면 true를 반환합니다.
+template <class InputIterator1, class InputIterator2>  
+bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2,
+								typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
+								typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
+{
+	for (; first2 != last2; ++first1, ++first2)
+	{
+		if (first1 == last1 || *first1 < *first2) 
+			return (true);
+		else if (*first2 < *first1) 
+			return (false);
+	}
+	return (false);
+}
+
+template <class InputIterator1, class InputIterator2, class Compare>
+bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp,
+								typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
+								typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
+{
+	for (; first2 != last2; ++first1, ++first2)
+	{
+		if (first1 == last1 || comp(*first1, *first2)) 
+			return (true);
+		else if (comp(*first2, *first1)) 
+			return (false);
+	}
+	return (false);
 }
 
 } // namespace ft
