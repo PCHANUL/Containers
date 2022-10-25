@@ -6,19 +6,16 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/24 19:16:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/25 18:04:03 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
-#include "iterator.hpp"
-#include "iterator_traits.hpp"
-
+#include <algorithm>
 #include <vector>
 #include <memory>
 
 #include "vector.hpp"
-#include "ftalgorithm.hpp"
 
 class Test
 {
@@ -644,18 +641,144 @@ int main(void)
 		test.main_end();
 	}
 
-	#include <algorithm>
-	test.main("operator <");
+	test.main("operator <, <=");
 	{
-		std::vector<int>	ft_v(10, 1);
-		std::vector<int>	ft_tmp(10, 1);
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		ft::vector<int>		ft_tmp(10, 1);
 
-		std::cout << (ft_v < ft_tmp) << std::endl;
-		ft_tmp.pop_back();
+		bool std_result = std_v < std_tmp;
+		bool ft_result = ft_v < ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		std_result = std_v <= std_tmp;
+		ft_result = ft_v <= ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		std_tmp.push_back(11);
 		ft_tmp.push_back(11);
-		std::cout << (ft_v < ft_tmp) << std::endl;
 
+		std_result = std_v < std_tmp;
+		ft_result = ft_v < ft_tmp;
+		test.main_then(std_result == ft_result);
 
+		std_result = std_v <= std_tmp;
+		ft_result = ft_v <= ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		test.main_end();
+	}
+
+	test.main("operator >, >=");
+	{
+		std::vector<int>	std_v(10, 1);
+		std::vector<int>	std_tmp(10, 1);
+		ft::vector<int>		ft_v(10, 1);
+		ft::vector<int>		ft_tmp(10, 1);
+
+		bool std_result = std_v > std_tmp;
+		bool ft_result = ft_v > ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		std_result = std_v >= std_tmp;
+		ft_result = ft_v >= ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		std_tmp.push_back(11);
+		ft_tmp.push_back(11);
+
+		std_result = std_v > std_tmp;
+		ft_result = ft_v > ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		std_result = std_v >= std_tmp;
+		ft_result = ft_v >= ft_tmp;
+		test.main_then(std_result == ft_result);
+
+		test.main_end();
+	}
+
+	test.main("reverse_iterator");
+	{
+		std::vector<int>	std_v;
+		std_v.push_back(10);
+		std_v.push_back(20);
+		std_v.push_back(30);
+		std_v.push_back(40);
+		std_v.push_back(50);
+		std_v.push_back(60);
+
+		ft::vector<int>	ft_v;
+		ft_v.push_back(10);
+		ft_v.push_back(20);
+		ft_v.push_back(30);
+		ft_v.push_back(40);
+		ft_v.push_back(50);
+		ft_v.push_back(60);
+
+		std::vector<int>::iterator			std_iter = std_v.begin();
+		std::vector<int>::reverse_iterator	std_riter = std::vector<int>::reverse_iterator(std_iter);
+
+		ft::vector<int>::iterator			ft_iter = ft_v.begin();
+		ft::vector<int>::reverse_iterator	ft_riter = ft::vector<int>::reverse_iterator(ft_iter);
+
+		test.main_then(*(std_iter - 1) == *std_riter);
+		test.main_then(*(ft_iter - 1) == *ft_riter);
+
+		std_riter -= 1;
+		ft_riter -= 1;
+
+		std_riter = std_riter - 1;
+		ft_riter = ft_riter - 1;
+
+		std_riter = 1 + std_riter;
+		ft_riter = 1 + ft_riter;
+
+		--std_riter;
+		--ft_riter;
+
+		test.main_then(*(std_iter + 1) == *(std_riter--));
+		test.main_then(*(ft_iter + 1) == *(ft_riter--));
+
+		test.main_then(*(std_iter + 2) == *std_riter);
+		test.main_then(*(ft_iter + 2) == *ft_riter);
+
+		test.main_then(std_riter[0] == ft_riter[0]);
+		test.main_then(std_riter[1] == ft_riter[1]);
+		test.main_then(std_riter[2] == ft_riter[2]);
+		test.main_then(std_riter.operator->()[0] == ft_riter.operator->()[0]);
+
+		test.main_then((std_riter - (std_riter - 2)) == (ft_riter - (ft_riter - 2)));
+
+		test.main_end();
+	}
+
+	test.main("rbegin, rend");
+	{
+		std::vector<int>	std_v;
+		std_v.push_back(10);
+		std_v.push_back(20);
+		std_v.push_back(30);
+		std_v.push_back(40);
+		std_v.push_back(50);
+		std_v.push_back(60);
+
+		ft::vector<int>		ft_v;
+		ft_v.push_back(10);
+		ft_v.push_back(20);
+		ft_v.push_back(30);
+		ft_v.push_back(40);
+		ft_v.push_back(50);
+		ft_v.push_back(60);
+
+		test.main_then(*std_v.rbegin() == *ft_v.rbegin());
+		test.main_then(*(std_v.rend()-1) == *(ft_v.rend()-1));
+
+		std::cout << *std_v.rbegin() << std::endl;
+		std::cout << *ft_v.rbegin() << std::endl;
+		std::cout << *(std_v.rend()-1) << std::endl;
+		std::cout << *(ft_v.rend()-1) << std::endl;
 		test.main_end();
 	}
 

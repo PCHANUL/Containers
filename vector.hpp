@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/24 19:29:12 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/25 18:07:11 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <memory>
 #include <limits>
 #include "type_traits.hpp"
+#include "iterator.hpp"
+#include "iterator_traits.hpp"
+#include "ftalgorithm.hpp"
 
 namespace ft {
 
@@ -34,8 +37,8 @@ public:
 	typedef typename __alloc_traits::const_pointer			const_pointer;
 	typedef ft::v_iter<T>									iterator;
 	typedef ft::v_iter<T>									const_iterator;
-	// typedef ft::reverse_iterator<iterator>					reverse_iterator;
-	// typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
+	typedef ft::reverse_iterator<iterator>					reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	typedef typename __alloc_traits::difference_type		difference_type;
 	typedef typename __alloc_traits::size_type				size_type;
 
@@ -59,10 +62,10 @@ public:
 	const_iterator 			begin() const;
 	iterator 				end();
 	const_iterator 			end() const;
-	// reverse_iterator 		rbegin();
-	// const_reverse_iterator 	rbegin() const;
-	// reverse_iterator 		rend();
-	// const_reverse_iterator 	rend() const;
+	reverse_iterator 		rbegin();
+	const_reverse_iterator 	rbegin() const;
+	reverse_iterator 		rend();
+	const_reverse_iterator 	rend() const;
 
 	size_type				size() const;
 	size_type				max_size() const;
@@ -388,7 +391,6 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::iterator 
 ft::vector<T, Alloc>::end()
 {
-
 	return (iterator(__end));
 }
 
@@ -401,40 +403,40 @@ ft::vector<T, Alloc>::end() const
 	return (const_iterator(__end));
 }
 
-// template<class T, class Alloc>
-// typename ft::vector<T, Alloc>::reverse_iterator 
-// ft::vector<T, Alloc>::rbegin()
-// {
-// 	// Returns a reverse iterator pointing to the last element in the vector (i.e., its reverse beginning).
+// 벡터의 마지막을 가리키는 역방향 반복자를 반환한다. 역방향 반복자는 뒤로 반복한다. 
+// rbegin은 end가 가리키는 요소 바로 앞의 요소를 가리킨다. 
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reverse_iterator 
+ft::vector<T, Alloc>::rbegin()
+{
+	return (reverse_iterator(end()));
+}
 
-// 	// 벡터의 마지막을 가리키는 역방향 반복자를 반환한다. 역방향 반복자는 뒤로 반복한다. 
-// 	// rbegin은 end가 가리키는 요소 바로 앞의 요소를 가리킨다. 
-// }
+// 객체가 const로 한정된 경우 함수는 const_iterator 를 반환합니다 . 그렇지 않으면 iterator 를 반환합니다 . 
+// 멤버 유형 iterator 및 const_iterator 는 임의 액세스 반복기 유형입니다(각각 요소 및 const 요소를 가리킴).
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reverse_iterator 
+ft::vector<T, Alloc>::rbegin() const
+{
+	return (const_reverse_iterator(end()));
+}
 
-// template<class T, class Alloc>
-// typename ft::vector<T, Alloc>::const_reverse_iterator 
-// ft::vector<T, Alloc>::rbegin() const
-// {
-// 	// If the vector object is const-qualified, the function returns a const_iterator. Otherwise, it returns an iterator.
-// 	// 객체가 const로 한정된 경우 함수는 const_iterator 를 반환합니다 . 그렇지 않으면 iterator 를 반환합니다 . 멤버 유형 iterator 및 const_iterator 는 임의 액세스 반복기 유형입니다(각각 요소 및 const 요소를 가리킴).
-// }
+// 벡터의 첫번째 요소 앞에 있는 이론적인 요소를 가리키는 역방향 iterator를 반환한다.
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::reverse_iterator 
+ft::vector<T, Alloc>::rend()
+{
+	return (reverse_iterator(begin()));
+}
 
-// template<class T, class Alloc>
-// typename ft::vector<T, Alloc>::reverse_iterator 
-// ft::vector<T, Alloc>::rend()
-// {
-// 	// Returns a reverse iterator pointing to the theoretical element preceding the first element in the vector (which is considered its reverse end).
-
-// 	// 벡터의 첫번째 요소 앞에 있는 이론적인 요소를 가리키는 역방향 iterator를 반환한다.
-// }
-
-// template<class T, class Alloc>
-// typename ft::vector<T, Alloc>::const_reverse_iterator 
-// ft::vector<T, Alloc>::rend() const
-// {
-// 	// If the vector object is const-qualified, the function returns a const_iterator. Otherwise, it returns an iterator.
-// 	// 객체가 const로 한정된 경우 함수는 const_iterator 를 반환합니다 . 그렇지 않으면 iterator 를 반환합니다 . 멤버 유형 iterator 및 const_iterator 는 임의 액세스 반복기 유형입니다(각각 요소 및 const 요소를 가리킴).
-// }
+// 객체가 const로 한정된 경우 함수는 const_iterator 를 반환합니다 . 그렇지 않으면 iterator 를 반환합니다 . 
+// 멤버 유형 iterator 및 const_iterator 는 임의 액세스 반복기 유형입니다(각각 요소 및 const 요소를 가리킴).
+template<class T, class Alloc>
+typename ft::vector<T, Alloc>::const_reverse_iterator 
+ft::vector<T, Alloc>::rend() const
+{
+	return (const_reverse_iterator(begin()));
+}
 
 // vector가 가지고 있는 실제 개체의 수를 반환한다. 저장공간의 크기과 같을 필요가 없다. 
 template<class T, class Alloc>
@@ -884,6 +886,8 @@ bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2,
 	return (true);
 }
 
+// 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
+// 범위 안의 요소가 모두 같은 경우에 true를 반환합니다.
 template <class InputIterator1, class InputIterator2, class BinaryPredicate>
 bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred,
 			typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
@@ -911,6 +915,7 @@ bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, Input
 	return (false);
 }
 
+// [first1,last1) 범위가 사전순으로 [first2,last2) 범위보다 작으면 true를 반환합니다.
 template <class InputIterator1, class InputIterator2, class Compare>
 bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp,
 								typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
