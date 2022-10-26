@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/25 18:04:03 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/26 17:44:54 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "vector.hpp"
+#include "map.hpp"
 
 class Test
 {
@@ -80,6 +81,10 @@ public:
 		__print(__result_sub);
 	}
 	void sub_then(bool is_true) {
+		if (is_true)
+			std::cout << "✓" << ' ';
+		else
+			std::cout << "✕" << ' ';
 		if (__result_sub)
 			__result_sub = is_true;
 	}
@@ -142,9 +147,11 @@ public:
 
 int main(void) 
 {
+
 	Testing	test;
 
 	std::cout << "< vector >" << std::endl;
+	{
 
 	test.main("Default constructor");
 	{
@@ -214,6 +221,7 @@ int main(void)
 			}
 			
 			test.main_then(it == range_end && idx == len - offset);
+			test.main_end();
 		}
 		{
 			test.sub("Exception : first가 last보다 뒤에 있는 경우(ft::length_error : vector)");
@@ -228,7 +236,6 @@ int main(void)
 			}
 			test.sub_end();
 		}
-		test.main_end();
 	}
 
 	test.main("Copy constructor");
@@ -699,6 +706,43 @@ int main(void)
 		test.main_end();
 	}
 
+	test.main("iterator");
+	{
+		std::vector<int>	std_v;
+		ft::vector<int>		ft_v;
+
+		std_v.push_back(10);
+		std_v.push_back(20);
+		std_v.push_back(30);
+		std_v.push_back(40);
+		std_v.push_back(40);
+
+		ft_v.push_back(10);
+		ft_v.push_back(20);
+		ft_v.push_back(30);
+		ft_v.push_back(40);
+		ft_v.push_back(40);
+
+		std::vector<int>::iterator	std_iter = std_v.begin();
+		ft::vector<int>::iterator	ft_iter = ft_v.begin();
+
+		test.main_then(*std_iter == *ft_iter);
+
+		++std_iter;
+		++ft_iter;
+
+		std_iter += 1;
+		ft_iter += 1;
+
+		test.main_then(*(std_iter++) == *(ft_iter++));
+		test.main_then(*std_iter == *ft_iter);
+		
+		test.main_then((ft_v.end() - 2) == (ft_v.end() - 1) == false);
+		test.main_then((ft_v.end() - 1) == (ft_v.end() - 1) == true);
+		
+		test.main_end();
+	}
+
 	test.main("reverse_iterator");
 	{
 		std::vector<int>	std_v;
@@ -774,14 +818,55 @@ int main(void)
 
 		test.main_then(*std_v.rbegin() == *ft_v.rbegin());
 		test.main_then(*(std_v.rend()-1) == *(ft_v.rend()-1));
-
-		std::cout << *std_v.rbegin() << std::endl;
-		std::cout << *ft_v.rbegin() << std::endl;
-		std::cout << *(std_v.rend()-1) << std::endl;
-		std::cout << *(ft_v.rend()-1) << std::endl;
 		test.main_end();
 	}
 
+	}
+
+	std::cout << "< map >" << std::endl;
+	{
+
+	test.main("pair");
+	{
+		std::pair <std::string, double>	std1;                  
+		std::pair <std::string, double>	std2 ("tomatoes", 2.30);
+		std::pair <std::string, double>	std3 (std2);
+
+		ft::pair <std::string, double>	ft1;                  
+		ft::pair <std::string, double>	ft2 ("tomatoes", 2.30);
+		ft::pair <std::string, double>	ft3 (ft2);       
+
+		std2.first = "shoes";
+		std2.second = 39.90;
+		ft2.first = "shoes";
+		ft2.second = 39.90;
+
+		test.main_then(std1.first == ft1.first);
+		test.main_then(std1.second == ft1.second);
+		test.main_then(std2.first == ft2.first);
+		test.main_then(std2.second == ft2.second);
+		test.main_then(std3.first == ft3.first);
+		test.main_then(std3.second == ft3.second);
+
+		ft::pair<int, int>	ft_a;
+		ft::pair<int, int>	ft_b;
+
+		ft_a = ft::make_pair(10, 11);
+		ft_b = ft::make_pair(10, 10);
+
+		test.main_then((ft_a < ft_b) == false);
+
+		ft_a.first = 9;
+		test.main_then((ft_a < ft_b) == true);
+
+		test.main_end();
+	}
+	
+	
+
+
+
+	}
 
 	return 0;
 }
