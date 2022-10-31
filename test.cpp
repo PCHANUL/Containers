@@ -6,14 +6,15 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/26 17:44:54 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/10/31 16:46:14 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <algorithm>
-#include <vector>
 #include <memory>
+#include <vector>
+#include <map>
 
 #include "vector.hpp"
 #include "map.hpp"
@@ -862,11 +863,21 @@ int main(void)
 		test.main_end();
 	}
 	
-	
+	test.main("tree(insert)");
+	{
+		ft::RBtree<int>	tree;
+
+		tree.insert(10);
+
+		std::map<int, int> 	m;
+		
+
+		test.main_end();
+	}
 
 
 
 	}
 
-	return 0;
+	return (0);
 }
