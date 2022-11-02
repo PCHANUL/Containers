@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/01 19:33:35 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/02 23:58:20 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@
 
 namespace ft
 {
+
+enum color_t {
+    BLACK,
+    RED
+};
 
 template <class T>
 class m_iter
@@ -54,26 +59,42 @@ public:
 	typedef ft::reverse_iterator<iterator>				reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 
-	class value_compare
+	class value_compare : public ft::binary_function<value_type, value_type, bool>
 	{
+		friend class map;
 
-	public:
-		typedef bool		result_type;
-		typedef value_type	first_argument_type;
-		typedef value_type	second_argument_type;
-
-		key_compare __comp;
+	protected:
+		key_compare comp;
+	
+		value_compare(key_compare c) : comp(c) {}
 		
-		value_compare(key_compare c) : __comp(c) {}
-		bool operator() (const value_type& x, const value_type& y) const
-			{return comp(x.first, y.first);}
-
+	public:
+		bool operator() (const value_type& lhs, const value_type& rhs) const
+		{ return comp(lhs.first, rhs.first); }
 	};
 
-	private:
-		typedef RBtree<value_type, value_compare, allocator_type>	__tree;
-		
+private:
+	struct __node {
+        __node*         	parent;
+        __node*         	child[2];
+        enum color_t    	color;
+        value_type			data;
 
+		__node() {
+			std::cout << "node" << std::endl;
+		}
+    };
+	
+	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
+	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
+
+	__node*			__root;
+	allocator_type	__alloc;
+	__node_alloc	__alloc_node;
+
+	void	__insert_node(const value_type& new_data);
+		
+public:
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 	template <class InputIterator>
 	map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
@@ -125,15 +146,55 @@ public:
 
 };
 
+template <class Key, class T, class Compare, class Alloc>
+void
+ft::map<Key, T, Compare, Alloc>::__insert_node (const value_type& new_data)
+{
+
+	std::cout << "tree" << std::endl;
+	
+	std::cout << new_data << std::endl;
+
+	// new_data로 node 생성
+	// tree를 확인하며 위치이동
+	// RBtree 조건 확인
+
+	__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
+	__alloc_traits::construct(this->__alloc, &new_node->data, new_data);
+	new_node->color = RED;
+
+	// // node의 위치찾기
+	// value_type* node = this->__root;
+
+	// if (!node)
+	// 	this->__root = new_node;
+	// else
+	// {
+	// 	// 현재 노드와 값을 비교하고, 오른쪽 또는 왼쪽을 확인한다.
+	// 	// 만약에 확인한 곳이 비어있으면 그곳으로 포인터를 옮긴다.
+	// 	// 이를 반복하여 확인한 곳이 null일 때까지 확인한다.
+
+	// 	int dir = key_compare()(node->key, new_node->key);
+		
+	// 	while (node->child[dir] == nullptr)
+	// 	{
+	// 		node = node->child[dir];
+	// 		dir = key_compare()(node->key, new_node->key);
+	// 	}
+	// 	node->child[dir] = new_node;
+	// }
+
+}
+
 // 요소가 없는 빈 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
-ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc)
 {}
 
 // 범위 [first,last)만큼 많은 요소가 있는 컨테이너를 생성하고, 각 요소는 해당 범위의 해당 요소로 구성됩니다.
 template <class Key, class T, class Compare, class Alloc>
 template <class InputIterator>
-ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc)
 {}
 
 // x의 각 요소의 복사본으로 컨테이너를 생성합니다.
@@ -259,7 +320,24 @@ ft::map<Key, T, Compare, Alloc>::at (const key_type& k) const
 template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
-{}
+{
+	// tree.insert(val)로 트리에 요소를 추가한다.
+	// Compare 객체를 RBtree 클래스에서 사용할 수 있도록 넘겨주어야 한다.
+	// tree 클래스에서 Compare 객체는 자신에게 들어오는 인자들이 pair인지 모른다.
+	// Compare(T a, T b)를 실행하여 결과를 받는다. 
+	// map에서 Compare의 동작을 모두 설명해야 한다.
+	// map에서 value_compare 객체를 만들어서 tree 템플릿에 타입을 넘겨주어야 한다.
+	// map에서 템플릿 인자로 받는 Compare 타입으로 value_compare 클래스를 정의한다.
+	// value_compare 클래스틑 Compare 타입을 사용하여 두개의 pair.key를 비교한다. 
+	//
+
+	std::cout << "map" << std::endl;
+
+	__insert_node(val);
+
+	
+
+}
 
 
 // position : 요소를 삽압할 수 있는 위치에 대한 힌트
@@ -313,6 +391,7 @@ void
 ft::map<Key, T, Compare, Alloc>::clear ()
 {}
 
+// 키를 비교하는 함수를 반환합니다.
 // 키를 비교하기 위해 컨테이너에서 사용하는 비교 객체의 복사본을 반환합니다. 
 // 비교 객체는 컨테이너에 있는 요소의 순서를 결정합니다. 
 template <class Key, class T, class Compare, class Alloc>
@@ -320,11 +399,12 @@ typename ft::map<Key, T, Compare, Alloc>::key_compare
 ft::map<Key, T, Compare, Alloc>::key_comp() const
 {}
 
-// 두 요소를 비교하는 데 사용할 수 있는 비교 개체를 반환하여 첫 번째 요소의 키가 두 번째 요소보다 먼저 이동하는지 요부를 확인합니다.
-// template <class Key, class T, class Compare, class Alloc>
-// typename ft::map<Key, T, Compare, Alloc>::value_compare 			
-// ft::map<Key, T, Compare, Alloc>::value_comp() const
-// {}
+// value_type 유형의 객체에서 키를 비교하는 함수를 반환합니다.
+// 두 요소를 비교하는 데 사용할 수 있는 비교 개체를 반환하여 첫 번째 요소의 키가 두 번째 요소보다 먼저 이동하는지 여부를 확인합니다.
+template <class Key, class T, class Compare, class Alloc>
+typename ft::map<Key, T, Compare, Alloc>::value_compare 			
+ft::map<Key, T, Compare, Alloc>::value_comp() const
+{}
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 발견되면 반복자를 반환하고, 그렇지 않으면 map::end에 대한 반복자를 반환합니다.
 // 컨테이너의 비교 객체가 반사적으로 false를 반환하는 경우(즉, 요소가 인수로 전달되는 순서에 관계없이) 두 개의 키는 동일한 것으로 간주됩니다.
