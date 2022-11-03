@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/02 23:58:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/03 19:24:46 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "type_traits.hpp"
 #include "iterator.hpp"
 #include "pair.hpp"
-#include "tree.hpp"
+#include "utility.hpp"
 
 #include <utility>
 
@@ -25,8 +25,8 @@ namespace ft
 {
 
 enum color_t {
-    BLACK,
-    RED
+	BLACK,
+	RED
 };
 
 template <class T>
@@ -40,14 +40,14 @@ class map
 {
 
 protected:
-    typedef std::allocator_traits<Alloc>                __alloc_traits;
+	typedef std::allocator_traits<Alloc>                __alloc_traits;
 
 public:
-    typedef Key                                         key_type;
-    typedef T                                           mapped_type;
-    typedef ft::pair<const key_type, mapped_type>       value_type;
-    typedef typename __alloc_traits::size_type          size_type;
-    typedef typename __alloc_traits::difference_type	difference_type;
+	typedef Key                                         key_type;
+	typedef T                                           mapped_type;
+	typedef ft::pair<const key_type, mapped_type>       value_type;
+	typedef typename __alloc_traits::size_type          size_type;
+	typedef typename __alloc_traits::difference_type	difference_type;
 	typedef Compare										key_compare;
 	typedef Alloc										allocator_type;
 	typedef value_type&									reference;
@@ -75,24 +75,154 @@ public:
 
 private:
 	struct __node {
-        __node*         	parent;
-        __node*         	child[2];
-        enum color_t    	color;
-        value_type			data;
+		__node*			parent;
+		__node*			child[2];
+		enum color_t	color;
+		value_type		data;
+	};
 
-		__node() {
-			std::cout << "node" << std::endl;
-		}
-    };
+	#define LEFT	0
+	#define RIGHT	1
+	#define left	child[LEFT]
+	#define right	child[RIGHT]
 	
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
 
-	__node*			__root;
+	key_compare		__key_comp;
+	value_compare	__value_comp;
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
+	__node*			__tree;
 
-	void	__insert_node(const value_type& new_data);
+	void __print_tree(const std::string& prefix, const __node* node, bool isLeft)
+	{
+		if( node != nullptr )
+		{
+			std::cout << prefix;
+
+			std::cout << (isLeft ? "├──" : "└──" );
+
+			if (node->color == RED)
+				std::cout << "\033[1;31m" << node->data.first << "\033[0m" << std::endl;
+			else
+				std::cout << node->data.first << std::endl;
+
+			__print_tree( prefix + (isLeft ? "│   " : "    "), node->left, true);
+			__print_tree( prefix + (isLeft ? "│   " : "    "), node->right, false);
+		}
+	}
+
+	void __print_tree(const __node* node)
+	{
+		__print_tree("", node, false);    
+	}
+
+	__node*	__get_grandparent(__node* node)
+	{
+		if ((node != nullptr) && (node->parent != nullptr))
+			return (node->parent->parent);
+		else
+			return (nullptr);
+	}
+
+	__node*	__get_uncle(__node* node)
+	{
+		__node*	g_node = __get_grandparent(node);
+
+		if (g_node == nullptr)
+			return (nullptr);
+		if (node->parent == g_node->left)
+			return (g_node->right);
+		else
+			return (g_node->left);
+	}
+
+	__node* __get_sibling(__node* node)
+	{
+		if ((node == nullptr) || (node->parent == nullptr))
+			return (nullptr);
+		if (node == node->parent->left)
+			return (node->parent->right);
+		else
+			return (node->parent->left);
+	}
+
+	__node*	__rotate_left(__node* node)
+	{
+		// rotate node left
+		__node*	p_node = node->parent;
+		__node*	c_node = node->right;
+		__node* gc_node = nullptr;
+
+		if (c_node != nullptr)
+			return (node);
+
+		gc_node = c_node->left;
+		node->right = gc_node;
+		if (gc_node != nullptr)
+			gc_node->parent = node;
+
+		c_node->left = node;
+		node->parent = c_node;
+
+		c_node->parent = p_node;
+		if (p_node != nullptr)
+			p_node->left = c_node;
+		else
+			__tree = c_node;
+		return (c_node);
+	}
+
+	void	insert_case1(__node* node)
+	{
+		if (node->parent == nullptr)
+			node->color = BLACK;
+		else
+			insert_case2(node);
+	}
+
+	void	insert_case2(__node* node)
+	{
+		if (node->parent->color == BLACK)
+			return ;
+		else
+			insert_case3_recoloring(node);
+	}
+
+	void	insert_case3_recoloring(__node* node)
+	{
+		__node* g_node = __get_grandparent(node);
+		__node*	u_node = __get_uncle(node);
+
+		if ((u_node != nullptr) && (u_node->color == RED))
+		{
+			node->parent->color = BLACK;
+			u_node->color = BLACK;
+			g_node->color = RED;
+			insert_case1(g_node);
+		}
+		else
+			insert_case4(node);
+	}
+
+	void	insert_case4(__node* node)
+	{
+		__node*	g_node = __get_grandparent(node);
+
+		if ((node == node->parent->right) && (node->parent == g_node->left))
+		{
+			__rotate_left(node->parent);
+			node = node->left;
+		} 
+		else if ((node == node->parent->left) && (node->parent == g_node->right))
+		{
+			// __rotate_right(node->parent);
+			node = node->right;
+		}
+	}
+
+
 		
 public:
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
@@ -117,19 +247,19 @@ public:
 	size_type 							size() const;
 	size_type 							max_size() const;
 
-    mapped_type&            			operator[] (const key_type& k);
-    mapped_type&            			at (const key_type& k);
-    const mapped_type&      			at (const key_type& k) const;
+	mapped_type&            			operator[] (const key_type& k);
+	mapped_type&            			at (const key_type& k);
+	const mapped_type&      			at (const key_type& k) const;
 
-    pair<iterator, bool>    			insert (const value_type& val);
-    iterator                			insert (iterator position, const value_type& val);
-    template <class InputIterator>  
-    void                    			insert (InputIterator first, InputIterator last);
-    void                    			erase (iterator position);
-    size_type               			erase (const key_type& k);
-    void                    			erase (iterator first, iterator last);
-    void                    			swap (map& x);
-    void                    			clear();
+	pair<iterator, bool>    			insert (const value_type& val);
+	iterator                			insert (iterator position, const value_type& val);
+	template <class InputIterator>  
+	void                    			insert (InputIterator first, InputIterator last);
+	void                    			erase (iterator position);
+	size_type               			erase (const key_type& k);
+	void                    			erase (iterator first, iterator last);
+	void                    			swap (map& x);
+	void                    			clear();
 
 	key_compare 						key_comp() const;
 	value_compare 						value_comp() const;
@@ -146,49 +276,10 @@ public:
 
 };
 
-template <class Key, class T, class Compare, class Alloc>
-void
-ft::map<Key, T, Compare, Alloc>::__insert_node (const value_type& new_data)
-{
-
-	std::cout << "tree" << std::endl;
-	
-	std::cout << new_data << std::endl;
-
-	// new_data로 node 생성
-	// tree를 확인하며 위치이동
-	// RBtree 조건 확인
-
-	__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
-	__alloc_traits::construct(this->__alloc, &new_node->data, new_data);
-	new_node->color = RED;
-
-	// // node의 위치찾기
-	// value_type* node = this->__root;
-
-	// if (!node)
-	// 	this->__root = new_node;
-	// else
-	// {
-	// 	// 현재 노드와 값을 비교하고, 오른쪽 또는 왼쪽을 확인한다.
-	// 	// 만약에 확인한 곳이 비어있으면 그곳으로 포인터를 옮긴다.
-	// 	// 이를 반복하여 확인한 곳이 null일 때까지 확인한다.
-
-	// 	int dir = key_compare()(node->key, new_node->key);
-		
-	// 	while (node->child[dir] == nullptr)
-	// 	{
-	// 		node = node->child[dir];
-	// 		dir = key_compare()(node->key, new_node->key);
-	// 	}
-	// 	node->child[dir] = new_node;
-	// }
-
-}
-
 // 요소가 없는 빈 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
-ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc)
+ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc) :
+	__tree(nullptr), __alloc(alloc), __alloc_node(__alloc_node), __key_comp(comp), __value_comp(value_compare(comp))
 {}
 
 // 범위 [first,last)만큼 많은 요소가 있는 컨테이너를 생성하고, 각 요소는 해당 범위의 해당 요소로 구성됩니다.
@@ -312,6 +403,8 @@ const typename ft::map<Key, T, Compare, Alloc>::mapped_type&
 ft::map<Key, T, Compare, Alloc>::at (const key_type& k) const
 {}
 
+
+
 // 새 요소를 삽입하여 컨테이너를 확장하고 삽입된 요소 수만큼 컨테이너 크기를 효과적으로 늘립니다.
 // 맵의 요소 키는 고유하기 때문에 컨테이너에 동일한 키를 가진 요소가 있는지 확인합니다.
 // 이미 존재한다면 요소가 삽입되지 않고 기존 요소에 대한 반복자를 반환합니다.
@@ -321,21 +414,35 @@ template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
-	// tree.insert(val)로 트리에 요소를 추가한다.
-	// Compare 객체를 RBtree 클래스에서 사용할 수 있도록 넘겨주어야 한다.
-	// tree 클래스에서 Compare 객체는 자신에게 들어오는 인자들이 pair인지 모른다.
-	// Compare(T a, T b)를 실행하여 결과를 받는다. 
-	// map에서 Compare의 동작을 모두 설명해야 한다.
-	// map에서 value_compare 객체를 만들어서 tree 템플릿에 타입을 넘겨주어야 한다.
-	// map에서 템플릿 인자로 받는 Compare 타입으로 value_compare 클래스를 정의한다.
-	// value_compare 클래스틑 Compare 타입을 사용하여 두개의 pair.key를 비교한다. 
-	//
+	// Create new node
+	__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
+	__alloc_traits::construct(this->__alloc, &new_node->data, val);
+	new_node->color = RED;
+	new_node->parent = NULL;
 
-	std::cout << "map" << std::endl;
 
-	__insert_node(val);
+	// Locate new node
+	__node* tmp_node = this->__tree;
+	if (this->__tree == nullptr)
+		this->__tree = new_node;
+	else
+	{
+		int dir = __value_comp(tmp_node->data, new_node->data);
+		
+		while (tmp_node->child[dir] != nullptr)
+		{
+			tmp_node = tmp_node->child[dir];
+			dir = __value_comp(tmp_node->data, new_node->data);
+		}
+		tmp_node->child[dir] = new_node;
+		new_node->parent = tmp_node;
+	}
 
-	
+	insert_case1(new_node);
+
+	__print_tree(__tree);
+
+
 
 }
 

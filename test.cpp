@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/02 18:52:02 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/03 19:30:45 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -866,15 +866,17 @@ int main(void)
 	test.main("tree(insert)");
 	{
 		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair1(10, 20);
-		ft::pair<int, int>	ft_pair2(20, 20);
+		ft::pair<int, int>	ft_pair1(10, 1);
+		ft::pair<int, int>	ft_pair2(20, 1);
+		ft::pair<int, int>	ft_pair3(30, 1);
+
 
 		std::cout << std::endl;
 		ft_map.insert(ft_pair1);
+		std::cout << std::endl;
 		ft_map.insert(ft_pair2);
-
-
-
+		std::cout << std::endl;
+		ft_map.insert(ft_pair3);
 
 		std::map<int, int> 	m;
 
