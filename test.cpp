@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/03 19:30:45 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/04 19:21:15 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -863,27 +863,42 @@ int main(void)
 		test.main_end();
 	}
 	
-	test.main("tree(insert)");
+	test.main("insert");
 	{
 		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair1(10, 1);
-		ft::pair<int, int>	ft_pair2(20, 1);
-		ft::pair<int, int>	ft_pair3(30, 1);
-
-
-		std::cout << std::endl;
-		ft_map.insert(ft_pair1);
-		std::cout << std::endl;
-		ft_map.insert(ft_pair2);
-		std::cout << std::endl;
-		ft_map.insert(ft_pair3);
+	
+		ft_map.insert(ft::pair<int, int>(10, 10));
+		ft_map.insert(ft::pair<int, int>(20, 10));
+		ft_map.insert(ft::pair<int, int>(30, 10));
+		ft_map.insert(ft::pair<int, int>(5, 10));
+		ft_map.insert(ft::pair<int, int>(15, 10));
+		ft_map.insert(ft::pair<int, int>(8, 10));
+		ft_map.insert(ft::pair<int, int>(7, 10));
+		ft_map.insert(ft::pair<int, int>(2, 10));
+		ft_map.insert(ft::pair<int, int>(1, 10));
+		ft_map.insert(ft::pair<int, int>(6, 10));
 
 		std::map<int, int> 	m;
 
 		test.main_end();
 	}
 
+	test.main("iterator");
+	{
+		std::map<int, int>	s_map;
+		std::pair<int, int>	p(5, 1);
 
+		for (; p.first<40; p.first+=10)
+			s_map.insert(p);
+		
+		std::map<int, int>::iterator	iter = s_map.begin();
+
+		for(; iter!=s_map.end(); iter++)
+			std::cout << (*iter).first << ": " << (*iter).second << std::endl;
+
+
+		test.main_end();
+	}
 
 	}
 

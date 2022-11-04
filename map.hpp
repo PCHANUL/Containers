@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/03 19:24:46 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/04 19:21:52 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,14 @@
 
 namespace ft
 {
+
+#define LEFT	0
+#define RIGHT	1
+#define left	child[LEFT]
+#define right	child[RIGHT]
+#define __rotate_left(node) __rotate_dir(node, LEFT)
+#define __rotate_right(node) __rotate_dir(node, RIGHT)
+
 
 enum color_t {
 	BLACK,
@@ -73,18 +81,12 @@ public:
 		{ return comp(lhs.first, rhs.first); }
 	};
 
-private:
 	struct __node {
 		__node*			parent;
 		__node*			child[2];
 		enum color_t	color;
 		value_type		data;
 	};
-
-	#define LEFT	0
-	#define RIGHT	1
-	#define left	child[LEFT]
-	#define right	child[RIGHT]
 	
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
@@ -94,6 +96,36 @@ private:
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
 	__node*			__tree;
+
+	__node* __create_node(const value_type& val)
+	{
+		__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
+		
+		__alloc_traits::construct(this->__alloc, &new_node->data, val);
+		new_node->color = RED;
+		new_node->parent = NULL;
+		return (new_node);
+	}
+
+	void __locate_node(__node* new_node)
+	{
+		__node* tmp_node = this->__tree;
+
+		if (this->__tree == nullptr)
+			this->__tree = new_node;
+		else
+		{
+			int dir = __value_comp(tmp_node->data, new_node->data);
+			
+			while (tmp_node->child[dir] != nullptr)
+			{
+				tmp_node = tmp_node->child[dir];
+				dir = __value_comp(tmp_node->data, new_node->data);
+			}
+			tmp_node->child[dir] = new_node;
+			new_node->parent = tmp_node;
+		}
+	}
 
 	void __print_tree(const std::string& prefix, const __node* node, bool isLeft)
 	{
@@ -148,49 +180,51 @@ private:
 			return (node->parent->left);
 	}
 
-	__node*	__rotate_left(__node* node)
+	__node*	__rotate_dir(__node* node, int dir)
 	{
-		// rotate node left
+		// left
 		__node*	p_node = node->parent;
-		__node*	c_node = node->right;
+		__node*	c_node = node->child[1-dir];
 		__node* gc_node = nullptr;
 
-		if (c_node != nullptr)
+		if (c_node == nullptr)
 			return (node);
-
-		gc_node = c_node->left;
-		node->right = gc_node;
+		gc_node = c_node->child[dir];
+		node->child[1-dir] = gc_node;
 		if (gc_node != nullptr)
 			gc_node->parent = node;
 
-		c_node->left = node;
+		c_node->child[dir] = node;
 		node->parent = c_node;
 
 		c_node->parent = p_node;
 		if (p_node != nullptr)
-			p_node->left = c_node;
+			p_node->child[node == p_node->left ? LEFT : RIGHT] = c_node;
 		else
 			__tree = c_node;
 		return (c_node);
 	}
 
-	void	insert_case1(__node* node)
+	// node가 root인 경우 : node color를 BLACK으로 변경
+	void	__validate_tree_0(__node* node)
 	{
 		if (node->parent == nullptr)
 			node->color = BLACK;
 		else
-			insert_case2(node);
+			__validate_tree_1(node);
 	}
 
-	void	insert_case2(__node* node)
+	// parent color가 BLACK인 경우 : 종료
+	void	__validate_tree_1(__node* node)
 	{
 		if (node->parent->color == BLACK)
 			return ;
 		else
-			insert_case3_recoloring(node);
+			__validate_tree_2(node);
 	}
 
-	void	insert_case3_recoloring(__node* node)
+	// uncle node color가 RED인 경우 : parent, uncle node의 color를 BLACK으로 변경, grand를 RED로 변경
+	void	__validate_tree_2(__node* node)
 	{
 		__node* g_node = __get_grandparent(node);
 		__node*	u_node = __get_uncle(node);
@@ -200,13 +234,14 @@ private:
 			node->parent->color = BLACK;
 			u_node->color = BLACK;
 			g_node->color = RED;
-			insert_case1(g_node);
+			__validate_tree_0(g_node);
 		}
 		else
-			insert_case4(node);
+			__validate_tree_3(node);
 	}
 
-	void	insert_case4(__node* node)
+	// uncle node color가 BLACK이고, node 연결 형태가 triangle인 경우 : parent node 회전
+	void	__validate_tree_3(__node* node)
 	{
 		__node*	g_node = __get_grandparent(node);
 
@@ -217,12 +252,24 @@ private:
 		} 
 		else if ((node == node->parent->left) && (node->parent == g_node->right))
 		{
-			// __rotate_right(node->parent);
+			__rotate_right(node->parent);
 			node = node->right;
 		}
+		__validate_tree_4(node);
 	}
 
+	// uncle node color가 Black이고, node 연결 형태가 line인 경우 : grand node 회전
+	void	__validate_tree_4(__node* node)
+	{
+		__node*	g_node = __get_grandparent(node);
 
+		g_node->color = RED;
+		node->parent->color = BLACK;
+		if (node == node->parent->right)
+			__rotate_left(g_node);
+		else
+			__rotate_right(g_node);
+	}
 		
 public:
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
@@ -414,36 +461,12 @@ template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
-	// Create new node
-	__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
-	__alloc_traits::construct(this->__alloc, &new_node->data, val);
-	new_node->color = RED;
-	new_node->parent = NULL;
+	
+	__node* new_node = __create_node(val);
 
-
-	// Locate new node
-	__node* tmp_node = this->__tree;
-	if (this->__tree == nullptr)
-		this->__tree = new_node;
-	else
-	{
-		int dir = __value_comp(tmp_node->data, new_node->data);
-		
-		while (tmp_node->child[dir] != nullptr)
-		{
-			tmp_node = tmp_node->child[dir];
-			dir = __value_comp(tmp_node->data, new_node->data);
-		}
-		tmp_node->child[dir] = new_node;
-		new_node->parent = tmp_node;
-	}
-
-	insert_case1(new_node);
-
+	__locate_node(new_node);
+	__validate_tree_0(new_node);
 	__print_tree(__tree);
-
-
-
 }
 
 
