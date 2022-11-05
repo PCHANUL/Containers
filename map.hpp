@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/04 19:21:52 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/05 23:58:25 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,72 +31,45 @@ namespace ft
 #define __rotate_left(node) __rotate_dir(node, LEFT)
 #define __rotate_right(node) __rotate_dir(node, RIGHT)
 
-
 enum color_t {
 	BLACK,
 	RED
 };
 
-template <class T>
-class m_iter
+template <class T, class Compare, class Alloc>
+class __tree_
 {
-	
-};
-
-template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
-class map
-{
-
-protected:
-	typedef std::allocator_traits<Alloc>                __alloc_traits;
 
 public:
-	typedef Key                                         key_type;
-	typedef T                                           mapped_type;
-	typedef ft::pair<const key_type, mapped_type>       value_type;
-	typedef typename __alloc_traits::size_type          size_type;
-	typedef typename __alloc_traits::difference_type	difference_type;
-	typedef Compare										key_compare;
-	typedef Alloc										allocator_type;
-	typedef value_type&									reference;
-	typedef const value_type&							const_reference;
-	typedef typename __alloc_traits::pointer			pointer;
-	typedef typename __alloc_traits::const_pointer		const_pointer;
-	typedef ft::m_iter<value_type>						iterator;
-	typedef ft::m_iter<const value_type>				const_iterator;
-	typedef ft::reverse_iterator<iterator>				reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
-
-	class value_compare : public ft::binary_function<value_type, value_type, bool>
-	{
-		friend class map;
-
-	protected:
-		key_compare comp;
-	
-		value_compare(key_compare c) : comp(c) {}
-		
-	public:
-		bool operator() (const value_type& lhs, const value_type& rhs) const
-		{ return comp(lhs.first, rhs.first); }
-	};
-
 	struct __node {
 		__node*			parent;
 		__node*			child[2];
 		enum color_t	color;
-		value_type		data;
+		T				data;
 	};
-	
+
+	typedef T															value_type;
+	typedef	Alloc														allocator_type;
+	typedef Compare														key_compare;
+	typedef std::allocator_traits<allocator_type>						__alloc_traits;
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
-
-	key_compare		__key_comp;
-	value_compare	__value_comp;
+	
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
-	__node*			__tree;
+	key_compare		__key_comp;
 
+	__node*			__root;
+
+	__tree_() : 
+		__root(nullptr), __alloc(allocator_type()), __alloc_node(__node_alloc()), __key_comp(key_compare())
+	{}
+		
+
+	__tree_(const key_compare& comp, const allocator_type& alloc) :
+		__root(nullptr), __alloc(alloc), __alloc_node(__alloc_node), __key_comp(comp)
+	{}
+	
 	__node* __create_node(const value_type& val)
 	{
 		__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
@@ -201,7 +174,7 @@ public:
 		if (p_node != nullptr)
 			p_node->child[node == p_node->left ? LEFT : RIGHT] = c_node;
 		else
-			__tree = c_node;
+			__root = c_node;
 		return (c_node);
 	}
 
@@ -270,6 +243,80 @@ public:
 		else
 			__rotate_right(g_node);
 	}
+	
+	void	__insert(const value_type& val)
+	{
+		__node* new_node = __create_node(val);
+
+		__locate_node(new_node);
+		__validate_tree_0(new_node);
+		__print_tree(__root);
+	}
+};
+
+template <class T>
+class m_iter
+{
+	
+};
+
+template<class Key, class Compare>
+class __map_compare : private Compare
+{
+
+	Compare comp;
+
+public:
+	__map_compare() : Compare()	{}
+	
+public:
+	bool operator() (const Key& lhs, const Key& rhs) const
+	{ return comp(lhs.first, rhs.first); }
+};
+
+
+
+template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
+class map
+{
+
+protected:
+	typedef std::allocator_traits<Alloc>                __alloc_traits;
+
+public:
+	typedef Key                                         key_type;
+	typedef T                                           mapped_type;
+	typedef ft::pair<const key_type, mapped_type>       value_type;
+	typedef typename __alloc_traits::size_type          size_type;
+	typedef typename __alloc_traits::difference_type	difference_type;
+	typedef Compare										key_compare;
+	typedef Alloc										allocator_type;
+	typedef value_type&									reference;
+	typedef const value_type&							const_reference;
+	typedef typename __alloc_traits::pointer			pointer;
+	typedef typename __alloc_traits::const_pointer		const_pointer;
+	typedef ft::m_iter<value_type>						iterator;
+	typedef ft::m_iter<const value_type>				const_iterator;
+	typedef ft::reverse_iterator<iterator>				reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
+
+	class value_compare : public ft::binary_function<value_type, value_type, bool>
+	{
+		friend class map;
+
+	protected:
+		key_compare comp;
+	
+		value_compare(key_compare c) : comp(c) {}
+		
+	public:
+		bool operator() (const value_type& lhs, const value_type& rhs) const
+		{ return comp(lhs.first, rhs.first); }
+	};
+
+	typedef	__tree_<value_type, __map_compare<value_type, key_compare>, allocator_type>			__tree_type;
+	__tree_type		__root;
+
 		
 public:
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
@@ -326,8 +373,10 @@ public:
 // 요소가 없는 빈 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
 ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc) :
-	__tree(nullptr), __alloc(alloc), __alloc_node(__alloc_node), __key_comp(comp), __value_comp(value_compare(comp))
-{}
+	__tree(nullptr), __alloc(alloc), __key_comp(comp), __value_comp(value_compare(comp))
+{
+
+}
 
 // 범위 [first,last)만큼 많은 요소가 있는 컨테이너를 생성하고, 각 요소는 해당 범위의 해당 요소로 구성됩니다.
 template <class Key, class T, class Compare, class Alloc>
@@ -461,12 +510,14 @@ template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
-	
-	__node* new_node = __create_node(val);
+	__root.insert(val);
 
-	__locate_node(new_node);
-	__validate_tree_0(new_node);
-	__print_tree(__tree);
+
+	// __node* new_node = __create_node(val);
+
+	// __locate_node(new_node);
+	// __validate_tree_0(new_node);
+	// __print_tree(__tree);
 }
 
 
