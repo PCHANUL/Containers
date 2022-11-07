@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/06 13:55:58 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/07 15:20:05 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,6 @@
 namespace ft
 {
 
-template <class T>
-class m_iter
-{
-	
-};
-
 template<class Key, class Compare>
 class __map_compare : private Compare
 {
@@ -45,8 +39,6 @@ public:
 	bool operator() (const Key& lhs, const Key& rhs) const
 	{ return comp(lhs.first, rhs.first); }
 };
-
-
 
 template <class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
 class map
@@ -72,7 +64,7 @@ public:
 	typedef ft::reverse_iterator<iterator>													reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>											const_reverse_iterator;
 
-protected:
+// protected:
 	typedef	__tree<value_type, __map_compare<value_type, key_compare>, allocator_type>		__tree_type;
 
 	key_compare		__key_comp;
@@ -287,15 +279,7 @@ ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool>
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
 	__root.insert(val);
-
-
-	// __node* new_node = __create_node(val);
-
-	// __locate_node(new_node);
-	// __validate_tree_0(new_node);
-	// __print_tree(__tree);
 }
-
 
 // position : 요소를 삽압할 수 있는 위치에 대한 힌트
 // 힌트일 뿐이며 맵 컨테이너 내의 해당 위치에 새 요소를 강제로 삽입하지 않습니다. (맵의 요소는 항상 키에 따라 특정 순서를 따릅니다.)

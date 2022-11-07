@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/04 19:21:15 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/07 18:59:38 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -883,18 +883,37 @@ int main(void)
 		test.main_end();
 	}
 
-	test.main("iterator");
+	test.main("__tree_iterator");
 	{
-		std::map<int, int>	s_map;
-		std::pair<int, int>	p(5, 1);
-
-		for (; p.first<40; p.first+=10)
-			s_map.insert(p);
+		typedef	ft::map<int, int>::__tree_type 	__tree;
 		
-		std::map<int, int>::iterator	iter = s_map.begin();
+		__tree		tree;
 
-		for(; iter!=s_map.end(); iter++)
-			std::cout << (*iter).first << ": " << (*iter).second << std::endl;
+		tree.insert(ft::pair<int, int>(10, 10));
+		tree.insert(ft::pair<int, int>(20, 10));
+		tree.insert(ft::pair<int, int>(30, 10));
+		tree.insert(ft::pair<int, int>(5, 10));
+		tree.insert(ft::pair<int, int>(15, 10));
+		tree.insert(ft::pair<int, int>(8, 10));
+		tree.insert(ft::pair<int, int>(7, 10));
+		tree.insert(ft::pair<int, int>(2, 10));
+		tree.insert(ft::pair<int, int>(1, 10));
+		tree.insert(ft::pair<int, int>(6, 10));
+
+		__tree::iterator	iter = tree.begin();
+		for (int i=0; i<9; i++)
+		{
+			std::cout << (*iter).key << std::endl;
+			iter++;
+		}
+
+		std::cout << std::endl;
+
+		for (int i=0; i<9; i++)
+		{
+			std::cout << (*iter).key << std::endl;
+			iter--;
+		}
 
 
 		test.main_end();

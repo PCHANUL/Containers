@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/26 12:24:16 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/07 18:28:17 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,45 @@ struct iterator
 	typedef Pointer		pointer;
 	typedef Reference	reference;
 	typedef Category	iterator_category;
+};
+
+template <class Node>
+class m_iter
+{
+
+public:
+	typedef ptrdiff_t						difference_type;
+	typedef Node							value_type;
+	typedef Node*							pointer;
+	typedef Node&							reference;
+	typedef ft::bidirectional_iterator_tag	iterator_category;
+
+protected:
+	pointer	__n;
+
+public:
+	m_iter();
+	m_iter(pointer __x);
+	m_iter(const m_iter& __x);
+
+	pointer		base() const;
+	m_iter&		operator =	(const m_iter& __x);
+	reference	operator *	() const;
+	pointer		operator ->	() const;
+	m_iter& 	operator ++	()
+	{
+		__n = __tree_next(__n);
+		return (*this);
+	}
+	m_iter		operator ++	(int);
+	m_iter&		operator -- ();
+	m_iter		operator -- (int);
+	m_iter		operator +	(difference_type n) const;
+	m_iter&		operator +=	(difference_type n);
+	m_iter		operator -	(difference_type n) const;
+	m_iter&		operator -=	(difference_type n);
+	reference	operator []	(difference_type n) const;
+
 };
 
 template <class T>
@@ -66,7 +105,8 @@ public:
 
 template <class T>
 ft::v_iter<T>::v_iter() : __i(nullptr)
-{}
+{
+}
 
 template <class T>
 ft::v_iter<T>::v_iter(T* __i) : __i(__i)

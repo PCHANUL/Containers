@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/06 13:56:37 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/07 19:01:05 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,34 +29,259 @@ enum color_t {
 	RED
 };
 
+// tree에서 다음 node를 찾습니다.
+template <class _NodePtr>
+_NodePtr 
+__tree_next(_NodePtr node)
+{
+	if (node->right != nullptr)
+		return (__tree_min(node->right));
+
+	while (node->parent != nullptr)
+	{
+		if (node->parent->left == node)
+			return (node->parent);
+		node = node->parent;
+	}
+	return (node);
+}
+
+// tree에서 이전 node를 찾습니다.
+template <class _NodePtr>
+_NodePtr
+__tree_prev(_NodePtr node)
+{
+	if (node->left != nullptr)
+		return (__tree_max(node->left));
+
+	while (node->parent != nullptr)
+	{
+		if (node->parent->right == node)
+			return (node->parent);
+		node = node->parent;
+	}
+	return (node);
+}
+
+// tree에서 가장 왼쪽에 있는 node를 반환합니다.
+template <class _NodePtr>
+_NodePtr
+__tree_min(_NodePtr tree)
+{
+	_NodePtr	node = tree;
+
+	while (node != nullptr && node->left != nullptr)
+		node = node->left;
+	return (node);
+}
+
+// tree에서 가장 오른쪽에 있는 node를 반환합니다.
+template <class _NodePtr>
+_NodePtr
+__tree_max(_NodePtr tree)
+{
+	_NodePtr	node = tree;
+
+	while (node != nullptr && node->right != nullptr)
+		node = node->right;
+	return (node);
+}
+
+template <class T>
+struct __tree_node 
+{
+	__tree_node*	parent;
+	__tree_node*	child[2];
+	enum color_t	color;
+	T				key;
+};
+
+template <class T>
+class __tree_iter
+{
+
+protected:
+	typedef	__tree_node<T>					__node;
+
+public:
+	typedef ptrdiff_t						difference_type;
+	typedef __node							value_type;
+	typedef __node*							pointer;
+	typedef __node&							reference;
+	typedef ft::bidirectional_iterator_tag	iterator_category;
+
+protected:
+	pointer	__n;
+
+public:
+	__tree_iter();
+	__tree_iter(pointer __x);
+	__tree_iter(const __tree_iter& __x);
+
+	pointer			base() const;
+	__tree_iter&	operator =	(const __tree_iter& __x);
+	reference		operator *	() const;
+	pointer			operator ->	() const;
+	__tree_iter& 	operator ++	();
+	__tree_iter		operator ++	(int);
+	__tree_iter&	operator -- ();
+	__tree_iter		operator -- (int);
+	__tree_iter		operator +	(difference_type n) const;
+	__tree_iter&	operator +=	(difference_type n);
+	__tree_iter		operator -	(difference_type n) const;
+	__tree_iter&	operator -=	(difference_type n);
+	reference		operator []	(difference_type n) const;
+};
+
+template <class T>
+ft::__tree_iter<T>::__tree_iter() : __n(nullptr)
+{
+}
+
+template <class T>
+ft::__tree_iter<T>::__tree_iter(pointer __x) : __n(__x)
+{
+}
+
+template <class T>
+ft::__tree_iter<T>::__tree_iter(const __tree_iter& __x) : __n(__x.__n)
+{
+}
+
+template <class T>
+typename ft::__tree_iter<T>::pointer
+ft::__tree_iter<T>::base() const
+{
+	return (__n);
+}
+
+template <class T>
+ft::__tree_iter<T>&
+ft::__tree_iter<T>::operator = (const __tree_iter& __x)
+{
+	if (__x.__n != __n)
+		__n = __x.__n;
+	return (*this);
+}
+
+template <class T>
+typename ft::__tree_iter<T>::reference
+ft::__tree_iter<T>::operator *	() const
+{
+	return (*__n);
+}
+
+template <class T>
+typename ft::__tree_iter<T>::pointer
+ft::__tree_iter<T>::operator ->	() const
+{
+	return (__n);
+}
+
+template <class T>
+ft::__tree_iter<T>&
+ft::__tree_iter<T>::operator ++	()
+{
+	__n = __tree_next(__n);
+	return (*this);
+}
+
+template <class T>
+ft::__tree_iter<T>
+ft::__tree_iter<T>::operator ++	(int)
+{
+	ft::__tree_iter<T>	tmp(*this);
+	++(*this);
+	return (tmp);
+}
+
+template <class T>
+ft::__tree_iter<T>&
+ft::__tree_iter<T>::operator --	()
+{
+	__n = __tree_prev(__n);
+	return (*this);
+}
+
+template <class T>
+ft::__tree_iter<T>
+ft::__tree_iter<T>::operator --	(int)
+{
+	ft::__tree_iter<T>	tmp(*this);
+	--(*this);
+	return (tmp);
+}
+
+// template <class T>
+// ft::__tree_iter<T>
+// ft::__tree_iter<T>::operator +	(difference_type n) const
+// {
+// 	__n = __tree_prev(__n);
+// 	return (*this);
+// }
+
+// template <class T>
+// ft::__tree_iter<T>&
+// ft::__tree_iter<T>::operator +=	(difference_type n)
+// {
+// 	ft::__tree_iter<T>	tmp(*this);
+// 	--(*this);
+// 	return (tmp);
+// }
+
+// template <class T>
+// ft::__tree_iter<T>
+// ft::__tree_iter<T>::operator -	(difference_type n) const
+// {
+// 	__n = __tree_prev(__n);
+// 	return (*this);
+// }
+
+// template <class T>
+// ft::__tree_iter<T>&
+// ft::__tree_iter<T>::operator -=	(difference_type n)
+// {
+// 	ft::__tree_iter<T>	tmp(*this);
+// 	--(*this);
+// 	return (tmp);
+// }
+
+// reference		operator []	(difference_type n) const;
+
+
+
+
 template <class T, class Compare, class Alloc>
 class __tree
 {
+protected:
+	typedef __tree_node<T>												__node;
 
 public:
-	struct __node {
-		__node*			parent;
-		__node*			child[2];
-		enum color_t	color;
-		T				data;
-	};
-
 	typedef T															value_type;
 	typedef	Alloc														allocator_type;
 	typedef Compare														key_compare;
 	typedef std::allocator_traits<allocator_type>						__alloc_traits;
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
+	typedef __tree_iter<T>												iterator;
+	typedef __tree_iter<const T>										const_iterator;
 	
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
 	key_compare		__key_comp;
-
 	__node*			__root;
 
 	__tree();
 	__tree(const key_compare& comp, const allocator_type& alloc);
+	
+	void		insert(const value_type& val);
+	iterator	begin()
+	{
+		return (iterator(__get_min()));
+	}
 
+private:
 	__node* 	__create_node(const value_type& val);
 	void 		__locate_node(__node* new_node);
 	void		__print_tree(const std::string& prefix, const __node* node, bool isLeft);
@@ -65,6 +290,8 @@ public:
 	__node*		__get_grandparent(__node* node);
 	__node*		__get_uncle(__node* node);
 	__node*		__get_sibling(__node* node);
+	__node*		__get_min();
+	__node*		__get_max();
 	
 	__node*		__rotate_dir(__node* node, int dir);
 
@@ -73,8 +300,6 @@ public:
 	void		__validate_tree_2(__node* node);
 	void		__validate_tree_3(__node* node);
 	void		__validate_tree_4(__node* node);
-	
-	void		insert(const value_type& val);
 };
 
 
@@ -94,7 +319,7 @@ __tree<T, Compare, Alloc>::__create_node(const value_type& val)
 {
 	__node* new_node = __node_alloc_traits::allocate(this->__alloc_node, sizeof(__node));
 		
-	__alloc_traits::construct(this->__alloc, &new_node->data, val);
+	__alloc_traits::construct(this->__alloc, &new_node->key, val);
 	new_node->color = RED;
 	new_node->parent = NULL;
 	return (new_node);
@@ -110,12 +335,12 @@ __tree<T, Compare, Alloc>::__locate_node(__node* new_node)
 		this->__root = new_node;
 	else
 	{
-		int dir = __key_comp(tmp_node->data, new_node->data);
+		int dir = __key_comp(tmp_node->key, new_node->key);
 		
 		while (tmp_node->child[dir] != nullptr)
 		{
 			tmp_node = tmp_node->child[dir];
-			dir = __key_comp(tmp_node->data, new_node->data);
+			dir = __key_comp(tmp_node->key, new_node->key);
 		}
 		tmp_node->child[dir] = new_node;
 		new_node->parent = tmp_node;
@@ -133,9 +358,9 @@ __tree<T, Compare, Alloc>::__print_tree(const std::string& prefix, const __node*
 		std::cout << (isLeft ? "├──" : "└──" );
 
 		if (node->color == RED)
-			std::cout << "\033[1;31m" << node->data.first << "\033[0m" << std::endl;
+			std::cout << "\033[1;31m" << node->key.first << "\033[0m" << std::endl;
 		else
-			std::cout << node->data.first << std::endl;
+			std::cout << node->key.first << std::endl;
 
 		__print_tree( prefix + (isLeft ? "│   " : "    "), node->left, true);
 		__print_tree( prefix + (isLeft ? "│   " : "    "), node->right, false);
@@ -187,9 +412,30 @@ __tree<T, Compare, Alloc>::__get_sibling(__node* node)
 
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node*
+__tree<T, Compare, Alloc>::__get_min()
+{
+	__node*	node = __root;
+
+	while (node != nullptr && node->left != nullptr)
+		node = node->left;
+	return (node);
+}
+
+template <class T, class Compare, class Alloc>
+typename __tree<T, Compare, Alloc>::__node*
+__tree<T, Compare, Alloc>::__get_max()
+{
+	__node*	node = __root;
+
+	while (node != nullptr && node->right != nullptr)
+		node = node->right;
+	return (node);
+}
+
+template <class T, class Compare, class Alloc>
+typename __tree<T, Compare, Alloc>::__node*
 __tree<T, Compare, Alloc>::__rotate_dir(__node* node, int dir)
 {
-	// left
 	__node*	p_node = node->parent;
 	__node*	c_node = node->child[1-dir];
 	__node* gc_node = nullptr;
