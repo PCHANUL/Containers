@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/07 19:01:05 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/08 18:44:42 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,13 @@ enum color_t {
 	RED
 };
 
-// tree에서 다음 node를 찾습니다.
+// tree에서 다음 node의 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr 
 __tree_next(_NodePtr node)
 {
 	if (node->right != nullptr)
 		return (__tree_min(node->right));
-
 	while (node->parent != nullptr)
 	{
 		if (node->parent->left == node)
@@ -46,14 +45,13 @@ __tree_next(_NodePtr node)
 	return (node);
 }
 
-// tree에서 이전 node를 찾습니다.
+// tree에서 이전 node의 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
 __tree_prev(_NodePtr node)
 {
 	if (node->left != nullptr)
 		return (__tree_max(node->left));
-
 	while (node->parent != nullptr)
 	{
 		if (node->parent->right == node)
@@ -63,7 +61,7 @@ __tree_prev(_NodePtr node)
 	return (node);
 }
 
-// tree에서 가장 왼쪽에 있는 node를 반환합니다.
+// tree에서 가장 왼쪽에 있는 node 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
 __tree_min(_NodePtr tree)
@@ -75,7 +73,7 @@ __tree_min(_NodePtr tree)
 	return (node);
 }
 
-// tree에서 가장 오른쪽에 있는 node를 반환합니다.
+// tree에서 가장 오른쪽에 있는 node 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
 __tree_max(_NodePtr tree)
@@ -109,6 +107,8 @@ public:
 	typedef __node*							pointer;
 	typedef __node&							reference;
 	typedef ft::bidirectional_iterator_tag	iterator_category;
+
+	typedef T								node_key_type;
 
 protected:
 	pointer	__n;
@@ -212,44 +212,6 @@ ft::__tree_iter<T>::operator --	(int)
 	return (tmp);
 }
 
-// template <class T>
-// ft::__tree_iter<T>
-// ft::__tree_iter<T>::operator +	(difference_type n) const
-// {
-// 	__n = __tree_prev(__n);
-// 	return (*this);
-// }
-
-// template <class T>
-// ft::__tree_iter<T>&
-// ft::__tree_iter<T>::operator +=	(difference_type n)
-// {
-// 	ft::__tree_iter<T>	tmp(*this);
-// 	--(*this);
-// 	return (tmp);
-// }
-
-// template <class T>
-// ft::__tree_iter<T>
-// ft::__tree_iter<T>::operator -	(difference_type n) const
-// {
-// 	__n = __tree_prev(__n);
-// 	return (*this);
-// }
-
-// template <class T>
-// ft::__tree_iter<T>&
-// ft::__tree_iter<T>::operator -=	(difference_type n)
-// {
-// 	ft::__tree_iter<T>	tmp(*this);
-// 	--(*this);
-// 	return (tmp);
-// }
-
-// reference		operator []	(difference_type n) const;
-
-
-
 
 template <class T, class Compare, class Alloc>
 class __tree
@@ -275,11 +237,10 @@ public:
 	__tree();
 	__tree(const key_compare& comp, const allocator_type& alloc);
 	
-	void		insert(const value_type& val);
-	iterator	begin()
-	{
-		return (iterator(__get_min()));
-	}
+	iterator	insert(const value_type& val);
+	iterator	begin();
+	iterator	end();
+	void		print();
 
 private:
 	__node* 	__create_node(const value_type& val);
@@ -535,16 +496,36 @@ __tree<T, Compare, Alloc>::__validate_tree_4(__node* node)
 }
 
 template <class T, class Compare, class Alloc>
-void
+typename  __tree<T, Compare, Alloc>::iterator
+__tree<T, Compare, Alloc>::begin()
+{
+	return (iterator(__get_min()));
+}
+
+template <class T, class Compare, class Alloc>
+typename  __tree<T, Compare, Alloc>::iterator
+__tree<T, Compare, Alloc>::end()
+{
+	return (iterator(__get_max()));
+}
+
+template <class T, class Compare, class Alloc>
+typename  __tree<T, Compare, Alloc>::iterator
 __tree<T, Compare, Alloc>::insert(const value_type& val)
 {
 	__node* new_node = __create_node(val);
 
 	__locate_node(new_node);
 	__validate_tree_0(new_node);
-	__print_tree(__root);
+	return (iterator(new_node));
 }
 
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::print()
+{
+	__print_tree(__root);
+}
 
 }	// ft
 

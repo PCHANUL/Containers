@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/07 15:20:05 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/08 18:50:16 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,8 @@ public:
 	typedef const value_type&																const_reference;
 	typedef typename __alloc_traits::pointer												pointer;
 	typedef typename __alloc_traits::const_pointer											const_pointer;
-	typedef ft::m_iter<value_type>															iterator;
-	typedef ft::m_iter<const value_type>													const_iterator;
-	typedef ft::reverse_iterator<iterator>													reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>											const_reverse_iterator;
 
-// protected:
+protected:
 	typedef	__tree<value_type, __map_compare<value_type, key_compare>, allocator_type>		__tree_type;
 
 	key_compare		__key_comp;
@@ -72,6 +68,11 @@ public:
 	__tree_type		__root;
 
 public:
+	typedef ft::m_iter<typename __tree_type::iterator>										iterator;
+	typedef ft::m_iter<typename __tree_type::const_iterator>								const_iterator;
+	typedef ft::reverse_iterator<iterator>													reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>											const_reverse_iterator;
+
 	class value_compare : public ft::binary_function<value_type, value_type, bool>
 	{
 		friend class map;

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/07 18:59:38 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/08 18:59:20 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -885,39 +885,36 @@ int main(void)
 
 	test.main("__tree_iterator");
 	{
-		typedef	ft::map<int, int>::__tree_type 	__tree;
+		typedef ft::pair<const int, int>											__value_type;
+		typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
+		typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
 		
-		__tree		tree;
+		__tree_type			tree;
+		ft::pair<int, int>	ft_pair(0, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 
-		tree.insert(ft::pair<int, int>(10, 10));
-		tree.insert(ft::pair<int, int>(20, 10));
-		tree.insert(ft::pair<int, int>(30, 10));
-		tree.insert(ft::pair<int, int>(5, 10));
-		tree.insert(ft::pair<int, int>(15, 10));
-		tree.insert(ft::pair<int, int>(8, 10));
-		tree.insert(ft::pair<int, int>(7, 10));
-		tree.insert(ft::pair<int, int>(2, 10));
-		tree.insert(ft::pair<int, int>(1, 10));
-		tree.insert(ft::pair<int, int>(6, 10));
-
-		__tree::iterator	iter = tree.begin();
-		for (int i=0; i<9; i++)
+		for (int i=0; i<10; i++)
 		{
-			std::cout << (*iter).key << std::endl;
+			ft_pair.first = nums[i];
+			tree.insert(ft_pair);
+		}
+
+		typename __tree_type::iterator	iter = tree.begin();
+		for (int i=0; i<10; i++)
+		{
+			test.main_then((*iter).key.first == nums[i]);
 			iter++;
 		}
-
-		std::cout << std::endl;
-
-		for (int i=0; i<9; i++)
-		{
-			std::cout << (*iter).key << std::endl;
-			iter--;
-		}
-
-
+		
 		test.main_end();
+		std::cout << "\n";
+		tree.print();
+		std::cout << "\n";
 	}
+
+	
+
+
 
 	}
 

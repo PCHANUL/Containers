@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/07 18:28:17 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/08 18:51:10 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,22 +30,22 @@ struct iterator
 	typedef Category	iterator_category;
 };
 
-template <class Node>
+template <class TreeIter>
 class m_iter
 {
+	typedef typename TreeIter::value_type	__node_type;
+
+	__node_type		__i;
 
 public:
-	typedef ptrdiff_t						difference_type;
-	typedef Node							value_type;
-	typedef Node*							pointer;
-	typedef Node&							reference;
-	typedef ft::bidirectional_iterator_tag	iterator_category;
-
-protected:
-	pointer	__n;
+	typedef ft::bidirectional_iterator_tag		iterator_category;
+	typedef typename TreeIter::difference_type	difference_type;
+	typedef typename TreeIter::node_key_type	value_type;
+	typedef value_type*							pointer;
+	typedef value_type&							reference;
 
 public:
-	m_iter();
+	m_iter() {};
 	m_iter(pointer __x);
 	m_iter(const m_iter& __x);
 
@@ -55,7 +55,7 @@ public:
 	pointer		operator ->	() const;
 	m_iter& 	operator ++	()
 	{
-		__n = __tree_next(__n);
+		__i = __tree_next(__i);
 		return (*this);
 	}
 	m_iter		operator ++	(int);
