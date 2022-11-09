@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/08 18:50:16 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/09 16:56:09 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,6 @@ template <class Key, class T, class Compare, class Alloc>
 ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc) :
 	__alloc(alloc), __key_comp(comp)
 {
-
 }
 
 // 범위 [first,last)만큼 많은 요소가 있는 컨테이너를 생성하고, 각 요소는 해당 범위의 해당 요소로 구성됩니다.
@@ -183,26 +182,34 @@ ft::map<Key, T, Compare, Alloc>::get_allocator() const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::begin()
-{}
+{
+    return (iterator(__root.begin()));
+}
 
 // 객체가 const로 한정된 경우 const_iterator를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::begin() const
-{}
+{
+    return (const_iterator(__root.begin()));
+}
 
 // 맵 컨테이너의 마지막 다음 요소를 참조하는 반복자를 반환합니다. 
 // 마지막 다음 요소는 이론적인 요소이며, 맵 컨테이너 마지막 다음에 위치합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::end()
-{}
+{
+    return (iterator(__root.end()));
+}
 
 // 객체가 const로 한정된 경우 const_iterator를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::end() const
-{}
+{
+    return (const_iterator(__root.end()));
+}
 
 // 컨테이너의 마지막 요소를 가리키는 역방향 반복자를 반환합니다.
 // 역방향 반복자는 반대로 진행합니다.

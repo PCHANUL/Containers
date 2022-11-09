@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/08 18:44:42 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/09 16:59:35 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,13 +102,11 @@ protected:
 	typedef	__tree_node<T>					__node;
 
 public:
-	typedef ptrdiff_t						difference_type;
+	typedef T								node_key_type;
 	typedef __node							value_type;
 	typedef __node*							pointer;
 	typedef __node&							reference;
-	typedef ft::bidirectional_iterator_tag	iterator_category;
-
-	typedef T								node_key_type;
+	typedef ptrdiff_t						difference_type;
 
 protected:
 	pointer	__n;

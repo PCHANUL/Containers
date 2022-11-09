@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/08 18:59:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/09 17:24:36 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -899,7 +899,7 @@ int main(void)
 			tree.insert(ft_pair);
 		}
 
-		typename __tree_type::iterator	iter = tree.begin();
+		__tree_type::iterator	iter = tree.begin();
 		for (int i=0; i<10; i++)
 		{
 			test.main_then((*iter).key.first == nums[i]);
@@ -912,7 +912,27 @@ int main(void)
 		std::cout << "\n";
 	}
 
-	
+	test.main("iterator");
+	{
+		ft::map<int, int>	ft_map;
+		ft::pair<int, int>	ft_pair(0, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = nums[i];
+			ft_map.insert(ft_pair);
+		}
+
+		ft::map<int, int>::iterator	ft_iter = ft_map.begin();
+		for (int i=0; i<10; i++)
+		{
+			test.main_then((*ft_iter).first == nums[i]);
+			ft_iter++;
+		}
+
+		test.main_end();
+	}
 
 
 

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/08 18:51:10 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/09 17:24:15 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@ struct iterator
 template <class TreeIter>
 class m_iter
 {
-	typedef typename TreeIter::value_type	__node_type;
-
-	__node_type		__i;
+	typedef typename TreeIter::value_type		__node_type;
 
 public:
 	typedef ft::bidirectional_iterator_tag		iterator_category;
@@ -44,30 +42,95 @@ public:
 	typedef value_type*							pointer;
 	typedef value_type&							reference;
 
+private:
+	TreeIter	__i;
+
 public:
-	m_iter() {};
-	m_iter(pointer __x);
+	m_iter();
+	m_iter(TreeIter __x);
 	m_iter(const m_iter& __x);
 
-	pointer		base() const;
 	m_iter&		operator =	(const m_iter& __x);
 	reference	operator *	() const;
 	pointer		operator ->	() const;
-	m_iter& 	operator ++	()
-	{
-		__i = __tree_next(__i);
-		return (*this);
-	}
+	m_iter& 	operator ++	();
 	m_iter		operator ++	(int);
 	m_iter&		operator -- ();
 	m_iter		operator -- (int);
-	m_iter		operator +	(difference_type n) const;
-	m_iter&		operator +=	(difference_type n);
-	m_iter		operator -	(difference_type n) const;
-	m_iter&		operator -=	(difference_type n);
 	reference	operator []	(difference_type n) const;
-
 };
+
+template <class TreeIter>
+ft::m_iter<TreeIter>::m_iter() : __i(nullptr)
+{
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>::m_iter(TreeIter __x) : __i(__x)
+{
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>::m_iter(const m_iter& __x) : __i(__x.__i)
+{
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>&		
+ft::m_iter<TreeIter>::operator = (const m_iter& __x)
+{
+	if (__x.__i != __i)
+		__i = __x.__i;
+	return (*this);
+}
+
+template <class TreeIter>
+typename ft::m_iter<TreeIter>::reference
+ft::m_iter<TreeIter>::operator * () const
+{
+	return ((*__i).key);
+}
+
+template <class TreeIter>
+typename ft::m_iter<TreeIter>::pointer		
+ft::m_iter<TreeIter>::operator -> () const
+{
+	return (&((*__i).key));
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>& 	
+ft::m_iter<TreeIter>::operator ++ ()
+{
+	++__i;
+	return (*this);
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>
+ft::m_iter<TreeIter>::operator ++ (int)
+{
+	m_iter	tmp(*this);
+	++(*this);
+	return (tmp);
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>& 	
+ft::m_iter<TreeIter>::operator -- ()
+{
+	--__i;
+	return (*this);
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>
+ft::m_iter<TreeIter>::operator -- (int)
+{
+	m_iter	tmp(*this);
+	--(*this);
+	return (tmp);
+}
 
 template <class T>
 class v_iter
@@ -85,7 +148,7 @@ protected:
 
 public:
 	v_iter();
-	v_iter(pointer __i);
+	v_iter(pointer __x);
 	v_iter(const v_iter& __x);
 
 	pointer		base() const;
@@ -109,7 +172,7 @@ ft::v_iter<T>::v_iter() : __i(nullptr)
 }
 
 template <class T>
-ft::v_iter<T>::v_iter(T* __i) : __i(__i)
+ft::v_iter<T>::v_iter(pointer __x) : __i(__x)
 {
 }
 
