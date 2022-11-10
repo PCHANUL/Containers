@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/09 16:59:35 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/10 18:38:51 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,23 +100,25 @@ class __tree_iter
 
 protected:
 	typedef	__tree_node<T>					__node;
+	typedef __node*							__node_pointer;
+	typedef __node&							__node_reference;
 
 public:
-	typedef T								node_key_type;
-	typedef __node							value_type;
-	typedef __node*							pointer;
-	typedef __node&							reference;
+	typedef T								value_type;
+	typedef T&								reference;
+	typedef T*								pointer;
 	typedef ptrdiff_t						difference_type;
+	typedef ft::bidirectional_iterator_tag	iterator_category;
 
 protected:
-	pointer	__n;
+	__node_pointer	__n;
 
 public:
 	__tree_iter();
-	__tree_iter(pointer __x);
+	__tree_iter(__node_pointer __x);
 	__tree_iter(const __tree_iter& __x);
 
-	pointer			base() const;
+	__node_pointer	base() const;
 	__tree_iter&	operator =	(const __tree_iter& __x);
 	reference		operator *	() const;
 	pointer			operator ->	() const;
@@ -124,11 +126,6 @@ public:
 	__tree_iter		operator ++	(int);
 	__tree_iter&	operator -- ();
 	__tree_iter		operator -- (int);
-	__tree_iter		operator +	(difference_type n) const;
-	__tree_iter&	operator +=	(difference_type n);
-	__tree_iter		operator -	(difference_type n) const;
-	__tree_iter&	operator -=	(difference_type n);
-	reference		operator []	(difference_type n) const;
 };
 
 template <class T>
@@ -137,7 +134,7 @@ ft::__tree_iter<T>::__tree_iter() : __n(nullptr)
 }
 
 template <class T>
-ft::__tree_iter<T>::__tree_iter(pointer __x) : __n(__x)
+ft::__tree_iter<T>::__tree_iter(__node_pointer __x) : __n(__x)
 {
 }
 
@@ -147,11 +144,12 @@ ft::__tree_iter<T>::__tree_iter(const __tree_iter& __x) : __n(__x.__n)
 }
 
 template <class T>
-typename ft::__tree_iter<T>::pointer
+typename ft::__tree_iter<T>::__node_pointer
 ft::__tree_iter<T>::base() const
 {
 	return (__n);
 }
+
 
 template <class T>
 ft::__tree_iter<T>&
@@ -166,14 +164,14 @@ template <class T>
 typename ft::__tree_iter<T>::reference
 ft::__tree_iter<T>::operator *	() const
 {
-	return (*__n);
+	return (__n->key);
 }
 
 template <class T>
 typename ft::__tree_iter<T>::pointer
 ft::__tree_iter<T>::operator ->	() const
 {
-	return (__n);
+	return (&(__n->key));
 }
 
 template <class T>
@@ -210,6 +208,13 @@ ft::__tree_iter<T>::operator --	(int)
 	return (tmp);
 }
 
+template <class T>
+bool
+operator == (const ft::__tree_iter<T>& lhs, const ft::__tree_iter<T>& rhs)
+{
+	return (lhs.base() == rhs.base());
+}
+
 
 template <class T, class Compare, class Alloc>
 class __tree
@@ -234,6 +239,9 @@ public:
 
 	__tree();
 	__tree(const key_compare& comp, const allocator_type& alloc);
+	__tree(const __tree& __x);
+	// ~__tree();
+	__tree&		operator = (const __tree& __x);
 	
 	iterator	insert(const value_type& val);
 	iterator	begin();

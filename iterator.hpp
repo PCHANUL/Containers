@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/09 17:24:15 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/10 18:43:32 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class m_iter
 public:
 	typedef ft::bidirectional_iterator_tag		iterator_category;
 	typedef typename TreeIter::difference_type	difference_type;
-	typedef typename TreeIter::node_key_type	value_type;
+	typedef typename TreeIter::value_type		value_type;
 	typedef value_type*							pointer;
 	typedef value_type&							reference;
 
@@ -50,6 +50,7 @@ public:
 	m_iter(TreeIter __x);
 	m_iter(const m_iter& __x);
 
+	TreeIter	base() const;
 	m_iter&		operator =	(const m_iter& __x);
 	reference	operator *	() const;
 	pointer		operator ->	() const;
@@ -76,6 +77,13 @@ ft::m_iter<TreeIter>::m_iter(const m_iter& __x) : __i(__x.__i)
 }
 
 template <class TreeIter>
+TreeIter
+ft::m_iter<TreeIter>::base() const
+{
+	return (__i);
+}
+
+template <class TreeIter>
 ft::m_iter<TreeIter>&		
 ft::m_iter<TreeIter>::operator = (const m_iter& __x)
 {
@@ -88,14 +96,14 @@ template <class TreeIter>
 typename ft::m_iter<TreeIter>::reference
 ft::m_iter<TreeIter>::operator * () const
 {
-	return ((*__i).key);
+	return (*__i);
 }
 
 template <class TreeIter>
 typename ft::m_iter<TreeIter>::pointer		
 ft::m_iter<TreeIter>::operator -> () const
 {
-	return (&((*__i).key));
+	return (__i.operator->());
 }
 
 template <class TreeIter>
@@ -130,6 +138,13 @@ ft::m_iter<TreeIter>::operator -- (int)
 	m_iter	tmp(*this);
 	--(*this);
 	return (tmp);
+}
+
+template <class T>
+bool
+operator == (const ft::m_iter<T>& lhs, const ft::m_iter<T>& rhs)
+{
+	return (lhs.base() == rhs.base());
 }
 
 template <class T>
