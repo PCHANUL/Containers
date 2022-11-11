@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/10 18:43:32 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/11 18:41:33 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,13 @@ bool
 operator == (const ft::m_iter<T>& lhs, const ft::m_iter<T>& rhs)
 {
 	return (lhs.base() == rhs.base());
+}
+
+template <class T>
+bool
+operator != (const ft::m_iter<T>& lhs, const ft::m_iter<T>& rhs)
+{
+	return (lhs.base() != rhs.base());
 }
 
 template <class T>

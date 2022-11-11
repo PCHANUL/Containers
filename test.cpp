@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/10 18:55:37 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/11 19:30:13 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -890,9 +890,9 @@ int main(void)
 		typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
 		
 		__tree_type			tree;
-		ft::pair<int, int>	ft_pair(0, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 
+		ft::pair<int, int>	ft_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 		for (int i=0; i<10; i++)
 		{
 			ft_pair.first = nums[i];
@@ -900,10 +900,10 @@ int main(void)
 		}
 
 		__tree_type::iterator	iter = tree.begin();
-		for (int i=0; i<10; i++)
+		__tree_type::iterator	iter_end = tree.end();
+		for (int i = 0; iter!=iter_end; iter++, i++)
 		{
 			test.main_then((*iter).first == nums[i]);
-			iter++;
 		}
 		
 		test.main_end();
@@ -928,33 +928,25 @@ int main(void)
 		for (int i=0; i<10; i++, ft_iter++)
 		{
 			test.main_then((*ft_iter).first == nums[i]);
-		std::cout << *ft_iter << std::endl;
 		}
-
 		test.main_end();
 	}
 
 	test.main("Constructor");
 	{
-		std::map<int, int>				std_map;
-		std::map<int, int>::iterator	std_end = std_map.end();
-		std_map.insert(std::pair<int, int>(10, 10));
-		std_map.insert(std::pair<int, int>(20, 10));
-		std_map.insert(std::pair<int, int>(30, 10));
-		std::map<int, int>::iterator	std_begin = std_map.begin();
+		ft::map<int, int>				std_map;
+		ft::map<int, int>::iterator		std_end = std_map.end();
+		ft::map<int, int>::iterator		std_begin = std_map.begin();
 
-		std::cout << (std_begin == std_end) << std::endl;
-		std::cout << "begin : " << &(*std_begin) << std::endl;
-		std::cout << "end : " << &(*std_end) << std::endl;
-
-		std_end++;
-		// std::cout << "begin : " << *std_begin << std::endl;
-		// std_begin--;
-		// std::cout << "begin : " << *std_begin << std::endl;
-		// std_begin--;
-		// std::cout << "begin : " << *std_begin << std::endl;
-		// std::cout << "end : " << &(*std_end) << std::endl;
+		test.main_then(std_begin == std_end);
+		std_map.insert(ft::pair<int, int>(10, 10));
+		std_begin = std_map.begin();
+		std_begin++;
+		test.main_then(std_begin == std_end);
+		test.main_end();
 	}
+
+	
 
 
 	}
