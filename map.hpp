@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/09 16:56:09 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/12 23:55:20 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,8 +141,8 @@ public:
 
 // 요소가 없는 빈 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
-ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc) :
-	__alloc(alloc), __key_comp(comp)
+ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_type& alloc) 
+	: __alloc(alloc), __key_comp(comp)
 {
 }
 
@@ -150,7 +150,10 @@ ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_t
 template <class Key, class T, class Compare, class Alloc>
 template <class InputIterator>
 ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc)
-{}
+	: __alloc(alloc), __key_comp(comp)
+{
+	insert(first, last);
+}
 
 // x의 각 요소의 복사본으로 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
@@ -286,7 +289,8 @@ template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
-	__root.insert(val);
+	ft::pair<iterator, bool>	result = __root.insert(val);
+	return (result);
 }
 
 // position : 요소를 삽압할 수 있는 위치에 대한 힌트
@@ -294,7 +298,9 @@ ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::insert (iterator position, const value_type& val)
-{}
+{
+	
+}
 
 // first, last : 요소 범위를 지정하는 반복자. 
 // [first, last) 범위에 있는 요소의 복사본이 컨테이너에 삽입됩니다. 

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/11 19:30:13 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/12 23:42:43 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -944,6 +944,35 @@ int main(void)
 		std_begin++;
 		test.main_then(std_begin == std_end);
 		test.main_end();
+	}
+
+	test.main("__tree.find()");
+	{
+		typedef ft::pair<const int, int>											__value_type;
+		typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
+		typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
+		typedef __tree_type::iterator										__iterator;
+		
+		__tree_type			tree;
+
+		ft::pair<int, int>	ft_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = nums[i];
+			tree.insert(ft_pair);
+		}
+
+		__iterator	iter;
+		std::cout << std::endl;
+		iter = tree.find(ft::pair<int, int>(10, 10));
+		std::cout << *iter << std::endl;
+		iter = tree.find(ft::pair<int, int>(3, 10));
+		std::cout << *iter << std::endl;
+		iter = tree.find(ft::pair<int, int>(1, 10));
+		std::cout << *iter << std::endl;
+		iter = tree.find(ft::pair<int, int>(1, 5));
+		std::cout << *iter << std::endl;
 	}
 
 	

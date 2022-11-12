@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/11 19:25:56 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/12 23:58:20 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ __tree_next(_NodePtr node)
 	if (node->right != nullptr)
 		return (__tree_min(node->right));
 	while (node != node->parent->left)
-		node = node->get_parent();
-	return (node->get_parent());
+		node = node->parent;
+	return (node->parent);
 }
 
 // tree에서 이전 node의 주소를 반환합니다.
@@ -49,8 +49,8 @@ __tree_prev(_NodePtr node)
 	if (node->left != nullptr)
 		return (__tree_max(node->left));
 	while (node != node->parent->right)
-		node = node->get_parent();
-	return (node->get_parent());
+		node = node->parent;
+	return (node->parent);
 }
 
 // tree에서 가장 왼쪽에 있는 node 주소를 반환합니다.
@@ -84,11 +84,6 @@ struct __tree_node
 	__tree_node*	child[2];
 	enum color_t	color;
 	T				key;
-
-	__tree_node*	get_parent()
-	{
-		return (parent);
-	}
 };
 
 template <class T>
@@ -246,19 +241,52 @@ public:
 	__tree();
 	__tree(const key_compare& comp, const allocator_type& alloc);
 	__tree(const __tree& __x);
-	// ~__tree();
-	__tree&		operator = (const __tree& __x);
+	~__tree();
+	__tree&						operator = (const __tree& __x);
 	
-	iterator	insert(const value_type& val);
-	iterator	begin();
-	iterator	end();
-	void		print();
+	iterator					begin();
+	iterator					end();
+	void						print();
+	ft::pair<iterator, bool>	insert(const value_type& val);
+
+	// __node*		__find_node()
+
+
+	iterator	find(const value_type& val)
+	{
+		iterator	iter = iterator(__root());
+		while (true)
+		{
+			if (iter == end() || key_compare()(val, *iter))
+			{
+				// val < *iter
+				iterator	prev = iter;
+				if (prev == begin() || key_compare()(*(--prev), val))
+					return end();	// *prev < val < *iter
+				else
+					iter = prev;	// val <= *iter
+			}
+			else if (key_compare()(*iter, val))
+			{
+				// *iter < val
+				iterator	next = iter;
+				if (next == end() || key_compare()(*(++next), val))
+					return end();	// *iter < val < *next
+				else
+					iter = next;	// *iter <= val
+			}
+			else
+				return (iter);	// val == *iter
+		}
+	}
+
+	void		delete_node(iterator iter)
+	{
+		// 
+	}
 
 private:
-	__node*		__root()
-	{
-		return (__end_node->left);
-	}
+	__node*		__root();
 	
 	__node* 	__create_node(const value_type& val);
 	void 		__locate_node(__node* new_node);
@@ -293,6 +321,20 @@ __tree<T, Compare, Alloc>::__tree(const key_compare& comp, const allocator_type&
 	: __alloc(alloc), __alloc_node(__alloc_node), __key_comp(comp)
 {
 	__end_node = __create_node(T());
+}
+
+template <class T, class Compare, class Alloc>
+__tree<T, Compare, Alloc>::~__tree() 
+{
+	// destroy all nodes
+	// 
+}
+
+template <class T, class Compare, class Alloc>
+typename __tree<T, Compare, Alloc>::__node*
+__tree<T, Compare, Alloc>::__root()
+{
+	return (__end_node->left);
 }
 
 template <class T, class Compare, class Alloc>
@@ -533,14 +575,18 @@ __tree<T, Compare, Alloc>::end()
 }
 
 template <class T, class Compare, class Alloc>
-typename  __tree<T, Compare, Alloc>::iterator
+ft::pair<typename __tree<T, Compare, Alloc>::iterator, bool>
 __tree<T, Compare, Alloc>::insert(const value_type& val)
 {
+	// iterator	iter = find(val);
+	// if (iter != end())
+	// 	return (ft::pair<iterator, bool>(iter, false));
+
 	__node* new_node = __create_node(val);
 
 	__locate_node(new_node);
 	__validate_tree_0(new_node);
-	return (iterator(new_node));
+	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
 template <class T, class Compare, class Alloc>
