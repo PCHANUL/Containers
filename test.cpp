@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/12 23:42:43 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/13 22:46:09 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,12 +143,8 @@ public:
 };
 
 
-
-
-
 int main(void) 
 {
-
 	Testing	test;
 
 	std::cout << "< vector >" << std::endl;
@@ -862,8 +858,8 @@ int main(void)
 
 		test.main_end();
 	}
-	
-	test.main("insert");
+
+	test.main("insert(val)");
 	{
 		ft::map<int, int>	ft_map;
 	
@@ -878,10 +874,36 @@ int main(void)
 		ft_map.insert(ft::pair<int, int>(1, 10));
 		ft_map.insert(ft::pair<int, int>(6, 10));
 
-		std::map<int, int> 	m;
-
 		test.main_end();
 	}
+
+	test.main("insert(hint)");
+	{
+		ft::map<int, int>	std_map;
+		ft::pair<int, int>	std_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+
+		for (int i=0; i<10; i++)
+		{
+			std_pair.first = nums[i];
+			std_map.insert(std_pair);
+		}
+
+		ft::map<int, int>::iterator	iter = std_map.begin();
+		std_pair.first = 500;
+		ft::map<int, int>::iterator	new_iter = std_map.insert(iter, std_pair);
+		std::cout << (*new_iter).first << std::endl;
+
+		ft::map<int, int>::iterator	std_iter = std_map.begin();
+		ft::map<int, int>::iterator	std_end = std_map.end();
+		for (; std_iter != std_end; std_iter++)
+		{
+			std::cout << (*std_iter).first << ' ' << (*std_iter).second << std::endl;
+		}
+		
+		std_map.__root.print();
+	}
+
 
 	test.main("__tree_iterator");
 	{
@@ -946,39 +968,13 @@ int main(void)
 		test.main_end();
 	}
 
-	test.main("__tree.find()");
-	{
-		typedef ft::pair<const int, int>											__value_type;
-		typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
-		typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
-		typedef __tree_type::iterator										__iterator;
-		
-		__tree_type			tree;
-
-		ft::pair<int, int>	ft_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-		for (int i=0; i<10; i++)
-		{
-			ft_pair.first = nums[i];
-			tree.insert(ft_pair);
-		}
-
-		__iterator	iter;
-		std::cout << std::endl;
-		iter = tree.find(ft::pair<int, int>(10, 10));
-		std::cout << *iter << std::endl;
-		iter = tree.find(ft::pair<int, int>(3, 10));
-		std::cout << *iter << std::endl;
-		iter = tree.find(ft::pair<int, int>(1, 10));
-		std::cout << *iter << std::endl;
-		iter = tree.find(ft::pair<int, int>(1, 5));
-		std::cout << *iter << std::endl;
-	}
-
 	
 
+	
 
 	}
 
 	return (0);
 }
+
+

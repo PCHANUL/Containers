@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/12 23:58:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/13 23:56:43 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,48 +248,20 @@ public:
 	iterator					end();
 	void						print();
 	ft::pair<iterator, bool>	insert(const value_type& val);
-
-	// __node*		__find_node()
-
-
-	iterator	find(const value_type& val)
-	{
-		iterator	iter = iterator(__root());
-		while (true)
-		{
-			if (iter == end() || key_compare()(val, *iter))
-			{
-				// val < *iter
-				iterator	prev = iter;
-				if (prev == begin() || key_compare()(*(--prev), val))
-					return end();	// *prev < val < *iter
-				else
-					iter = prev;	// val <= *iter
-			}
-			else if (key_compare()(*iter, val))
-			{
-				// *iter < val
-				iterator	next = iter;
-				if (next == end() || key_compare()(*(++next), val))
-					return end();	// *iter < val < *next
-				else
-					iter = next;	// *iter <= val
-			}
-			else
-				return (iter);	// val == *iter
-		}
-	}
+	ft::pair<iterator, bool>	insert(iterator iter, const value_type& val);
+	__node_pointer&				find_node(__node_pointer& parent, const value_type& val);
+	__node_pointer&				find_node(iterator iter, __node_pointer& parent, const value_type& val);
 
 	void		delete_node(iterator iter)
 	{
 		// 
 	}
 
-private:
 	__node*		__root();
+private:
 	
 	__node* 	__create_node(const value_type& val);
-	void 		__locate_node(__node* new_node);
+	void 		__locate_node(__node_pointer parent, __node_pointer& child, __node_pointer new_node);
 	void		__print_tree(const std::string& prefix, const __node* node, bool isLeft);
 	void		__print_tree(const __node* node);
 
@@ -345,33 +317,133 @@ __tree<T, Compare, Alloc>::__create_node(const value_type& val)
 		
 	__alloc_traits::construct(this->__alloc, &new_node->key, val);
 	new_node->color = RED;
-	new_node->parent = NULL;
 	return (new_node);
 }
 
 template <class T, class Compare, class Alloc>
-void
-__tree<T, Compare, Alloc>::__locate_node(__node* new_node)
+typename __tree<T, Compare, Alloc>::__node_pointer&
+__tree<T, Compare, Alloc>::find_node(__node_pointer& parent, const value_type& val)
 {
-	__node* tmp_node = __root();
+	__node_pointer	node = __root();
 
-	if (tmp_node == nullptr)
+	parent = __end_node;
+	if (node == nullptr)
+		return (parent->left);
+	while (true)
 	{
-		__end_node->left = new_node;
-		new_node->parent = __end_node;
-	}
-	else
-	{
-		int dir = __key_comp(tmp_node->key, new_node->key);
-		
-		while (tmp_node->child[dir] != nullptr)
+		if (key_compare()(val, node->key))
 		{
-			tmp_node = tmp_node->child[dir];
-			dir = __key_comp(tmp_node->key, new_node->key);
+			if (node->left == nullptr)
+			{
+				parent = node;
+				return (parent->left);
+			}
+			else
+				node = node->left;
 		}
-		tmp_node->child[dir] = new_node;
-		new_node->parent = tmp_node;
+		else if (key_compare()(node->key, val))
+		{
+			if (node->right == nullptr)
+			{
+				parent = node;
+				return (parent->right);
+			}
+			else
+				node = node->right;
+		}
+		else
+		{
+			parent = node;
+			return (parent);
+		}
 	}
+}
+
+// iter의 전/후의 값이 삽입되어야하는 위치인지 확인하고 아니라면 root에서 시작하여 탐색한다.
+template <class T, class Compare, class Alloc>
+typename __tree<T, Compare, Alloc>::__node_pointer&
+__tree<T, Compare, Alloc>::find_node(iterator iter, __node_pointer& parent, const value_type& val)
+{
+	if (iter == end() || key_compare()(val, *iter))
+	{
+		iterator	prev = iter;
+		if (prev == begin() || key_compare()(*(--prev), val))
+		{
+			if (iter.base()->left == nullptr)
+			{
+				parent = iter.base();
+				return (parent->left);
+			}
+			else
+			{
+				parent = prev.base();
+				return (parent->right);
+			}
+		}
+		return (find_node(parent, val));
+	}
+	else if (key_compare()(*iter, val))
+	{
+		iterator	next = iter;
+		if (next == --end() || key_compare()(val, *(++next)))
+		{
+			if (iter.base()->right == nullptr)
+			{
+				parent = iter.base();
+				return (parent->right);
+			}
+			else
+			{
+				parent = next.base();
+				return (parent->left);
+			}
+		}
+		return (find_node(parent, val));
+	}
+	parent = iter.base();
+	return (parent);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__locate_node(__node_pointer parent, __node_pointer& child, __node_pointer new_node)
+{
+	new_node->left = nullptr;
+	new_node->right = nullptr;
+	new_node->parent = parent;
+	child = new_node;
+}
+
+template <class T, class Compare, class Alloc>
+ft::pair<typename __tree<T, Compare, Alloc>::iterator, bool>
+__tree<T, Compare, Alloc>::insert(const value_type& val)
+{
+	__node_pointer	parent = __end_node;
+	__node_pointer&	child = find_node(parent, val);
+	__node_pointer 	new_node;
+	
+	if (child != nullptr)
+		return (ft::pair<iterator, bool>(iterator(child), false));
+	new_node = __create_node(val);	
+	__locate_node(parent, child, new_node);
+	__validate_tree_0(new_node);
+	return (ft::pair<iterator, bool>(iterator(new_node), true));
+}
+
+template <class T, class Compare, class Alloc>
+ft::pair<typename __tree<T, Compare, Alloc>::iterator, bool>
+__tree<T, Compare, Alloc>::insert(iterator iter, const value_type& val)
+{
+	__node_pointer	parent = __end_node;
+	__node_pointer&	child = find_node(iter, parent, val);
+	__node_pointer 	new_node;
+	
+	if (child != nullptr)
+		return (ft::pair<iterator, bool>(iterator(child), false));
+	new_node = __create_node(val);	
+	__locate_node(parent, child, new_node);
+	__validate_tree_0(new_node);
+	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
 template <class T, class Compare, class Alloc>
@@ -572,21 +644,6 @@ typename  __tree<T, Compare, Alloc>::iterator
 __tree<T, Compare, Alloc>::end()
 {
 	return (iterator(__end_node));
-}
-
-template <class T, class Compare, class Alloc>
-ft::pair<typename __tree<T, Compare, Alloc>::iterator, bool>
-__tree<T, Compare, Alloc>::insert(const value_type& val)
-{
-	// iterator	iter = find(val);
-	// if (iter != end())
-	// 	return (ft::pair<iterator, bool>(iter, false));
-
-	__node* new_node = __create_node(val);
-
-	__locate_node(new_node);
-	__validate_tree_0(new_node);
-	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
 template <class T, class Compare, class Alloc>

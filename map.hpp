@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/12 23:55:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/13 22:45:58 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ protected:
 
 	key_compare		__key_comp;
 	allocator_type	__alloc;
-	__tree_type		__root;
 
 public:
+	__tree_type		__root;
 	typedef ft::m_iter<typename __tree_type::iterator>										iterator;
 	typedef ft::m_iter<typename __tree_type::const_iterator>								const_iterator;
 	typedef ft::reverse_iterator<iterator>													reverse_iterator;
@@ -289,17 +289,19 @@ template <class Key, class T, class Compare, class Alloc>
 ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, bool> 
 ft::map<Key, T, Compare, Alloc>::insert (const value_type& val)
 {
-	ft::pair<iterator, bool>	result = __root.insert(val);
-	return (result);
+	return (__root.insert(val));
 }
 
 // position : 요소를 삽압할 수 있는 위치에 대한 힌트
 // 힌트일 뿐이며 맵 컨테이너 내의 해당 위치에 새 요소를 강제로 삽입하지 않습니다. (맵의 요소는 항상 키에 따라 특정 순서를 따릅니다.)
+// position의 전/후의 위치가 삽입될 위치인지 확인하고, 아니라면 root에서부터 위치를 찾습니다. 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::insert (iterator position, const value_type& val)
 {
+	typename __tree_type::iterator	tree_iter(position.base());
 	
+	return (__root.insert(tree_iter, val).first);
 }
 
 // first, last : 요소 범위를 지정하는 반복자. 
