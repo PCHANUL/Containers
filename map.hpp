@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/14 04:15:03 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/14 17:35:11 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,33 +45,34 @@ class map
 {
 
 protected:
-	typedef std::allocator_traits<Alloc>                									__alloc_traits;
+	typedef std::allocator_traits<Alloc>                			__alloc_traits;
 
 public:
-	typedef Key																				key_type;
-	typedef T                                           									mapped_type;
-	typedef ft::pair<const key_type, mapped_type>       									value_type;
-	typedef typename __alloc_traits::size_type          									size_type;
-	typedef typename __alloc_traits::difference_type										difference_type;
-	typedef Compare																			key_compare;
-	typedef Alloc																			allocator_type;
-	typedef value_type&																		reference;
-	typedef const value_type&																const_reference;
-	typedef typename __alloc_traits::pointer												pointer;
-	typedef typename __alloc_traits::const_pointer											const_pointer;
+	typedef Key														key_type;
+	typedef T                                           			mapped_type;
+	typedef ft::pair<const key_type, mapped_type>       			value_type;
+	typedef typename __alloc_traits::size_type          			size_type;
+	typedef typename __alloc_traits::difference_type				difference_type;
+	typedef Compare													key_compare;
+	typedef Alloc													allocator_type;
+	typedef value_type&												reference;
+	typedef const value_type&										const_reference;
+	typedef typename __alloc_traits::pointer						pointer;
+	typedef typename __alloc_traits::const_pointer					const_pointer;
 
 protected:
-	typedef	__tree<value_type, __map_compare<value_type, key_compare>, allocator_type>		__tree_type;
+	typedef	__map_compare<value_type, key_compare>					__tree_compare;
+	typedef	__tree<value_type,	__tree_compare, allocator_type>		__tree_type;
 
 	key_compare		__key_comp;
 	allocator_type	__alloc;
 
 public:
 	__tree_type		__root;
-	typedef ft::m_iter<typename __tree_type::iterator>										iterator;
-	typedef ft::m_iter<typename __tree_type::const_iterator>								const_iterator;
-	typedef ft::reverse_iterator<iterator>													reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>											const_reverse_iterator;
+	typedef ft::m_iter<typename __tree_type::iterator>				iterator;
+	typedef ft::m_iter<typename __tree_type::const_iterator>		const_iterator;
+	typedef ft::reverse_iterator<iterator>							reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 
 	class value_compare : public ft::binary_function<value_type, value_type, bool>
 	{
@@ -180,7 +181,9 @@ ft::map<Key, T, Compare, Alloc>::operator = (const map& x)
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::allocator_type 						
 ft::map<Key, T, Compare, Alloc>::get_allocator() const
-{}
+{
+	return (__alloc);
+}
 
 // 맵 컨테이너의 첫 번째 요소를 참조하는 반복자를 반환합니다. 
 // 맵 컨테이너는 요소의 순서를 항상 유지하기 때문에 begin은 컨테이너의 정렬 기준으로 다음에 오는 요소를 가리킵니다. 
@@ -222,44 +225,61 @@ ft::map<Key, T, Compare, Alloc>::end() const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rbegin()
-{}
+{
+	return (reverse_iterator(__root.begin()));
+}
 
 // 객체가 const로 한정된 경우 const_reverse_iterator를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rbegin() const
-{}
+{
+	return (const_reverse_iterator(__root.begin()));
+}
 
 // 컨테이너의 첫번째 요소를 가리키는 역방향 반복자를 반환합니다.
 // 역방향 반복자의 끝으로 간주되는 이론적 요소를 가리킵니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rend()
-{}
+{
+	return (reverse_iterator(__root.end()));
+}
 
 // 객체가 const로 한정된 경우 const_reverse_iterator를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rend() const
-{}
+{
+	return (const_reverse_iterator(__root.end()));
+}
 
 // 컨테이너가 비어있는지 확인하고 bool 값을 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 bool 
 ft::map<Key, T, Compare, Alloc>::empty() const
-{}
+{
+	return (__root.size() == 0);
+}
 
 // 컨테이너의 요소 개수를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::size_type
 ft::map<Key, T, Compare, Alloc>::size() const
-{}
+{
+	return (__root.size());
+}
 
 // 컨테이너가 보유할 수 있는 최대 요소의 수를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::size_type
 ft::map<Key, T, Compare, Alloc>::max_size() const
-{}
+{
+	size_type	max = __alloc_traits::max_size(this->__alloc);
+	size_type	diff_max = std::numeric_limits<difference_type>::max();
+
+	return (max < diff_max ? max : diff_max);
+}
 
 // k가 컨테이너에 있는 요소의 키와 일치하면 함수는 매핑된 값에 대한 참조를 반환합니다.
 // 일치하지 않는다면 해당 키가 있는 새 요소를 삽입하고 매핑된 값에 대한 참조를 반환합니다.
@@ -267,19 +287,36 @@ ft::map<Key, T, Compare, Alloc>::max_size() const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::mapped_type& 
 ft::map<Key, T, Compare, Alloc>::operator[] (const key_type& k)
-{}
+{	
+	iterator	iter = __root.insert(value_type(k, mapped_type())).first;
+	return ((*iter).second);
+}
 
 // 키 k로 식별된 요소의 매핑된 값에 대한 참조를 반환합니다.
 // k가 컨테이너에 있는 요소의 키와 일치하지 않으면 함수는 out_of_range 예외를 throw합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::mapped_type& 
 ft::map<Key, T, Compare, Alloc>::at (const key_type& k)
-{}
+{
+	iterator	iter = find(k);
+	
+	if (iter == end())
+		throw ft::out_of_range("map::at:  key not found");
+	else
+		return ((*iter).second);
+}
 
 template <class Key, class T, class Compare, class Alloc>
 const typename ft::map<Key, T, Compare, Alloc>::mapped_type& 
 ft::map<Key, T, Compare, Alloc>::at (const key_type& k) const
-{}
+{
+	const_iterator	iter = find(k);
+	
+	if (iter == end())
+		throw ft::out_of_range("map::at:  key not found");
+	else
+		return ((*iter).second);
+}
 
 // 새 요소를 삽입하여 컨테이너를 확장하고 삽입된 요소 수만큼 컨테이너 크기를 효과적으로 늘립니다.
 // 맵의 요소 키는 고유하기 때문에 컨테이너에 동일한 키를 가진 요소가 있는지 확인합니다.
@@ -358,14 +395,18 @@ ft::map<Key, T, Compare, Alloc>::clear ()
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::key_compare 			
 ft::map<Key, T, Compare, Alloc>::key_comp() const
-{}
+{
+	return (__key_comp);
+}
 
 // value_type 유형의 객체에서 키를 비교하는 함수를 반환합니다.
 // 두 요소를 비교하는 데 사용할 수 있는 비교 개체를 반환하여 첫 번째 요소의 키가 두 번째 요소보다 먼저 이동하는지 여부를 확인합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::value_compare 			
 ft::map<Key, T, Compare, Alloc>::value_comp() const
-{}
+{
+	return (__root.get_compare());
+}
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 발견되면 반복자를 반환하고, 그렇지 않으면 map::end에 대한 반복자를 반환합니다.
 // 컨테이너의 비교 객체가 반사적으로 false를 반환하는 경우(즉, 요소가 인수로 전달되는 순서에 관계없이) 두 개의 키는 동일한 것으로 간주됩니다.
@@ -373,31 +414,32 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k)
 {
-	typename __tree_type::__node_pointer	node;
+	typename __tree_type::__node_pointer	__n;
 
-	if (__root.find_node(node, value_type(k, 0)) == nullptr)
+	if (__root.find_node(__n, value_type(k, 0)) == nullptr)
 		return (iterator(end()));
-	return (iterator(node));
+	return (iterator(__n));
 }
 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k) const
 {
-	typename __tree_type::__node_pointer	node;
+	typename __tree_type::__node_pointer	__n;
 
-	if (__root.find_node(node, value_type(k, 0)) == nullptr)
+	if (__root.find_node(__n, value_type(k, 0)) == nullptr)
 		return (iterator(end()));
-	return (const_iterator(node));
+	return (const_iterator(__n));
 }
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 일치 항목 수를 반환합니다.
 // 맵 컨테이너의 요소는 고유하기 때문에 함수는 1과 0만 반환할 수 있습니다. 
 template <class Key, class T, class Compare, class Alloc>
-typename ft::map<Key, T, Compare, Alloc>::size_type 
+typename ft::map<Key, T, Compare, Alloc>::size_type
 ft::map<Key, T, Compare, Alloc>::count (const key_type& k) const
-{}
-
+{
+	return (find(k) == end() ? 0 : 1);
+}
 
 // 키가 k보다 앞서는 것으로 간주되지 않는 컨테이너의 첫 번째 요소를 가리키는 반복자를 반환합니다. 
 // 함수는 내부 비교 객체(key_comp)를 사용하여 이를 결정하고, key_comp가 false를 반환하는 첫 번째 요소에 대한 반복자를 반환합니다.
@@ -406,13 +448,17 @@ ft::map<Key, T, Compare, Alloc>::count (const key_type& k) const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator 
 ft::map<Key, T, Compare, Alloc>::lower_bound (const key_type& k)
-{}
+{
+	return (__root.lower_bound(value_type(k, 0)));
+}
 
 // 지도 개체가 const로 한정된 경우 함수는 const_iterator를 반환합니다. 그렇지 않으면 반복자를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator 
 ft::map<Key, T, Compare, Alloc>::lower_bound (const key_type& k) const
-{}
+{
+	return (__root.lower_bound(value_type(k, 0)));
+}
 
 // 키가 k 다음에 오는 것으로 간주되는 컨테이너의 첫 번째 요소를 가리키는 반복자를 반환합니다.
 // 이 함수는 내부 비교 객체(key_comp)를 사용하여 이를 결정하고 key_comp(k,element_key)가 true를 반환하는 첫 번째 요소에 대한 반복자를 반환합니다.
@@ -421,28 +467,35 @@ ft::map<Key, T, Compare, Alloc>::lower_bound (const key_type& k) const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator 
 ft::map<Key, T, Compare, Alloc>::upper_bound (const key_type& k)
-{}
+{
+	return (__root.upper_bound(value_type(k, 0)));
+}
 
 // 지도 개체가 const로 한정된 경우 함수는 const_iterator를 반환합니다. 그렇지 않으면 반복자를 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator 
 ft::map<Key, T, Compare, Alloc>::upper_bound (const key_type& k) const
-{}
-
+{
+	return (__root.upper_bound(value_type(k, 0)));
+}
 
 // k에 해당하는 키가 있는 컨테이너의 모든 요소를 ​​포함하는 범위의 경계를 반환합니다.
 // 맵 컨테이너의 요소에는 고유 키가 있으므로 반환되는 범위에는 최대 단일 요소가 포함됩니다.
 // 일치하는 항목이 없으면 반환된 범위의 길이는 0이고 두 반복자는 컨테이너의 내부 비교 개체(key_comp)에 따라 k 다음에 오는 것으로 간주되는 키가 있는 첫 번째 요소를 가리킵니다.
-// template <class Key, class T, class Compare, class Alloc>
-// ft::pair<const_iterator,const_iterator> 
-// ft::map<Key, T, Compare, Alloc>::equal_range (const key_type& k) const
-// {}
+template <class Key, class T, class Compare, class Alloc>
+ft::pair<typename ft::map<Key, T, Compare, Alloc>::iterator, typename ft::map<Key, T, Compare, Alloc>::iterator>
+ft::map<Key, T, Compare, Alloc>::equal_range (const key_type& k)
+{
+	return (__root.equal_range(value_type(k, 0)));
+}
 
-// // 지도 개체가 const로 한정된 경우 함수는 const_iterator를 반환합니다. 그렇지 않으면 반복자를 반환합니다.
-// template <class Key, class T, class Compare, class Alloc>
-// ft::pair<iterator,iterator>
-// ft::map<Key, T, Compare, Alloc>::equal_range (const key_type& k)
-// {}
+// 지도 개체가 const로 한정된 경우 함수는 const_iterator를 반환합니다. 그렇지 않으면 반복자를 반환합니다.
+template <class Key, class T, class Compare, class Alloc>
+ft::pair<typename ft::map<Key, T, Compare, Alloc>::const_iterator, typename ft::map<Key, T, Compare, Alloc>::const_iterator> 
+ft::map<Key, T, Compare, Alloc>::equal_range (const key_type& k) const
+{
+	return (__root.equal_range(value_type(k, 0)));
+}
 
 // lhs의 내용과 rhs의 내용이 동일한지 확인합니다. 동일한 수의 요소를 갖고, 각 요소가 동일한 위치에 있는 lhs의 요소와 동일한지 확인합니다. 
 template <class Key, class T, class Compare, class Alloc>

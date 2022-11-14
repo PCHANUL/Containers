@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/14 04:14:31 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/14 17:38:30 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1012,7 +1012,134 @@ int main(void)
 		test.main_end();
 	}
 
+	test.main("operator []");
+	{
+		ft::map<int, int>	ft_map;
+
+		ft_map[10];
+		ft_map[20];
+		ft_map[30];
+		test.main_then(ft_map.size() == 3);
+		ft_map[10] = 100;
+		ft_map[20] = 100;
+		ft_map[30] = 100;
+		ft_map[40] = 100;
+		test.main_then(ft_map.size() == 4);
+		test.main_then(ft_map[10] == 100 || ft_map[20] == 100 || ft_map[30] == 100 || ft_map[40] == 100);
+		test.main_end();
+	}
+
+	test.main("at");
+	{
+		ft::map<int, int>	ft_map;
+
+		try
+		{
+			ft_map.at(10);
+			test.main_then(false);
+		}
+		catch(const std::exception& e)
+		{
+			test.main_then(std::string(e.what()) == "map::at:  key not found");
+			test.main_then(true);
+		}
+
+		ft_map[10] = 10;
+
+		try
+		{
+			test.main_then(ft_map.at(10) == 10);
+			test.main_then(true);
+		}
+		catch(const std::exception& e)
+		{
+			test.main_then(false);
+		}
+		test.main_end();
+	}
+
+	test.main("lower_bound");
+	{
+		std::map<int, int>	std_map;
+		ft::map<int, int>	ft_map;
+
+		std_map[10] = 10;
+		std_map[20] = 20;
+		std_map[30] = 30;
+		ft_map[10] = 10;
+		ft_map[20] = 20;
+		ft_map[30] = 30;
+		test.main_then((*std_map.lower_bound(8)).first == (*ft_map.lower_bound(8)).first);
+		test.main_then((*std_map.lower_bound(13)).first == (*ft_map.lower_bound(13)).first);
+		test.main_then((*std_map.lower_bound(20)).first == (*ft_map.lower_bound(20)).first);
+		test.main_then((*std_map.lower_bound(21)).first == (*ft_map.lower_bound(21)).first);
+		test.main_then(std_map.lower_bound(35) == std_map.end());
+		test.main_then(ft_map.lower_bound(35) == ft_map.end());
+		test.main_end();
+	}
 	
+	test.main("upper_bound");
+	{
+		std::map<int, int>	std_map;
+		ft::map<int, int>	ft_map;
+
+		std_map[10] = 10;
+		std_map[20] = 20;
+		std_map[30] = 30;
+		ft_map[10] = 10;
+		ft_map[20] = 20;
+		ft_map[30] = 30;
+		test.main_then((*std_map.upper_bound(8)).first == (*ft_map.upper_bound(8)).first);
+		test.main_then((*std_map.upper_bound(13)).first == (*ft_map.upper_bound(13)).first);
+		test.main_then((*std_map.upper_bound(20)).first == (*ft_map.upper_bound(20)).first);
+		test.main_then((*std_map.upper_bound(21)).first == (*ft_map.upper_bound(21)).first);
+		test.main_then(std_map.upper_bound(35) == std_map.end());
+		test.main_then(ft_map.upper_bound(35) == ft_map.end());
+		test.main_end();
+	}
+
+	test.main("equal_range");
+	{
+		typedef std::map<int, int>::iterator	std_iterator;
+		typedef ft::map<int, int>::iterator		ft_iterator;
+
+		std::map<int, int>						std_map;
+		std::pair<std_iterator, std_iterator>	std_p;
+		ft::map<int, int>						ft_map;
+		ft::pair<ft_iterator, ft_iterator>		ft_p;
+
+		std_map.insert(std::pair<int, int>(10, 10));
+		std_map.insert(std::pair<int, int>(20, 10));
+		std_map.insert(std::pair<int, int>(30, 10));
+
+		ft_map.insert(ft::pair<int, int>(10, 10));
+		ft_map.insert(ft::pair<int, int>(20, 10));
+		ft_map.insert(ft::pair<int, int>(30, 10));
+
+		std_p = std_map.equal_range(9);
+		ft_p = ft_map.equal_range(9);
+		test.main_then((*std_p.first).first == (*ft_p.first).first);
+		test.main_then((*std_p.second).first == (*ft_p.second).first);
+
+
+		std_p = std_map.equal_range(10);
+		ft_p = ft_map.equal_range(10);
+		test.main_then((*std_p.first).first == (*ft_p.first).first);
+		test.main_then((*std_p.second).first == (*ft_p.second).first);
+
+		std_p = std_map.equal_range(11);
+		ft_p = ft_map.equal_range(11);
+		test.main_then((*std_p.first).first == (*ft_p.first).first);
+		test.main_then((*std_p.second).first == (*ft_p.second).first);
+
+		std_p = std_map.equal_range(30);
+		ft_p = ft_map.equal_range(30);
+		test.main_then((*std_p.first).first == (*ft_p.first).first);
+		test.main_then((*std_p.second) == *std_map.end());
+		test.main_then((*ft_p.second) == *ft_map.end());
+		
+		test.main_end();
+	}
 
 	}
 
