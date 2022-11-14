@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/13 22:45:58 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/14 04:15:03 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ public:
 public:
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 	template <class InputIterator>
-	map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
+	map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(),
+		typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	map (const map& x);
 	~map();
 
@@ -117,7 +118,8 @@ public:
 	pair<iterator, bool>    			insert (const value_type& val);
 	iterator                			insert (iterator position, const value_type& val);
 	template <class InputIterator>  
-	void                    			insert (InputIterator first, InputIterator last);
+	void                    			insert (InputIterator first, InputIterator last,
+											typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
 	void                    			erase (iterator position);
 	size_type               			erase (const key_type& k);
 	void                    			erase (iterator first, iterator last);
@@ -149,7 +151,8 @@ ft::map<Key, T, Compare, Alloc>::map (const key_compare& comp, const allocator_t
 // 범위 [first,last)만큼 많은 요소가 있는 컨테이너를 생성하고, 각 요소는 해당 범위의 해당 요소로 구성됩니다.
 template <class Key, class T, class Compare, class Alloc>
 template <class InputIterator>
-ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc)
+ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc,
+										typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 	: __alloc(alloc), __key_comp(comp)
 {
 	insert(first, last);
@@ -278,8 +281,6 @@ const typename ft::map<Key, T, Compare, Alloc>::mapped_type&
 ft::map<Key, T, Compare, Alloc>::at (const key_type& k) const
 {}
 
-
-
 // 새 요소를 삽입하여 컨테이너를 확장하고 삽입된 요소 수만큼 컨테이너 크기를 효과적으로 늘립니다.
 // 맵의 요소 키는 고유하기 때문에 컨테이너에 동일한 키를 가진 요소가 있는지 확인합니다.
 // 이미 존재한다면 요소가 삽입되지 않고 기존 요소에 대한 반복자를 반환합니다.
@@ -310,9 +311,13 @@ ft::map<Key, T, Compare, Alloc>::insert (iterator position, const value_type& va
 template <class Key, class T, class Compare, class Alloc>
 template <class InputIterator>  
 void 
-ft::map<Key, T, Compare, Alloc>::insert (InputIterator first, InputIterator last)
-{}
-
+ft::map<Key, T, Compare, Alloc>::insert (InputIterator first, InputIterator last,
+											typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
+{
+	iterator	end_node = end();
+	for(; first!=last; first++)
+		insert(end_node, *first);
+}
 
 // 맵 컨테이너에서 단일 요소 또는 요소 범위를 제거합니다. 제거된 요소의 수만큼 컨테이너 크기를 효과적으로 줄여 파괴됩니다. 
 // position : 맵에서 제거할 단일 요소를 가리키는 반복자. 역참조 가능한 요소를 가리켜야 합니다. 
@@ -332,7 +337,6 @@ template <class Key, class T, class Compare, class Alloc>
 void 
 ft::map<Key, T, Compare, Alloc>::erase (iterator first, iterator last)
 {}
-
 
 // 같은 유형의 다른 맵인 x의 내용으로 컨테이너의 내용을 교환합니다. 크기가 다를 수 있습니다. 
 // 모든 반복자, 참조 및 포인터는 교환된 개체에 대해 유효한 상태로 유지됩니다. 
@@ -368,12 +372,24 @@ ft::map<Key, T, Compare, Alloc>::value_comp() const
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k)
-{}
+{
+	typename __tree_type::__node_pointer	node;
+
+	if (__root.find_node(node, value_type(k, 0)) == nullptr)
+		return (iterator(end()));
+	return (iterator(node));
+}
 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k) const
-{}
+{
+	typename __tree_type::__node_pointer	node;
+
+	if (__root.find_node(node, value_type(k, 0)) == nullptr)
+		return (iterator(end()));
+	return (const_iterator(node));
+}
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 일치 항목 수를 반환합니다.
 // 맵 컨테이너의 요소는 고유하기 때문에 함수는 1과 0만 반환할 수 있습니다. 

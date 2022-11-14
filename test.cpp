@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/13 22:46:09 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/14 04:14:31 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -892,18 +892,44 @@ int main(void)
 		ft::map<int, int>::iterator	iter = std_map.begin();
 		std_pair.first = 500;
 		ft::map<int, int>::iterator	new_iter = std_map.insert(iter, std_pair);
-		std::cout << (*new_iter).first << std::endl;
 
 		ft::map<int, int>::iterator	std_iter = std_map.begin();
 		ft::map<int, int>::iterator	std_end = std_map.end();
-		for (; std_iter != std_end; std_iter++)
+		std_end--;
+		for (int i=0; std_iter!=std_end; std_iter++, i++)
 		{
-			std::cout << (*std_iter).first << ' ' << (*std_iter).second << std::endl;
+			test.main_then((*std_iter).first == nums[i]);
 		}
-		
-		std_map.__root.print();
+		test.main_then((*std_iter).first == (*std_end).first);
+		test.main_end();
 	}
 
+	test.main("insert(range)");
+	{
+		ft::map<int, int>	ft_map;
+		ft::pair<int, int>	ft_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = nums[i];
+			ft_map.insert(ft_pair);
+		}
+
+		ft::map<int, int>	range_map(ft_map.begin(), ft_map.end());
+		
+		ft::map<int, int>::iterator	ft_begin = ft_map.begin();
+		ft::map<int, int>::iterator	range_begin = range_map.begin();
+		ft::map<int, int>::iterator	range_end = range_begin;
+		range_end++;
+		range_end++;
+		range_end++;
+		for (; range_begin!=range_end; range_begin++, ft_begin++)
+		{
+			test.main_then((*range_begin).first == (*ft_begin).first);
+		}
+		test.main_end();
+	}
 
 	test.main("__tree_iterator");
 	{
@@ -968,7 +994,23 @@ int main(void)
 		test.main_end();
 	}
 
-	
+	test.main("find");
+	{
+		ft::map<int, int>	ft_map;
+		ft_map.insert(ft::pair<int, int>(10, 1));
+		ft_map.insert(ft::pair<int, int>(20, 1));
+
+		ft::map<int, int>::iterator	iter;
+		iter = ft_map.find(10);
+		test.main_then((*iter).first == 10);
+		iter = ft_map.find(20);
+		test.main_then((*iter).first == 20);
+		iter = ft_map.find(30);
+		test.main_then((*iter).first == (*ft_map.end()).first);
+		iter = ft_map.find(10000);
+		test.main_then((*iter).first == (*ft_map.end()).first);
+		test.main_end();
+	}
 
 	
 

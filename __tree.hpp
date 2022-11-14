@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/13 23:56:43 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/14 03:50:36 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,13 +225,13 @@ public:
 	typedef __tree_iter<T>												iterator;
 	typedef __tree_iter<const T>										const_iterator;
 	
-private:
 	typedef std::allocator_traits<allocator_type>						__alloc_traits;
 	typedef __tree_node<T>												__node;
 	typedef __node*														__node_pointer;
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
 	
+private:
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
 	key_compare		__key_comp;
