@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/14 17:38:47 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/15 17:18:42 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ protected:
 
 public:
 	__tree_iter();
-	__tree_iter(__node_pointer __x);
+	__tree_iter(const __node_pointer __x);
 	__tree_iter(const __tree_iter& __x);
 
 	__node_pointer	base() const;
@@ -126,7 +126,7 @@ ft::__tree_iter<T>::__tree_iter() : __n(nullptr)
 }
 
 template <class T>
-ft::__tree_iter<T>::__tree_iter(__node_pointer __x) : __n(__x)
+ft::__tree_iter<T>::__tree_iter(const __node_pointer __x) : __n(__x)
 {
 }
 
@@ -227,6 +227,7 @@ public:
 	
 	typedef std::allocator_traits<allocator_type>						__alloc_traits;
 	typedef __tree_node<T>												__node;
+	typedef __tree_node<const T>										__const_node;
 	typedef __node*														__node_pointer;
 	typedef typename allocator_type::template rebind<__node>::other		__node_alloc;
 	typedef std::allocator_traits<__node_alloc>							__node_alloc_traits;
@@ -246,8 +247,10 @@ public:
 	~__tree();
 	__tree&							operator = (const __tree& __x);
 	
-	iterator						begin() const;
-	iterator						end() const;
+	iterator						begin();
+	const_iterator					begin() const;
+	iterator						end();
+	const_iterator					end() const;
 	void							print() const;
 	int								size() const;
 	key_compare						get_compare() const;
@@ -646,16 +649,30 @@ __tree<T, Compare, Alloc>::__validate_tree_4(__node* node)
 
 template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::iterator
-__tree<T, Compare, Alloc>::begin() const
+__tree<T, Compare, Alloc>::begin()
 {
 	return (iterator(__get_min()));
 }
 
 template <class T, class Compare, class Alloc>
+typename  __tree<T, Compare, Alloc>::const_iterator
+__tree<T, Compare, Alloc>::begin() const
+{
+	return (const_iterator(reinterpret_cast<__const_node*>(__get_min())));
+}
+
+template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::iterator
-__tree<T, Compare, Alloc>::end() const
+__tree<T, Compare, Alloc>::end()
 {
 	return (iterator(__end_node));
+}
+
+template <class T, class Compare, class Alloc>
+typename  __tree<T, Compare, Alloc>::const_iterator
+__tree<T, Compare, Alloc>::end() const
+{
+	return (const_iterator(reinterpret_cast<__const_node*>(__end_node)));
 }
 
 template <class T, class Compare, class Alloc>
@@ -790,6 +807,48 @@ __tree<T, Compare, Alloc>::equal_range (const value_type& val)
 		}
 	}
 	return (ft::pair<iterator, iterator>(__r, __r));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator == (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator != (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (lhs.size() != rhs.size() || !ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator <  (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator >  (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator <= (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (!ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
+
+template <class T, class Compare, class Alloc>
+bool 
+operator >= (const __tree<T, Compare, Alloc>& lhs, const __tree<T, Compare, Alloc>& rhs)
+{
+	return (!ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 }
 
 }	// ft

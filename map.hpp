@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/14 17:35:11 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/15 16:59:42 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::begin()
 {
-    return (iterator(__root.begin()));
+    return (__root.begin());
 }
 
 // 객체가 const로 한정된 경우 const_iterator를 반환합니다.
@@ -200,7 +200,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::begin() const
 {
-    return (const_iterator(__root.begin()));
+    return (__root.begin());
 }
 
 // 맵 컨테이너의 마지막 다음 요소를 참조하는 반복자를 반환합니다. 
@@ -209,7 +209,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::end()
 {
-    return (iterator(__root.end()));
+    return (__root.end());
 }
 
 // 객체가 const로 한정된 경우 const_iterator를 반환합니다.
@@ -217,7 +217,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::end() const
 {
-    return (const_iterator(__root.end()));
+    return (__root.end());
 }
 
 // 컨테이너의 마지막 요소를 가리키는 역방향 반복자를 반환합니다.
@@ -501,43 +501,57 @@ ft::map<Key, T, Compare, Alloc>::equal_range (const key_type& k) const
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator == (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
 
 // lhs의 내용과 rhs의 내용이 다른지 확인합니다.
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator != (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	return (lhs.size() != rhs.size() || !ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
 
 // rhs의 내용을 사전 순으로 lhs와 비교합니다. 비교는 std::lexicographical_compare 함수에 의해 수행됩니다. 
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator < (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
 
 // rhs의 내용을 사전 순으로 lhs와 비교합니다. 비교는 std::lexicographical_compare 함수에 의해 수행됩니다. 
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator <= (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	return (!ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
 
 // rhs의 내용을 사전 순으로 lhs와 비교합니다. 비교는 std::lexicographical_compare 함수에 의해 수행됩니다. 
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator > (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
 
 // rhs의 내용을 사전 순으로 lhs와 비교합니다. 비교는 std::lexicographical_compare 함수에 의해 수행됩니다. 
 template <class Key, class T, class Compare, class Alloc>
 bool 
 operator >= (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	return (!ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
 
 // map에 대한 swap 알고리즘을 전문화합니다. lhs와 rhs의 내용을 바꿉니다. lhs.swap(rhs) 함수 호출
 template< class Key, class T, class Compare, class Alloc >
 void 
 swap(std::map<Key, T, Compare, Alloc>& lhs, std::map<Key, T, Compare, Alloc>& rhs)
-{}
+{
+	lhs.swap(rhs);
+}
 
 
 } // ft

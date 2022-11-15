@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/14 17:38:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/15 17:30:04 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1140,6 +1140,77 @@ int main(void)
 		
 		test.main_end();
 	}
+
+	test.main("operator ==");
+	{
+		std::map<int, int>	std_map1;
+		std::map<int, int>	std_map2;
+		bool				std_result;
+		std_map1[10] = 10;
+		std_map1[20] = 20;
+		std_map2[10] = 10;
+		std_map2[20] = 20;
+	
+		ft::map<int, int>	ft_map1;
+		ft::map<int, int>	ft_map2;
+		bool				ft_result;
+		ft_map1[10] = 10;
+		ft_map1[20] = 20;
+		ft_map2[10] = 10;
+		ft_map2[20] = 20;
+
+		std_result = (std_map1 == std_map2);
+		ft_result = (ft_map1 == ft_map2);
+		test.main_then(std_result == ft_result);
+
+		std_map1[20] = 10;
+		ft_map1[20] = 10;
+		std_result = (std_map1 == std_map2);
+		ft_result = (ft_map1 == ft_map2);
+		test.main_then(std_result == ft_result);
+		
+		std_result = (std_map1 != std_map2);
+		ft_result = (ft_map1 != ft_map2);
+		test.main_then(std_result == ft_result);
+
+		test.main_end();
+	}
+
+	test.main("operator <, >");
+	{
+		std::map<int, int>	std_map1;
+		std::map<int, int>	std_map2;
+		bool				std_result;
+		std_map1[10] = 10;
+		std_map1[20] = 20;
+		std_map2[10] = 10;
+		std_map2[20] = 20;
+	
+		ft::map<int, int>	ft_map1;
+		ft::map<int, int>	ft_map2;
+		bool				ft_result;
+		ft_map1[10] = 10;
+		ft_map1[20] = 20;
+		ft_map2[10] = 10;
+		ft_map2[20] = 20;
+
+		std_result = (std_map1 < std_map2);
+		ft_result = (ft_map1 < ft_map2);
+		test.main_then(std_result == ft_result);
+
+		std_map1[20] = 10;
+		ft_map1[20] = 10;
+		std_result = (std_map1 < std_map2);
+		ft_result = (ft_map1 < ft_map2);
+		test.main_then(std_result == ft_result);
+		
+		std_result = (std_map1 > std_map2);
+		ft_result = (ft_map1 > ft_map2);
+		test.main_then(std_result == ft_result);
+
+		test.main_end();
+	}
+
 
 	}
 
