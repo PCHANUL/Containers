@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/15 16:59:42 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/15 18:11:08 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -414,22 +414,14 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k)
 {
-	typename __tree_type::__node_pointer	__n;
-
-	if (__root.find_node(__n, value_type(k, 0)) == nullptr)
-		return (iterator(end()));
-	return (iterator(__n));
+	return (__root.find(value_type(k, 0)));
 }
 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k) const
 {
-	typename __tree_type::__node_pointer	__n;
-
-	if (__root.find_node(__n, value_type(k, 0)) == nullptr)
-		return (iterator(end()));
-	return (const_iterator(__n));
+	return (__root.find(value_type(k, 0)));
 }
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 일치 항목 수를 반환합니다.
@@ -502,7 +494,7 @@ template <class Key, class T, class Compare, class Alloc>
 bool 
 operator == (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs)
 {
-		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 // lhs의 내용과 rhs의 내용이 다른지 확인합니다.
