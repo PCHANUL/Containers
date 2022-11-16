@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/15 18:22:52 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/16 18:28:13 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,23 @@ __tree_max(_NodePtr tree)
 	while (node != nullptr && node->right != nullptr)
 		node = node->right;
 	return (node);
+}
+
+// 두 node의 위치를 교체합니다. 
+// __u가 __u.parent와 해제되고, __u.parent에 __v가 연결됩니다.
+template <class _NodePtr>
+_NodePtr
+__tree_transplant(_NodePtr end, _NodePtr __u, _NodePtr __v)
+{
+	_NodePtr	__p = __u.parent;
+
+	if (__p == end)
+		__v.parent = end;
+	else if (__u == __p->left)
+		__p->left = __v;
+	else
+		__p->right = __v;
+	__v.parent = __p;
 }
 
 template <class T>
@@ -280,7 +297,9 @@ private:
 	void				__print_tree(const __node* node) const;
 	__node_pointer&		__find_node(__node_pointer& parent, const value_type& val);
 	__node_pointer&		__find_node(iterator iter, __node_pointer& parent, const value_type& val);
-	void				__delete_node(iterator position);
+	__node_pointer		__delete_node(__node_pointer __n);
+	void				__destroy_node(__node_pointer __n);
+	void				__delete_fixup(__node_pointer __n);
 
 	__node*				__get_grandparent(__node* node) const;
 	__node*				__get_uncle(__node* node) const;
@@ -467,6 +486,8 @@ __tree<T, Compare, Alloc>::insert(iterator iter, const value_type& val)
 	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
+/// @param val 
+/// @return val 값을 가진 node의 iterator
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::iterator
 __tree<T, Compare, Alloc>::find(const value_type& val)
@@ -489,24 +510,98 @@ __tree<T, Compare, Alloc>::find(const value_type& val) const
 	return (const_iterator(__n));
 }
 
+/// @brief node의 연결을 해제한다.
+/// @param __n
+/// @return __node_pointer
+template <class T, class Compare, class Alloc>
+typename __tree<T, Compare, Alloc>::__node_pointer
+__tree<T, Compare, Alloc>::__delete_node(__node_pointer __n)
+{
+	__node_pointer	__c;
+	
+	if (__n->left != nullptr)
+		__c = __n->left;
+	else if (__n->right != nullptr)
+		__c = __n->right;
+	else
+	{
+		__c = __tree_min(__n->right);
+		__tree_transplant(end(), __c, __c->right);
+	}
+	__tree_transplant(end(), __n, __c);
+	return (__c);
+}
+
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__delete_node(iterator position)
+__tree<T, Compare, Alloc>::__delete_fixup(__node_pointer __n)
 {
+	__node_pointer	__s = __get_sibling(__n);
+	__node_pointer	__p = __n->parent;
+
+	if (__s == nullptr)
+		return ;
+	if (__n->color == RED)
+	{
+		__n->color = BLACK;
+		__n = __n->parent;
+	}
+
+	while ((__p = __n->parent) != end())
+	{
+		__s = __get_sibling(__n);
+
+		if (__s->color == RED)
+		{
+			__s->color = BLACK;
+			__n->parent->color = RED;
+			__rotate_left(__n->parent);
+			__s = __n->parent->right;
+		}
+		if (__s->left->color == BLACK && __s->right->color == BLACK)
+		{
+			__s->color = RED;
+			__n = __n->parent;
+		}
+		else
+		{
+			if (__s->right->color == BLACK)
+			{
+				__s->left->color = BLACK;
+				__s->color = RED;
+				rotate_right(__s);
+				__s = __n->parent->right;
+			}
+			__s->color = __n->parent->color;
+			__n->parent->color = BLACK;
+			__s->right->color = BLACK;
+			__rotate_left(__n->parent);
+			__n = __root();
+		}
+	}
 }
 
 template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::erase(iterator position)
 {
-	__delete_node(position);
+	__node_pointer	__n = position.base();
+	__node_pointer	__c;
+	enum color_t	__n_color = __n->color;
+
+	__c = __delete_node(__n);
+	__alloc_traits::destroy(this->__alloc, __n);
+	__alloc_traits::deallocate(this->__alloc, __n, 1);
+	if (__n_color == BLACK)
+		__delete_fixup(__c);
 }
 
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::size_type
 __tree<T, Compare, Alloc>::erase(const value_type& val)
 {
-	
+	iterator	iter = find(val);
+	erase(iter);
 }
 
 template <class T, class Compare, class Alloc>
