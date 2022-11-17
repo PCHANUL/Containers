@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/16 18:28:13 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/17 19:14:06 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,15 +83,18 @@ template <class _NodePtr>
 _NodePtr
 __tree_transplant(_NodePtr end, _NodePtr __u, _NodePtr __v)
 {
-	_NodePtr	__p = __u.parent;
+	_NodePtr	__p = __u->parent;
 
 	if (__p == end)
-		__v.parent = end;
+		end->left = __v;
 	else if (__u == __p->left)
 		__p->left = __v;
 	else
 		__p->right = __v;
-	__v.parent = __p;
+
+	if (__v != nullptr)
+		__v->parent = __p;
+	return (__v);
 }
 
 template <class T>
@@ -299,7 +302,6 @@ private:
 	__node_pointer&		__find_node(iterator iter, __node_pointer& parent, const value_type& val);
 	__node_pointer		__delete_node(__node_pointer __n);
 	void				__destroy_node(__node_pointer __n);
-	void				__delete_fixup(__node_pointer __n);
 
 	__node*				__get_grandparent(__node* node) const;
 	__node*				__get_uncle(__node* node) const;
@@ -314,6 +316,8 @@ private:
 	void				__validate_tree_2(__node* node);
 	void				__validate_tree_3(__node* node);
 	void				__validate_tree_4(__node* node);
+
+	void				__delete_fixup_0(__node_pointer __n);
 };
 
 
@@ -510,44 +514,38 @@ __tree<T, Compare, Alloc>::find(const value_type& val) const
 	return (const_iterator(__n));
 }
 
-/// @brief node의 연결을 해제한다.
+/// @brief __n을 자식 노드로 치환하고, 자식 노드를 반환합니다. 
 /// @param __n
 /// @return __node_pointer
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node_pointer
 __tree<T, Compare, Alloc>::__delete_node(__node_pointer __n)
 {
-	__node_pointer	__c;
-	
-	if (__n->left != nullptr)
-		__c = __n->left;
-	else if (__n->right != nullptr)
-		__c = __n->right;
+	if (__n->right == nullptr)
+		return (__tree_transplant(end().base(), __n, __n->left));
 	else
-	{
-		__c = __tree_min(__n->right);
-		__tree_transplant(end(), __c, __c->right);
-	}
-	__tree_transplant(end(), __n, __c);
-	return (__c);
+		return (__tree_transplant(end().base(), __n, __n->right));
 }
 
+/// @brief 레드-블랙 트리 규칙에 맞게 tree를 수정합니다.
+/// @param __n 삭제된 자리를 대체한 node의 포인터
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__delete_fixup(__node_pointer __n)
+__tree<T, Compare, Alloc>::__delete_fixup_0(__node_pointer __n)
 {
 	__node_pointer	__s = __get_sibling(__n);
 	__node_pointer	__p = __n->parent;
 
-	if (__s == nullptr)
-		return ;
 	if (__n->color == RED)
 	{
 		__n->color = BLACK;
 		__n = __n->parent;
 	}
 
-	while ((__p = __n->parent) != end())
+	if (__s == nullptr)
+		return ;
+
+	while ((__p = __n->parent) != end().base())
 	{
 		__s = __get_sibling(__n);
 
@@ -569,7 +567,7 @@ __tree<T, Compare, Alloc>::__delete_fixup(__node_pointer __n)
 			{
 				__s->left->color = BLACK;
 				__s->color = RED;
-				rotate_right(__s);
+				__rotate_right(__s);
 				__s = __n->parent->right;
 			}
 			__s->color = __n->parent->color;
@@ -585,15 +583,31 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::erase(iterator position)
 {
-	__node_pointer	__n = position.base();
+	__node_pointer	__m = position.base();
 	__node_pointer	__c;
-	enum color_t	__n_color = __n->color;
+	enum color_t	__m_color = __m->color;
 
-	__c = __delete_node(__n);
-	__alloc_traits::destroy(this->__alloc, __n);
-	__alloc_traits::deallocate(this->__alloc, __n, 1);
-	if (__n_color == BLACK)
-		__delete_fixup(__c);
+	// 자식이 2개인 경우 오른쪽 자식의 최댓값을 복사하고, 타깃을 변경합니다.
+	if (__m->left != nullptr && __m->right != nullptr)
+	{
+		__node_pointer	tmp = __tree_min(__m->right);
+		__m->key = tmp->key;
+		__m = tmp;
+	}
+
+	__c = __delete_node(__m);
+	
+	if (__c != nullptr && __m->color == BLACK)
+	{
+		if (__c->color == RED)
+			__c->color = BLACK;
+		else
+			__delete_fixup_0(__c);
+	}
+
+	// free node
+	__node_alloc_traits::destroy(this->__alloc_node, __m);
+	__node_alloc_traits::deallocate(this->__alloc_node, __m, 1);
 }
 
 template <class T, class Compare, class Alloc>
@@ -601,7 +615,10 @@ typename __tree<T, Compare, Alloc>::size_type
 __tree<T, Compare, Alloc>::erase(const value_type& val)
 {
 	iterator	iter = find(val);
+	if (iter == end())
+		return (0);
 	erase(iter);
+	return (1);
 }
 
 template <class T, class Compare, class Alloc>

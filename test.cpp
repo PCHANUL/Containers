@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/15 17:30:04 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/17 17:06:24 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -931,35 +931,6 @@ int main(void)
 		test.main_end();
 	}
 
-	test.main("__tree_iterator");
-	{
-		typedef ft::pair<const int, int>											__value_type;
-		typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
-		typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
-		
-		__tree_type			tree;
-
-		ft::pair<int, int>	ft_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-		for (int i=0; i<10; i++)
-		{
-			ft_pair.first = nums[i];
-			tree.insert(ft_pair);
-		}
-
-		__tree_type::iterator	iter = tree.begin();
-		__tree_type::iterator	iter_end = tree.end();
-		for (int i = 0; iter!=iter_end; iter++, i++)
-		{
-			test.main_then((*iter).first == nums[i]);
-		}
-		
-		test.main_end();
-		std::cout << "\n";
-		tree.print();
-		std::cout << "\n";
-	}
-
 	test.main("iterator");
 	{
 		ft::map<int, int>	ft_map;
@@ -1212,7 +1183,86 @@ int main(void)
 	}
 
 
+
+	}	// map
+
+	
+	std::cout << "< __tree >" << std::endl;
+	{
+
+	typedef ft::pair<const int, int>											__value_type;
+	typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
+	typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
+
+	
+	test.main("__tree_iterator");
+	{
+		__tree_type			tree;
+
+		ft::pair<int, int>	ft_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = nums[i];
+			tree.insert(ft_pair);
+		}
+
+		__tree_type::iterator	iter = tree.begin();
+		__tree_type::iterator	iter_end = tree.end();
+		for (int i = 0; iter!=iter_end; iter++, i++)
+		{
+			test.main_then((*iter).first == nums[i]);
+		}
+		
+		test.main_end();
+		std::cout << "\n";
+		tree.print();
+		std::cout << "\n";
 	}
+
+	test.main("__tree::erase");
+	{
+		__tree_type	tree;
+
+		ft::pair<int, int>	ft_pair(10, 10);
+		for (int i=0; i<20; i++)
+		{
+			ft_pair.first = i;
+			tree.insert(ft_pair);
+		}
+
+		std::cout << "\n" << std::endl;
+		tree.print();
+
+		// none child
+		ft_pair.first = 16;
+		tree.erase(ft_pair);
+		tree.print();
+
+		// one child
+		ft_pair.first = 18;
+		tree.erase(ft_pair);
+		tree.print();
+		
+		// ft_pair.first = 3;
+		// tree.erase(ft_pair);
+		// tree.print();
+		
+		// ft_pair.first = 17;
+		// tree.erase(ft_pair);
+		// tree.print();
+		
+		// ft_pair.first = 15;
+		// tree.erase(ft_pair);
+		// tree.print();
+
+
+
+
+
+	}
+
+	}	// __tree
 
 	return (0);
 }
