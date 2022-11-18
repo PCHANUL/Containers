@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 12:29:39 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/15 16:05:34 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/18 14:44:58 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,8 @@ template <class T1, class T2>
 ft::pair<T1, T2>& 
 ft::pair<T1, T2>::operator = (const pair& pr)
 {
-    if ((pr.first != first) || (pr.second != second))
-    {
-        first = pr.first;
-        second = pr.second;
-    }
+    first = pr.first;
+    second = pr.second;
     return (*this);
 }
 

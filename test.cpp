@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/17 17:06:24 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/18 23:54:21 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1234,27 +1234,34 @@ int main(void)
 		std::cout << "\n" << std::endl;
 		tree.print();
 
-		// none child
 		ft_pair.first = 16;
 		tree.erase(ft_pair);
 		tree.print();
 
-		// one child
-		ft_pair.first = 18;
+		ft_pair.first = 13;
 		tree.erase(ft_pair);
 		tree.print();
 		
-		// ft_pair.first = 3;
+		ft_pair.first = 14;
+		tree.erase(ft_pair);
+		tree.print();
+		
+		// ft_pair.first = 19;
 		// tree.erase(ft_pair);
 		// tree.print();
 		
-		// ft_pair.first = 17;
+		// ft_pair.first = 9;
+		// tree.erase(ft_pair);
+		// tree.print();
+
+		// ft_pair.first = 10;
 		// tree.erase(ft_pair);
 		// tree.print();
 		
-		// ft_pair.first = 15;
+		// ft_pair.first = 8;
 		// tree.erase(ft_pair);
 		// tree.print();
+
 
 
 

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/17 19:14:06 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/18 23:53:34 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,22 @@
 namespace ft
 {
 
-#define LEFT					0
-#define RIGHT					1
-#define left					child[LEFT]
-#define right					child[RIGHT]
-#define __rotate_left(node)		__rotate_dir(node, LEFT)
-#define __rotate_right(node)	__rotate_dir(node, RIGHT)
+enum dir_t {
+	LEFT,
+	RIGHT
+};
 
 enum color_t {
 	BLACK,
 	RED
 };
+
+// #define LEFT					0
+// #define RIGHT					1
+#define left					child[LEFT]
+#define right					child[RIGHT]
+#define __rotate_left(node)		__rotate_dir(node, LEFT)
+#define __rotate_right(node)	__rotate_dir(node, RIGHT)
 
 // tree에서 다음 node의 주소를 반환합니다.
 template <class _NodePtr>
@@ -77,25 +82,41 @@ __tree_max(_NodePtr tree)
 	return (node);
 }
 
-// 두 node의 위치를 교체합니다. 
-// __u가 __u.parent와 해제되고, __u.parent에 __v가 연결됩니다.
+template <class _NodePtr>
+dir_t
+__child_dir(_NodePtr __n)
+{
+	return (__n == __n->parent->right ? RIGHT : LEFT);
+}
+
+template <class _NodePtr>
+color_t
+__node_color(_NodePtr __n)
+{
+	if (__n == nullptr)
+		return (BLACK);
+	else
+		return (__n->color);
+}
+
+// 두 node의 부모가 교체되어 연결됩니다.
 template <class _NodePtr>
 _NodePtr
-__tree_transplant(_NodePtr end, _NodePtr __u, _NodePtr __v)
+__tree_transplant(_NodePtr __u, _NodePtr __v)
 {
-	_NodePtr	__p = __u->parent;
+	_NodePtr	__u_p = __u->parent;
+	_NodePtr	__v_p = __v->parent;
+	enum dir_t	__u_dir = __child_dir(__u);
+	enum dir_t	__v_dir = __child_dir(__v);
 
-	if (__p == end)
-		end->left = __v;
-	else if (__u == __p->left)
-		__p->left = __v;
-	else
-		__p->right = __v;
-
-	if (__v != nullptr)
-		__v->parent = __p;
+	__u_p->child[__u_dir] = __v;
+	__v_p->child[__v_dir] = __u; 
+	
+	__v->parent = __u_p;
+	__u->parent = __v_p;
 	return (__v);
 }
+
 
 template <class T>
 struct __tree_node 
@@ -303,21 +324,27 @@ private:
 	__node_pointer		__delete_node(__node_pointer __n);
 	void				__destroy_node(__node_pointer __n);
 
-	__node*				__get_grandparent(__node* node) const;
-	__node*				__get_uncle(__node* node) const;
-	__node*				__get_sibling(__node* node) const;
-	__node*				__get_min() const;
-	__node*				__get_max() const;
+	__node_pointer		__get_grandparent(__node_pointer node) const;
+	__node_pointer		__get_uncle(__node_pointer node) const;
+	__node_pointer		__get_sibling(__node_pointer node) const;
+	__node_pointer		__get_min() const;
+	__node_pointer		__get_max() const;
 	
-	__node*				__rotate_dir(__node* node, int dir);
+	__node_pointer		__rotate_dir(__node_pointer node, int dir);
+	void				__swap_node(__node_pointer __x, __node_pointer __y);
 
-	void				__validate_tree_0(__node* node);
-	void				__validate_tree_1(__node* node);
-	void				__validate_tree_2(__node* node);
-	void				__validate_tree_3(__node* node);
-	void				__validate_tree_4(__node* node);
+	void				__validate_tree_0(__node_pointer node);
+	void				__validate_tree_1(__node_pointer node);
+	void				__validate_tree_2(__node_pointer node);
+	void				__validate_tree_3(__node_pointer node);
+	void				__validate_tree_4(__node_pointer node);
 
 	void				__delete_fixup_0(__node_pointer __n);
+	void				__delete_fixup_1(__node_pointer __n);
+	void				__delete_fixup_2(__node_pointer __n);
+	void				__delete_fixup_3(__node_pointer __n);
+	void				__delete_fixup_4(__node_pointer __n);
+	void				__delete_fixup_5(__node_pointer __n);
 };
 
 
@@ -521,10 +548,14 @@ template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node_pointer
 __tree<T, Compare, Alloc>::__delete_node(__node_pointer __n)
 {
-	if (__n->right == nullptr)
-		return (__tree_transplant(end().base(), __n, __n->left));
-	else
-		return (__tree_transplant(end().base(), __n, __n->right));
+	enum dir_t		__n_dir = __child_dir(__n);
+	enum dir_t		__c_dir = (__n->right == nullptr ? LEFT : RIGHT);
+	__node_pointer	__c = __n->child[__c_dir];
+
+	__n->parent->child[__n_dir] = __c;
+	if (__c != nullptr)
+		__c->parent = __n->parent;
+	return (__c);
 }
 
 /// @brief 레드-블랙 트리 규칙에 맞게 tree를 수정합니다.
@@ -533,51 +564,137 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::__delete_fixup_0(__node_pointer __n)
 {
+	if (__n->parent != __end_node)
+		__delete_fixup_1(__n);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__delete_fixup_1(__node_pointer __n)
+{
 	__node_pointer	__s = __get_sibling(__n);
-	__node_pointer	__p = __n->parent;
-
-	if (__n->color == RED)
+	
+	if (__node_color(__s) == RED)
 	{
-		__n->color = BLACK;
-		__n = __n->parent;
-	}
-
-	if (__s == nullptr)
-		return ;
-
-	while ((__p = __n->parent) != end().base())
-	{
-		__s = __get_sibling(__n);
-
-		if (__s->color == RED)
-		{
-			__s->color = BLACK;
-			__n->parent->color = RED;
+		__n->parent->color = RED;
+		__s->color = BLACK;
+		if (__n == __n->parent->left)
 			__rotate_left(__n->parent);
-			__s = __n->parent->right;
-		}
-		if (__s->left->color == BLACK && __s->right->color == BLACK)
-		{
-			__s->color = RED;
-			__n = __n->parent;
-		}
 		else
+			__rotate_right(__n->parent);
+	}
+	__delete_fixup_2(__n);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__delete_fixup_2(__node_pointer __n)
+{
+	__node_pointer	__s = __get_sibling(__n);
+	
+	if ((__node_color(__n->parent) == BLACK) &&
+		(__node_color(__s) == BLACK) &&
+		(__node_color(__s->left) == BLACK) &&
+		(__node_color(__s->right) == BLACK))
+	{
+		__s->color = RED;
+		__delete_fixup_0(__n->parent);	
+	}
+	else
+		__delete_fixup_3(__n);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__delete_fixup_3(__node_pointer __n)
+{
+	__node_pointer	__s = __get_sibling(__n);
+	
+	if ((__node_color(__n->parent) == RED) &&
+        (__node_color(__s) == BLACK) &&
+        (__node_color(__s->left) == BLACK) &&
+        (__node_color(__s->right) == BLACK)) 
+	{
+        __s->color = RED;
+        __n->parent->color = BLACK;
+    } 
+	else
+        __delete_fixup_4(__n);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__delete_fixup_4(__node_pointer __n)
+{
+	__node_pointer	__s = __get_sibling(__n);
+	
+	if  (__node_color(__s) == BLACK) 
+	{
+        if ((__n == __n->parent->left) &&
+            (__node_color(__s->right) == BLACK) &&
+            (__node_color(__s->left) == RED)) 
 		{
-			if (__s->right->color == BLACK)
-			{
-				__s->left->color = BLACK;
-				__s->color = RED;
-				__rotate_right(__s);
-				__s = __n->parent->right;
-			}
-			__s->color = __n->parent->color;
-			__n->parent->color = BLACK;
-			__s->right->color = BLACK;
-			__rotate_left(__n->parent);
-			__n = __root();
-		}
+            __s->color = RED;
+            __s->left->color = BLACK;
+            __rotate_right(__s);
+        } 
+		else if ((__n == __n->parent->right) &&
+            (__node_color(__s->left) == BLACK) &&
+            (__node_color(__s->right) == RED)) 
+		{
+            __s->color = RED;
+            __s->right->color = BLACK;
+            __rotate_left(__s);
+        }
+    }
+    __delete_fixup_5(__n);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__delete_fixup_5(__node_pointer __n)
+{
+    __node_pointer	__s = __get_sibling(__n);
+
+    __s->color = __n->parent->color;
+    __n->parent->color = BLACK;
+
+    if (__n == __n->parent->left) 
+	{
+        __s->right->color = BLACK;
+        __rotate_left(__n->parent);
+    } 
+	else 
+	{
+        __s->left->color = BLACK;
+        __rotate_right(__n->parent);
+    }
+}
+
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__swap_node(__node_pointer __x, __node_pointer __y)
+{
+	enum color_t	color = __x->color;
+
+	__x->color = __y->color;
+	__y->color = color;
+	__tree_transplant(__x, __y);
+
+	for (int i=0; i<2; i++)
+	{
+		__node_pointer	tmp = __x->child[i];
+		__x->child[i] = __y->child[i];
+		__y->child[i] = tmp;
+
+		if (__x->child[i] != nullptr)
+			__x->child[i]->parent = __x;
+		if (__y->child[i] != nullptr)
+			__y->child[i]->parent = __y;
 	}
 }
+
 
 template <class T, class Compare, class Alloc>
 void
@@ -585,25 +702,28 @@ __tree<T, Compare, Alloc>::erase(iterator position)
 {
 	__node_pointer	__m = position.base();
 	__node_pointer	__c;
-	enum color_t	__m_color = __m->color;
 
-	// 자식이 2개인 경우 오른쪽 자식의 최댓값을 복사하고, 타깃을 변경합니다.
+	// 자식이 2개인 경우 오른쪽 자식의 최댓값 노드와 위치를 교환하고, 타깃을 변경합니다.
 	if (__m->left != nullptr && __m->right != nullptr)
 	{
 		__node_pointer	tmp = __tree_min(__m->right);
-		__m->key = tmp->key;
-		__m = tmp;
+		__swap_node(__m, tmp);
 	}
 
-	__c = __delete_node(__m);
+	__c = __m->child[__m->right == nullptr ? LEFT : RIGHT];
+	if (__c != nullptr)
+		__delete_node(__m);
 	
-	if (__c != nullptr && __m->color == BLACK)
+	if (__m->color == BLACK)
 	{
-		if (__c->color == RED)
+		if (__c != nullptr && __c->color == RED)
 			__c->color = BLACK;
 		else
-			__delete_fixup_0(__c);
+			__delete_fixup_0(__m);
 	}
+
+	if (__c == nullptr)
+		__delete_node(__m);
 
 	// free node
 	__node_alloc_traits::destroy(this->__alloc_node, __m);
@@ -734,7 +854,7 @@ __tree<T, Compare, Alloc>::__rotate_dir(__node* node, int dir)
 // node가 root인 경우 : node color를 BLACK으로 변경
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_0(__node* node)
+__tree<T, Compare, Alloc>::__validate_tree_0(__node_pointer node)
 {
 	if (node->parent == __end_node)
 		node->color = BLACK;
@@ -745,7 +865,7 @@ __tree<T, Compare, Alloc>::__validate_tree_0(__node* node)
 // parent color가 BLACK인 경우 : 종료
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_1(__node* node)
+__tree<T, Compare, Alloc>::__validate_tree_1(__node_pointer node)
 {
 	if (node->parent->color == BLACK)
 		return ;
@@ -756,10 +876,10 @@ __tree<T, Compare, Alloc>::__validate_tree_1(__node* node)
 // uncle node color가 RED인 경우 : parent, uncle node의 color를 BLACK으로 변경, grand를 RED로 변경
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_2(__node* node)
+__tree<T, Compare, Alloc>::__validate_tree_2(__node_pointer node)
 {
-	__node* g_node = __get_grandparent(node);
-	__node*	u_node = __get_uncle(node);
+	__node_pointer g_node = __get_grandparent(node);
+	__node_pointer	u_node = __get_uncle(node);
 
 	if ((u_node != nullptr) && (u_node->color == RED))
 	{
@@ -775,9 +895,9 @@ __tree<T, Compare, Alloc>::__validate_tree_2(__node* node)
 // uncle node color가 BLACK이고, node 연결 형태가 triangle인 경우 : parent node 회전
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_3(__node* node)
+__tree<T, Compare, Alloc>::__validate_tree_3(__node_pointer node)
 {
-	__node*	g_node = __get_grandparent(node);
+	__node_pointer	g_node = __get_grandparent(node);
 
 	if ((node == node->parent->right) && (node->parent == g_node->left))
 	{
@@ -795,9 +915,9 @@ __tree<T, Compare, Alloc>::__validate_tree_3(__node* node)
 // uncle node color가 Black이고, node 연결 형태가 line인 경우 : grand node 회전
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_4(__node* node)
+__tree<T, Compare, Alloc>::__validate_tree_4(__node_pointer node)
 {
-	__node*	g_node = __get_grandparent(node);
+	__node_pointer	g_node = __get_grandparent(node);
 
 	g_node->color = RED;
 	node->parent->color = BLACK;
