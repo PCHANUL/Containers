@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/18 23:54:21 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/20 23:38:59 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int main(void)
 {
 	Testing	test;
 
-	std::cout << "< vector >" << std::endl;
+	std::cout << "\n< vector >" << std::endl;
 	{
 
 	test.main("Default constructor");
@@ -820,7 +820,7 @@ int main(void)
 
 	}
 
-	std::cout << "< map >" << std::endl;
+	std::cout << "\n< map >" << std::endl;
 	{
 
 	test.main("pair");
@@ -928,6 +928,7 @@ int main(void)
 		{
 			test.main_then((*range_begin).first == (*ft_begin).first);
 		}
+		
 		test.main_end();
 	}
 
@@ -1182,12 +1183,66 @@ int main(void)
 		test.main_end();
 	}
 
+	test.main("erase");
+	{
+		std::map<int, int>	std_map;
+		std::pair<int, int>	std_pair(10, 10);
+		ft::map<int, int>	ft_map;
+		ft::pair<int, int>	ft_pair(10, 10);
+
+		std_map.insert(std_pair);
+		ft_map.insert(ft_pair);
+
+		test.main_then(std_map.size() == ft_map.size());
+		std_map.erase(10);
+		ft_map.erase(10);
+		test.main_then(std_map.size() == ft_map.size());
+		test.main_then(std_map.find(10) == std_map.end()
+						&& ft_map.find(10) == ft_map.end());
+		test.main_end();
+	}
+
+	test.main("erase(iter)");
+	{
+		ft::map<int, int>	ft_map;
+		ft::pair<int, int>	ft_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = nums[i];
+			ft_map.insert(ft_pair);
+		}
+
+		test.main_then(ft_map.size() == 10);
+		test.main_then(ft_map[1] == 10);
+		test.main_then(ft_map[456] == 10);
+
+		ft_map.erase(ft_map.begin(), ft_map.end());
+		test.main_then(ft_map.size() == 0);
+
+		test.main_end();
+	}
+
+	test.main("swap");
+	{
+		std::map<int, int>	std_map;
+		std::pair<int, int>	std_pair(10, 10);
+		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+		for (int i=0; i<10; i++)
+		{
+			std_pair.first = nums[i];
+			std_map.insert(std_pair);
+		}
+
+		
+
+	}
 
 
 	}	// map
 
 	
-	std::cout << "< __tree >" << std::endl;
+	std::cout << "\n< __tree >" << std::endl;
 	{
 
 	typedef ft::pair<const int, int>											__value_type;
@@ -1225,48 +1280,40 @@ int main(void)
 		__tree_type	tree;
 
 		ft::pair<int, int>	ft_pair(10, 10);
-		for (int i=0; i<20; i++)
+		for (int i=0; i<10; i++)
 		{
 			ft_pair.first = i;
 			tree.insert(ft_pair);
 		}
-
-		std::cout << "\n" << std::endl;
-		tree.print();
-
-		ft_pair.first = 16;
+		ft_pair.first = 6;
 		tree.erase(ft_pair);
-		tree.print();
-
-		ft_pair.first = 13;
+		ft_pair.first = 4;
 		tree.erase(ft_pair);
-		tree.print();
-		
-		ft_pair.first = 14;
+		ft_pair.first = 1;
 		tree.erase(ft_pair);
+		
+		test.main_end();
+		std::cout << std::endl;
 		tree.print();
-		
-		// ft_pair.first = 19;
-		// tree.erase(ft_pair);
-		// tree.print();
-		
-		// ft_pair.first = 9;
-		// tree.erase(ft_pair);
-		// tree.print();
+	}
 
-		// ft_pair.first = 10;
-		// tree.erase(ft_pair);
-		// tree.print();
-		
-		// ft_pair.first = 8;
-		// tree.erase(ft_pair);
-		// tree.print();
+	test.main("__tree::clear");
+	{
+		__tree_type	tree;
 
-
-
-
-
-
+		ft::pair<int, int>	ft_pair(10, 10);
+		for (int i=0; i<10; i++)
+		{
+			ft_pair.first = i;
+			tree.insert(ft_pair);
+		}
+		std::cout << std::endl;
+		tree.print();
+		tree.clear();
+		std::cout << std::endl;
+		tree.print();
+		test.main_then(tree.size() == 0);
+		test.main_end();
 	}
 
 	}	// __tree

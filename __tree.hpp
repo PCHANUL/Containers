@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/18 23:53:34 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/20 23:35:38 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,8 +278,8 @@ private:
 	allocator_type	__alloc;
 	__node_alloc	__alloc_node;
 	key_compare		__key_comp;
-	__node_pointer	__end_node;
 	__node_pointer	__begin_node;
+	__node_pointer	__end_node;
 	size_type		__size;
 
 public:
@@ -302,16 +302,15 @@ public:
 	const_iterator					find(const value_type& val) const;
 	void							erase(iterator position);
 	size_type						erase(const value_type& val);
+	void							erase(iterator first, iterator last);
+	void							clear();
+	void							destroy_node(__node_pointer& __n);
+	void							swap(__tree& x);
 	iterator						lower_bound(const value_type& val);
 	const_iterator					lower_bound(const value_type& val) const;
 	iterator						upper_bound(const value_type& val);
 	const_iterator					upper_bound(const value_type& val) const;
 	ft::pair<iterator, iterator>	equal_range(const value_type& val);
-
-	void		delete_node(iterator iter)
-	{
-		// 
-	}
 
 private:
 	__node*				__root() const;
@@ -323,6 +322,7 @@ private:
 	__node_pointer&		__find_node(iterator iter, __node_pointer& parent, const value_type& val);
 	__node_pointer		__delete_node(__node_pointer __n);
 	void				__destroy_node(__node_pointer __n);
+	void				__destroy_pointer(__node_pointer x, __node_pointer y);
 
 	__node_pointer		__get_grandparent(__node_pointer node) const;
 	__node_pointer		__get_uncle(__node_pointer node) const;
@@ -332,12 +332,13 @@ private:
 	
 	__node_pointer		__rotate_dir(__node_pointer node, int dir);
 	void				__swap_node(__node_pointer __x, __node_pointer __y);
+	void				__swap_pointer(__node_pointer& __x, __node_pointer& __y);
 
-	void				__validate_tree_0(__node_pointer node);
-	void				__validate_tree_1(__node_pointer node);
-	void				__validate_tree_2(__node_pointer node);
-	void				__validate_tree_3(__node_pointer node);
-	void				__validate_tree_4(__node_pointer node);
+	void				__insert_fixup_0(__node_pointer node);
+	void				__insert_fixup_1(__node_pointer node);
+	void				__insert_fixup_2(__node_pointer node);
+	void				__insert_fixup_3(__node_pointer node);
+	void				__insert_fixup_4(__node_pointer node);
 
 	void				__delete_fixup_0(__node_pointer __n);
 	void				__delete_fixup_1(__node_pointer __n);
@@ -367,8 +368,7 @@ __tree<T, Compare, Alloc>::__tree(const key_compare& comp, const allocator_type&
 template <class T, class Compare, class Alloc>
 __tree<T, Compare, Alloc>::~__tree() 
 {
-	// destroy all nodes
-	// 
+	destroy_node(__end_node);
 }
 
 template <class T, class Compare, class Alloc>
@@ -487,17 +487,7 @@ template <class T, class Compare, class Alloc>
 ft::pair<typename __tree<T, Compare, Alloc>::iterator, bool>
 __tree<T, Compare, Alloc>::insert(const value_type& val)
 {
-	__node_pointer	parent = __end_node;
-	__node_pointer&	child = __find_node(parent, val);
-	__node_pointer 	new_node;
-	
-	if (child != nullptr)
-		return (ft::pair<iterator, bool>(iterator(child), false));
-	new_node = __create_node(val);	
-	__locate_node(parent, child, new_node);
-	__validate_tree_0(new_node);
-	__size++;
-	return (ft::pair<iterator, bool>(iterator(new_node), true));
+	return (insert(end(), val));
 }
 
 template <class T, class Compare, class Alloc>
@@ -512,8 +502,10 @@ __tree<T, Compare, Alloc>::insert(iterator iter, const value_type& val)
 		return (ft::pair<iterator, bool>(iterator(child), false));
 	new_node = __create_node(val);	
 	__locate_node(parent, child, new_node);
-	__validate_tree_0(new_node);
-	__size++;
+	__insert_fixup_0(new_node);
+	if (this->__begin_node->left != nullptr)
+		this->__begin_node = this->__begin_node->left;
+	this->__size++;
 	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
@@ -564,7 +556,7 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::__delete_fixup_0(__node_pointer __n)
 {
-	if (__n->parent != __end_node)
+	if (__n->parent != this->__end_node)
 		__delete_fixup_1(__n);
 }
 
@@ -695,7 +687,6 @@ __tree<T, Compare, Alloc>::__swap_node(__node_pointer __x, __node_pointer __y)
 	}
 }
 
-
 template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::erase(iterator position)
@@ -703,7 +694,6 @@ __tree<T, Compare, Alloc>::erase(iterator position)
 	__node_pointer	__m = position.base();
 	__node_pointer	__c;
 
-	// 자식이 2개인 경우 오른쪽 자식의 최댓값 노드와 위치를 교환하고, 타깃을 변경합니다.
 	if (__m->left != nullptr && __m->right != nullptr)
 	{
 		__node_pointer	tmp = __tree_min(__m->right);
@@ -725,9 +715,9 @@ __tree<T, Compare, Alloc>::erase(iterator position)
 	if (__c == nullptr)
 		__delete_node(__m);
 
-	// free node
 	__node_alloc_traits::destroy(this->__alloc_node, __m);
 	__node_alloc_traits::deallocate(this->__alloc_node, __m, 1);
+	this->__size--;
 }
 
 template <class T, class Compare, class Alloc>
@@ -739,6 +729,75 @@ __tree<T, Compare, Alloc>::erase(const value_type& val)
 		return (0);
 	erase(iter);
 	return (1);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::erase(iterator first, iterator last)
+{
+	iterator	iter = first;
+	
+	while (iter != last)
+	{
+		iter++;
+		erase(first);
+		first = iter;
+	}
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::clear()
+{
+	if (__end_node->left != nullptr)
+	{
+		destroy_node(__end_node->left);
+		this->__size = 0;
+		this->__begin_node = this->__end_node;
+	}
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::__swap_pointer(__node_pointer& x, __node_pointer& y)
+{
+	__node_pointer	tmp = x;
+	x = y;
+	y = tmp;
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::swap(__tree& x)
+{
+	allocator_type	__tmp_alloc = this->__alloc;
+	__node_alloc	__tmp_alloc_node = this->__alloc_node;
+	key_compare		__tmp_compare = this->__key_comp;
+	size_type		__tmp_size = this->__size;
+
+	this->__alloc = x.__alloc;
+	x.__alloc = __tmp_alloc;
+	this->__alloc_node = x.__alloc_node;
+	x.__alloc_node = __tmp_alloc_node;
+	this->__key_comp = x.__key_comp;
+	x.__key_comp = __tmp_compare;
+	this->__size = x.__size;
+	x.__size = __tmp_size;
+	__swap_pointer(this->__begin_node, x.__begin_node);
+	__swap_pointer(this->__end_node, x.__end_node);
+}
+
+template <class T, class Compare, class Alloc>
+void
+__tree<T, Compare, Alloc>::destroy_node(__node_pointer& __n)
+{
+	if (__n == nullptr)
+		return ;
+	destroy_node(__n->left);
+	destroy_node(__n->right);
+	__node_alloc_traits::destroy(this->__alloc_node, &__n->key);
+	__node_alloc_traits::deallocate(this->__alloc_node, __n, 1);
+	__n = nullptr;
 }
 
 template <class T, class Compare, class Alloc>
@@ -854,29 +913,29 @@ __tree<T, Compare, Alloc>::__rotate_dir(__node* node, int dir)
 // node가 root인 경우 : node color를 BLACK으로 변경
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_0(__node_pointer node)
+__tree<T, Compare, Alloc>::__insert_fixup_0(__node_pointer node)
 {
 	if (node->parent == __end_node)
 		node->color = BLACK;
 	else
-		__validate_tree_1(node);
+		__insert_fixup_1(node);
 }
 
 // parent color가 BLACK인 경우 : 종료
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_1(__node_pointer node)
+__tree<T, Compare, Alloc>::__insert_fixup_1(__node_pointer node)
 {
 	if (node->parent->color == BLACK)
 		return ;
 	else
-		__validate_tree_2(node);
+		__insert_fixup_2(node);
 }
 
 // uncle node color가 RED인 경우 : parent, uncle node의 color를 BLACK으로 변경, grand를 RED로 변경
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_2(__node_pointer node)
+__tree<T, Compare, Alloc>::__insert_fixup_2(__node_pointer node)
 {
 	__node_pointer g_node = __get_grandparent(node);
 	__node_pointer	u_node = __get_uncle(node);
@@ -886,16 +945,16 @@ __tree<T, Compare, Alloc>::__validate_tree_2(__node_pointer node)
 		node->parent->color = BLACK;
 		u_node->color = BLACK;
 		g_node->color = RED;
-		__validate_tree_0(g_node);
+		__insert_fixup_0(g_node);
 	}
 	else
-		__validate_tree_3(node);
+		__insert_fixup_3(node);
 }
 
 // uncle node color가 BLACK이고, node 연결 형태가 triangle인 경우 : parent node 회전
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_3(__node_pointer node)
+__tree<T, Compare, Alloc>::__insert_fixup_3(__node_pointer node)
 {
 	__node_pointer	g_node = __get_grandparent(node);
 
@@ -909,13 +968,13 @@ __tree<T, Compare, Alloc>::__validate_tree_3(__node_pointer node)
 		__rotate_right(node->parent);
 		node = node->right;
 	}
-	__validate_tree_4(node);
+	__insert_fixup_4(node);
 }
 
 // uncle node color가 Black이고, node 연결 형태가 line인 경우 : grand node 회전
 template <class T, class Compare, class Alloc>
 void
-__tree<T, Compare, Alloc>::__validate_tree_4(__node_pointer node)
+__tree<T, Compare, Alloc>::__insert_fixup_4(__node_pointer node)
 {
 	__node_pointer	g_node = __get_grandparent(node);
 
@@ -931,14 +990,14 @@ template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::iterator
 __tree<T, Compare, Alloc>::begin()
 {
-	return (iterator(__get_min()));
+	return (iterator(__begin_node));
 }
 
 template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::const_iterator
 __tree<T, Compare, Alloc>::begin() const
 {
-	return (const_iterator(reinterpret_cast<__const_node*>(__get_min())));
+	return (const_iterator(reinterpret_cast<__const_node*>(__begin_node)));
 }
 
 template <class T, class Compare, class Alloc>

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/15 18:11:08 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/20 23:34:49 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,8 @@ ft::map<Key, T, Compare, Alloc>::map (const map& x)
 // 이것은 모든 컨테이너 요소를 파괴하고 할당자를 사용하여 맵 컨테이너에 의해 할당된 모든 저장 용량을 할당 해제합니다.
 template <class Key, class T, class Compare, class Alloc>
 ft::map<Key, T, Compare, Alloc>::~map ()
-{}
+{
+}
 
 // 현재 콘텐츠를 대체하여 컨테이너에 새 콘텐츠를 할당합니다.
 // x 의 모든 요소를 ​​컨테이너에 복사하여 그에 따라 크기 를 변경합니다 .
@@ -361,19 +362,25 @@ ft::map<Key, T, Compare, Alloc>::insert (InputIterator first, InputIterator last
 template <class Key, class T, class Compare, class Alloc>
 void 
 ft::map<Key, T, Compare, Alloc>::erase (iterator position)
-{}
+{
+	__root.erase(position);
+}
 
 // k : 맵에서 제거할 요소의 키입니다.
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::size_type 
 ft::map<Key, T, Compare, Alloc>::erase (const key_type& k)
-{}
+{
+	return (__root.erase(value_type(k, 0)));
+}
 
 // 제거할 맵 컨테이너 내 범위를 지정하는 반복자. first와 last 사이의 모든 요소가 포함되며 first가 가리키는 요소는 포함되지만 last가 가리키는 요소는 포함되지 않습니다. 
 template <class Key, class T, class Compare, class Alloc>
 void 
 ft::map<Key, T, Compare, Alloc>::erase (iterator first, iterator last)
-{}
+{
+	__root.erase(first.base(), last.base());
+}
 
 // 같은 유형의 다른 맵인 x의 내용으로 컨테이너의 내용을 교환합니다. 크기가 다를 수 있습니다. 
 // 모든 반복자, 참조 및 포인터는 교환된 개체에 대해 유효한 상태로 유지됩니다. 
@@ -381,13 +388,17 @@ ft::map<Key, T, Compare, Alloc>::erase (iterator first, iterator last)
 template <class Key, class T, class Compare, class Alloc>
 void
 ft::map<Key, T, Compare, Alloc>::swap (map& x)
-{}
+{
+	
+}
 
 // 맵 컨테이너 에서 모든 요소 (파기됨)를 제거하고 컨테이너의 크기 는 0 으로 유지 합니다.
 template <class Key, class T, class Compare, class Alloc>
 void
 ft::map<Key, T, Compare, Alloc>::clear ()
-{}
+{
+	__root.clear();
+}
 
 // 키를 비교하는 함수를 반환합니다.
 // 키를 비교하기 위해 컨테이너에서 사용하는 비교 객체의 복사본을 반환합니다. 
