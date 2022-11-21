@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/20 23:34:49 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/21 15:28:50 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,10 @@ ft::map<Key, T, Compare, Alloc>::map (InputIterator first, InputIterator last, c
 // x의 각 요소의 복사본으로 컨테이너를 생성합니다.
 template <class Key, class T, class Compare, class Alloc>
 ft::map<Key, T, Compare, Alloc>::map (const map& x)
-{}
+	: __alloc(x.__alloc), __key_comp(x.__key_comp)
+{
+	insert(x.begin(), x.end());
+}
 
 // 이것은 모든 컨테이너 요소를 파괴하고 할당자를 사용하여 맵 컨테이너에 의해 할당된 모든 저장 용량을 할당 해제합니다.
 template <class Key, class T, class Compare, class Alloc>
@@ -176,7 +179,12 @@ ft::map<Key, T, Compare, Alloc>::~map ()
 template <class Key, class T, class Compare, class Alloc>
 ft::map<Key, T, Compare, Alloc>& 
 ft::map<Key, T, Compare, Alloc>::operator = (const map& x)
-{}
+{
+	map	__tmp(x);
+
+	swap(__tmp);
+	return (*this);
+}
 
 // 컨테이너와 연결된 할당자 객체 복사본을 반환합니다.
 template <class Key, class T, class Compare, class Alloc>
@@ -338,7 +346,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::insert (iterator position, const value_type& val)
 {
-	typename __tree_type::iterator	tree_iter(position.base());
+	typename __tree_type::iterator	tree_iter = position.base();
 	
 	return (__root.insert(tree_iter, val).first);
 }
@@ -351,10 +359,9 @@ template <class InputIterator>
 void 
 ft::map<Key, T, Compare, Alloc>::insert (InputIterator first, InputIterator last,
 											typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
-{
-	iterator	end_node = end();
+{	
 	for(; first!=last; first++)
-		insert(end_node, *first);
+		__root.insert(*first);
 }
 
 // 맵 컨테이너에서 단일 요소 또는 요소 범위를 제거합니다. 제거된 요소의 수만큼 컨테이너 크기를 효과적으로 줄여 파괴됩니다. 
@@ -389,7 +396,14 @@ template <class Key, class T, class Compare, class Alloc>
 void
 ft::map<Key, T, Compare, Alloc>::swap (map& x)
 {
+	allocator_type	__tmp_alloc = this->__alloc;
+	key_compare		__tmp_compare = this->__key_comp;
 	
+	this->__alloc = x.__alloc;
+	this->__key_comp = x.__key_comp;
+	x.__alloc = this->__alloc;
+	x.__key_comp = this->__key_comp;
+	__root.swap(x.__root);
 }
 
 // 맵 컨테이너 에서 모든 요소 (파기됨)를 제거하고 컨테이너의 크기 는 0 으로 유지 합니다.

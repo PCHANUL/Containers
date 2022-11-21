@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/20 23:35:38 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/21 14:07:22 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,7 +353,7 @@ template <class T, class Compare, class Alloc>
 __tree<T, Compare, Alloc>::__tree() 
 	: __alloc(allocator_type()), __alloc_node(__node_alloc()), __key_comp(key_compare()), __size(0)
 {
-	__end_node = __create_node(T());
+	__end_node = __create_node(value_type());
 	__begin_node = __end_node;
 }
 
@@ -361,7 +361,7 @@ template <class T, class Compare, class Alloc>
 __tree<T, Compare, Alloc>::__tree(const key_compare& comp, const allocator_type& alloc) 
 	: __alloc(alloc), __alloc_node(__alloc_node), __key_comp(comp), __size(0)
 {
-	__end_node = __create_node(T());
+	__end_node = __create_node(value_type());
 	__begin_node = __end_node;
 }
 
@@ -386,6 +386,9 @@ __tree<T, Compare, Alloc>::__create_node(const value_type& val)
 		
 	__alloc_traits::construct(this->__alloc, &new_node->key, val);
 	new_node->color = RED;
+	new_node->parent = nullptr;
+	new_node->left = nullptr;
+	new_node->right = nullptr;
 	return (new_node);
 }
 
@@ -502,10 +505,10 @@ __tree<T, Compare, Alloc>::insert(iterator iter, const value_type& val)
 		return (ft::pair<iterator, bool>(iterator(child), false));
 	new_node = __create_node(val);	
 	__locate_node(parent, child, new_node);
-	__insert_fixup_0(new_node);
 	if (this->__begin_node->left != nullptr)
 		this->__begin_node = this->__begin_node->left;
 	this->__size++;
+	__insert_fixup_0(new_node);
 	return (ft::pair<iterator, bool>(iterator(new_node), true));
 }
 
