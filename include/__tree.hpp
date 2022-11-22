@@ -6,13 +6,15 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/21 14:07:22 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 14:06:27 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __TREE_HPP__
 #define	__TREE_HPP__
 #include <string>
+#include "utility.hpp"
+#include "pair.hpp"
 
 namespace ft
 {
@@ -27,21 +29,21 @@ enum color_t {
 	RED
 };
 
-// #define LEFT					0
-// #define RIGHT					1
-#define left					child[LEFT]
-#define right					child[RIGHT]
+// #define LEFT						0
+// #define RIGHT						1
+#define __left						child[LEFT]
+#define __right						child[RIGHT]
 #define __rotate_left(node)		__rotate_dir(node, LEFT)
 #define __rotate_right(node)	__rotate_dir(node, RIGHT)
 
 // tree에서 다음 node의 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr 
-__tree_next(_NodePtr node)
+__tree_get_next(_NodePtr node)
 {
-	if (node->right != nullptr)
-		return (__tree_min(node->right));
-	while (node != node->parent->left)
+	if (node->__right != nullptr)
+		return (__tree_get_min(node->__right));
+	while (node != node->parent->__left)
 		node = node->parent;
 	return (node->parent);
 }
@@ -49,11 +51,11 @@ __tree_next(_NodePtr node)
 // tree에서 이전 node의 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
-__tree_prev(_NodePtr node)
+__tree_get_prev(_NodePtr node)
 {
-	if (node->left != nullptr)
-		return (__tree_max(node->left));
-	while (node != node->parent->right)
+	if (node->__left != nullptr)
+		return (__tree_get_max(node->__left));
+	while (node != node->parent->__right)
 		node = node->parent;
 	return (node->parent);
 }
@@ -61,36 +63,36 @@ __tree_prev(_NodePtr node)
 // tree에서 가장 왼쪽에 있는 node 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
-__tree_min(_NodePtr tree)
+__tree_get_min(_NodePtr tree)
 {
 	_NodePtr	node = tree;
 
-	while (node != nullptr && node->left != nullptr)
-		node = node->left;
+	while (node != nullptr && node->__left != nullptr)
+		node = node->__left;
 	return (node);
 }
 
 // tree에서 가장 오른쪽에 있는 node 주소를 반환합니다.
 template <class _NodePtr>
 _NodePtr
-__tree_max(_NodePtr tree)
+__tree_get_max(_NodePtr tree)
 {
 	_NodePtr	node = tree;
 
-	while (node != nullptr && node->right != nullptr)
-		node = node->right;
+	while (node != nullptr && node->__right != nullptr)
+		node = node->__right;
 	return (node);
 }
 
 template <class _NodePtr>
-dir_t
+int
 __child_dir(_NodePtr __n)
 {
-	return (__n == __n->parent->right ? RIGHT : LEFT);
+	return (__n == __n->parent->__right ? RIGHT : LEFT);
 }
 
 template <class _NodePtr>
-color_t
+int
 __node_color(_NodePtr __n)
 {
 	if (__n == nullptr)
@@ -106,8 +108,8 @@ __tree_transplant(_NodePtr __u, _NodePtr __v)
 {
 	_NodePtr	__u_p = __u->parent;
 	_NodePtr	__v_p = __v->parent;
-	enum dir_t	__u_dir = __child_dir(__u);
-	enum dir_t	__v_dir = __child_dir(__v);
+	int			__u_dir = __child_dir(__u);
+	int			__v_dir = __child_dir(__v);
 
 	__u_p->child[__u_dir] = __v;
 	__v_p->child[__v_dir] = __u; 
@@ -123,7 +125,7 @@ struct __tree_node
 {	 
 	__tree_node*	parent;
 	__tree_node*	child[2];
-	enum color_t	color;
+	int				color;
 	T				key;
 };
 
@@ -180,15 +182,15 @@ template <class T>
 typename ft::__tree_iter<T>::__node_pointer
 ft::__tree_iter<T>::base() const
 {
-	return (__n);
+	return (this->__n);
 }
 
 template <class T>
 ft::__tree_iter<T>&
 ft::__tree_iter<T>::operator = (const __tree_iter& __x)
 {
-	if (__x.__n != __n)
-		__n = __x.__n;
+	if (__x.__n != this->__n)
+		this->__n = __x.__n;
 	return (*this);
 }
 
@@ -196,21 +198,21 @@ template <class T>
 typename ft::__tree_iter<T>::reference
 ft::__tree_iter<T>::operator *	() const
 {
-	return (__n->key);
+	return (this->__n->key);
 }
 
 template <class T>
 typename ft::__tree_iter<T>::pointer
 ft::__tree_iter<T>::operator ->	() const
 {
-	return (&(__n->key));
+	return (&(this->__n->key));
 }
 
 template <class T>
 ft::__tree_iter<T>&
 ft::__tree_iter<T>::operator ++	()
 {
-	__n = __tree_next(__n);
+	this->__n = __tree_get_next(this->__n);
 	return (*this);
 }
 
@@ -227,7 +229,7 @@ template <class T>
 ft::__tree_iter<T>&
 ft::__tree_iter<T>::operator --	()
 {
-	__n = __tree_prev(__n);
+	this->__n = __tree_get_prev(this->__n);
 	return (*this);
 }
 
@@ -375,7 +377,7 @@ template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node_pointer
 __tree<T, Compare, Alloc>::__root() const
 {
-	return (__end_node->left);
+	return (__end_node->__left);
 }
 
 template <class T, class Compare, class Alloc>
@@ -387,8 +389,8 @@ __tree<T, Compare, Alloc>::__create_node(const value_type& val)
 	__alloc_traits::construct(this->__alloc, &new_node->key, val);
 	new_node->color = RED;
 	new_node->parent = nullptr;
-	new_node->left = nullptr;
-	new_node->right = nullptr;
+	new_node->__left = nullptr;
+	new_node->__right = nullptr;
 	return (new_node);
 }
 
@@ -400,28 +402,28 @@ __tree<T, Compare, Alloc>::__find_node(__node_pointer& parent, const value_type&
 
 	parent = __end_node;
 	if (node == nullptr)
-		return (parent->left);
+		return (parent->__left);
 	while (true)
 	{
 		if (key_compare()(val, node->key))
 		{
-			if (node->left == nullptr)
+			if (node->__left == nullptr)
 			{
 				parent = node;
-				return (parent->left);
+				return (parent->__left);
 			}
 			else
-				node = node->left;
+				node = node->__left;
 		}
 		else if (key_compare()(node->key, val))
 		{
-			if (node->right == nullptr)
+			if (node->__right == nullptr)
 			{
 				parent = node;
-				return (parent->right);
+				return (parent->__right);
 			}
 			else
-				node = node->right;
+				node = node->__right;
 		}
 		else
 		{
@@ -441,15 +443,15 @@ __tree<T, Compare, Alloc>::__find_node(iterator iter, __node_pointer& parent, co
 		iterator	prev = iter;
 		if (prev == begin() || key_compare()(*(--prev), val))
 		{
-			if (iter.base()->left == nullptr)
+			if (iter.base()->__left == nullptr)
 			{
 				parent = iter.base();
-				return (parent->left);
+				return (parent->__left);
 			}
 			else
 			{
 				parent = prev.base();
-				return (parent->right);
+				return (parent->__right);
 			}
 		}
 		return (__find_node(parent, val));
@@ -459,15 +461,15 @@ __tree<T, Compare, Alloc>::__find_node(iterator iter, __node_pointer& parent, co
 		iterator	next = iter;
 		if (next == --end() || key_compare()(val, *(++next)))
 		{
-			if (iter.base()->right == nullptr)
+			if (iter.base()->__right == nullptr)
 			{
 				parent = iter.base();
-				return (parent->right);
+				return (parent->__right);
 			}
 			else
 			{
 				parent = next.base();
-				return (parent->left);
+				return (parent->__left);
 			}
 		}
 		return (__find_node(parent, val));
@@ -480,8 +482,8 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::__locate_node(__node_pointer parent, __node_pointer& child, __node_pointer new_node)
 {
-	new_node->left = nullptr;
-	new_node->right = nullptr;
+	new_node->__left = nullptr;
+	new_node->__right = nullptr;
 	new_node->parent = parent;
 	child = new_node;
 }
@@ -505,8 +507,8 @@ __tree<T, Compare, Alloc>::insert(iterator iter, const value_type& val)
 		return (ft::pair<iterator, bool>(iterator(child), false));
 	new_node = __create_node(val);	
 	__locate_node(parent, child, new_node);
-	if (this->__begin_node->left != nullptr)
-		this->__begin_node = this->__begin_node->left;
+	if (this->__begin_node->__left != nullptr)
+		this->__begin_node = this->__begin_node->__left;
 	this->__size++;
 	__insert_fixup_0(new_node);
 	return (ft::pair<iterator, bool>(iterator(new_node), true));
@@ -543,8 +545,8 @@ template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node_pointer
 __tree<T, Compare, Alloc>::__delete_node(__node_pointer __n)
 {
-	enum dir_t		__n_dir = __child_dir(__n);
-	enum dir_t		__c_dir = (__n->right == nullptr ? LEFT : RIGHT);
+	int				__n_dir = __child_dir(__n);
+	int				__c_dir = (__n->__right == nullptr ? LEFT : RIGHT);
 	__node_pointer	__c = __n->child[__c_dir];
 
 	__n->parent->child[__n_dir] = __c;
@@ -573,7 +575,7 @@ __tree<T, Compare, Alloc>::__delete_fixup_1(__node_pointer __n)
 	{
 		__n->parent->color = RED;
 		__s->color = BLACK;
-		if (__n == __n->parent->left)
+		if (__n == __n->parent->__left)
 			__rotate_left(__n->parent);
 		else
 			__rotate_right(__n->parent);
@@ -589,8 +591,8 @@ __tree<T, Compare, Alloc>::__delete_fixup_2(__node_pointer __n)
 	
 	if ((__node_color(__n->parent) == BLACK) &&
 		(__node_color(__s) == BLACK) &&
-		(__node_color(__s->left) == BLACK) &&
-		(__node_color(__s->right) == BLACK))
+		(__node_color(__s->__left) == BLACK) &&
+		(__node_color(__s->__right) == BLACK))
 	{
 		__s->color = RED;
 		__delete_fixup_0(__n->parent);	
@@ -607,8 +609,8 @@ __tree<T, Compare, Alloc>::__delete_fixup_3(__node_pointer __n)
 	
 	if ((__node_color(__n->parent) == RED) &&
         (__node_color(__s) == BLACK) &&
-        (__node_color(__s->left) == BLACK) &&
-        (__node_color(__s->right) == BLACK)) 
+        (__node_color(__s->__left) == BLACK) &&
+        (__node_color(__s->__right) == BLACK)) 
 	{
         __s->color = RED;
         __n->parent->color = BLACK;
@@ -625,20 +627,20 @@ __tree<T, Compare, Alloc>::__delete_fixup_4(__node_pointer __n)
 	
 	if  (__node_color(__s) == BLACK) 
 	{
-        if ((__n == __n->parent->left) &&
-            (__node_color(__s->right) == BLACK) &&
-            (__node_color(__s->left) == RED)) 
+        if ((__n == __n->parent->__left) &&
+            (__node_color(__s->__right) == BLACK) &&
+            (__node_color(__s->__left) == RED)) 
 		{
             __s->color = RED;
-            __s->left->color = BLACK;
+            __s->__left->color = BLACK;
             __rotate_right(__s);
         } 
-		else if ((__n == __n->parent->right) &&
-            (__node_color(__s->left) == BLACK) &&
-            (__node_color(__s->right) == RED)) 
+		else if ((__n == __n->parent->__right) &&
+            (__node_color(__s->__left) == BLACK) &&
+            (__node_color(__s->__right) == RED)) 
 		{
             __s->color = RED;
-            __s->right->color = BLACK;
+            __s->__right->color = BLACK;
             __rotate_left(__s);
         }
     }
@@ -654,14 +656,14 @@ __tree<T, Compare, Alloc>::__delete_fixup_5(__node_pointer __n)
     __s->color = __n->parent->color;
     __n->parent->color = BLACK;
 
-    if (__n == __n->parent->left) 
+    if (__n == __n->parent->__left) 
 	{
-        __s->right->color = BLACK;
+        __s->__right->color = BLACK;
         __rotate_left(__n->parent);
     } 
 	else 
 	{
-        __s->left->color = BLACK;
+        __s->__left->color = BLACK;
         __rotate_right(__n->parent);
     }
 }
@@ -671,7 +673,7 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::__swap_node(__node_pointer __x, __node_pointer __y)
 {
-	enum color_t	color = __x->color;
+	int	color = __x->color;
 
 	__x->color = __y->color;
 	__y->color = color;
@@ -697,13 +699,13 @@ __tree<T, Compare, Alloc>::erase(iterator position)
 	__node_pointer	__m = position.base();
 	__node_pointer	__c;
 
-	if (__m->left != nullptr && __m->right != nullptr)
+	if (__m->__left != nullptr && __m->__right != nullptr)
 	{
-		__node_pointer	tmp = __tree_min(__m->right);
+		__node_pointer	tmp = __tree_get_min(__m->__right);
 		__swap_node(__m, tmp);
 	}
 
-	__c = __m->child[__m->right == nullptr ? LEFT : RIGHT];
+	__c = __m->child[__m->__right == nullptr ? LEFT : RIGHT];
 	if (__c != nullptr)
 		__delete_node(__m);
 	
@@ -752,9 +754,9 @@ template <class T, class Compare, class Alloc>
 void
 __tree<T, Compare, Alloc>::clear()
 {
-	if (__end_node->left != nullptr)
+	if (__end_node->__left != nullptr)
 	{
-		destroy_node(__end_node->left);
+		destroy_node(__end_node->__left);
 		this->__size = 0;
 		this->__begin_node = this->__end_node;
 	}
@@ -796,32 +798,32 @@ __tree<T, Compare, Alloc>::destroy_node(__node_pointer& __n)
 {
 	if (__n == nullptr)
 		return ;
-	destroy_node(__n->left);
-	destroy_node(__n->right);
+	destroy_node(__n->__left);
+	destroy_node(__n->__right);
 	__node_alloc_traits::destroy(this->__alloc_node, &__n->key);
 	__node_alloc_traits::deallocate(this->__alloc_node, __n, 1);
 	__n = nullptr;
 }
 
-template <class T, class Compare, class Alloc>
-void
-__tree<T, Compare, Alloc>::__print_tree(const std::string& prefix, const __node* node, bool isLeft) const
-{
-	if(node != nullptr)
-	{
-		std::cout << prefix;
+// template <class T, class Compare, class Alloc>
+// void
+// __tree<T, Compare, Alloc>::__print_tree(const std::string& prefix, const __node* node, bool isLeft) const
+// {
+// 	if(node != nullptr)
+// 	{
+// 		std::cout << prefix;
 
-		std::cout << (isLeft ? "├──" : "└──" );
+// 		std::cout << (isLeft ? "├──" : "└──" );
 
-		if (node->color == RED)
-			std::cout << "\033[1;31m" << node->key.first << "\033[0m" << std::endl;
-		else
-			std::cout << node->key.first << std::endl;
+// 		if (node->color == RED)
+// 			std::cout << "\033[1;31m" << node->key.first << "\033[0m" << std::endl;
+// 		else
+// 			std::cout << node->key.first << std::endl;
 
-		__print_tree( prefix + (isLeft ? "│   " : "    "), node->left, true);
-		__print_tree( prefix + (isLeft ? "│   " : "    "), node->right, false);
-	}
-}
+// 		__print_tree( prefix + (isLeft ? "│   " : "    "), node->__left, true);
+// 		__print_tree( prefix + (isLeft ? "│   " : "    "), node->__right, false);
+// 	}
+// }
 
 template <class T, class Compare, class Alloc>
 void
@@ -848,10 +850,10 @@ __tree<T, Compare, Alloc>::__get_uncle(__node* node) const
 
 	if (g_node == nullptr)
 		return (nullptr);
-	if (node->parent == g_node->left)
-		return (g_node->right);
+	if (node->parent == g_node->__left)
+		return (g_node->__right);
 	else
-		return (g_node->left);
+		return (g_node->__left);
 }
 
 template <class T, class Compare, class Alloc>
@@ -860,28 +862,28 @@ __tree<T, Compare, Alloc>::__get_sibling(__node* node) const
 {
 	if ((node == nullptr) || (node->parent == nullptr))
 		return (nullptr);
-	if (node == node->parent->left)
-		return (node->parent->right);
+	if (node == node->parent->__left)
+		return (node->parent->__right);
 	else
-		return (node->parent->left);
+		return (node->parent->__left);
 }
 
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node*
 __tree<T, Compare, Alloc>::__get_min() const
 {
-	if (__end_node->left == nullptr)
+	if (__end_node->__left == nullptr)
 		return (__end_node);
-	return (__tree_min(__root()));
+	return (__tree_get_min(__root()));
 }
 
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node*
 __tree<T, Compare, Alloc>::__get_max() const
 {
-	if (__end_node->left == nullptr)
+	if (__end_node->__left == nullptr)
 		return (__end_node);
-	return (__tree_max(__root()));
+	return (__tree_get_max(__root()));
 }
 
 template <class T, class Compare, class Alloc>
@@ -904,10 +906,10 @@ __tree<T, Compare, Alloc>::__rotate_dir(__node* node, int dir)
 
 	c_node->parent = p_node;
 	if (p_node != nullptr)
-		p_node->child[node == p_node->left ? LEFT : RIGHT] = c_node;
+		p_node->child[node == p_node->__left ? LEFT : RIGHT] = c_node;
 	else
 	{
-		__end_node->left = c_node;
+		__end_node->__left = c_node;
 		c_node->parent = __end_node;
 	}
 	return (c_node);
@@ -961,15 +963,15 @@ __tree<T, Compare, Alloc>::__insert_fixup_3(__node_pointer node)
 {
 	__node_pointer	g_node = __get_grandparent(node);
 
-	if ((node == node->parent->right) && (node->parent == g_node->left))
+	if ((node == node->parent->__right) && (node->parent == g_node->__left))
 	{
 		__rotate_left(node->parent);
-		node = node->left;
+		node = node->__left;
 	} 
-	else if ((node == node->parent->left) && (node->parent == g_node->right))
+	else if ((node == node->parent->__left) && (node->parent == g_node->__right))
 	{
 		__rotate_right(node->parent);
-		node = node->right;
+		node = node->__right;
 	}
 	__insert_fixup_4(node);
 }
@@ -983,7 +985,7 @@ __tree<T, Compare, Alloc>::__insert_fixup_4(__node_pointer node)
 
 	g_node->color = RED;
 	node->parent->color = BLACK;
-	if (node == node->parent->right)
+	if (node == node->parent->__right)
 		__rotate_left(g_node);
 	else
 		__rotate_right(g_node);
@@ -1051,10 +1053,10 @@ __tree<T, Compare, Alloc>::lower_bound(const value_type& val)
 			if (!key_compare()(__n->key, val))
 			{
 				__r = __n;
-				__n = __n->left;
+				__n = __n->__left;
 			}
 			else
-				__n = __n->right;
+				__n = __n->__right;
 		}
 	}
 	return (iterator(__r));
@@ -1073,10 +1075,10 @@ __tree<T, Compare, Alloc>::lower_bound(const value_type& val) const
 			if (!key_compare()(__n->key, val))
 			{
 				__r = __n;
-				__n = __n->left;
+				__n = __n->__left;
 			}
 			else
-				__n = __n->right;
+				__n = __n->__right;
 		}
 	}
 	return (const_iterator(__r));
@@ -1095,10 +1097,10 @@ __tree<T, Compare, Alloc>::upper_bound(const value_type& val)
 			if (key_compare()(val, __n->key))
 			{
 				__r = __n;
-				__n = __n->left;
+				__n = __n->__left;
 			}
 			else
-				__n = __n->right;
+				__n = __n->__right;
 		}
 	}
 	return (iterator(__r));
@@ -1117,10 +1119,10 @@ __tree<T, Compare, Alloc>::upper_bound(const value_type& val) const
 			if (key_compare()(val, __n->key))
 			{
 				__r = __n;
-				__n = __n->left;
+				__n = __n->__left;
 			}
 			else
-				__n = __n->right;
+				__n = __n->__right;
 		}
 	}
 	return (const_iterator(__r));
@@ -1140,10 +1142,10 @@ __tree<T, Compare, Alloc>::equal_range (const value_type& val)
 			if (key_compare()(val, __n->key))
 			{
 				__r = __n;
-				__n = __n->left;
+				__n = __n->__left;
 			}
 			else if (key_compare()(__n->key, val))
-				__n = __n->right;
+				__n = __n->__right;
 			else
 				return (ft::pair<iterator, iterator>(__n, __r));
 		}

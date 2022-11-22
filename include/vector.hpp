@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 13:31:14 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/26 14:34:15 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 14:05:03 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,71 +18,9 @@
 #include "iterator.hpp"
 #include "iterator_traits.hpp"
 #include "ftalgorithm.hpp"
+#include "utility.hpp"
 
 namespace ft {
-
-
-// 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
-// 범위 안의 요소가 모두 같은 경우에 true를 반환합니다.
-template <class InputIterator1, class InputIterator2>  
-bool 
-equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2,
-		typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
-		typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
-{
-	for (; first1 != last1; ++first1, ++first2)
-		if (!(*first1 == *first2))
-			return (false);
-	return (true);
-}
-
-// 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
-// 범위 안의 요소가 모두 같은 경우에 true를 반환합니다.
-template <class InputIterator1, class InputIterator2, class BinaryPredicate>
-bool 
-equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred,
-		typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
-		typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
-{
-	for (; first1 != last1; ++first1, ++first2)
-		if (!pred(*first1, *first2))
-			return (false);
-	return (true);
-}
-
-// [first1,last1) 범위가 사전순으로 [first2,last2) 범위보다 작으면 true를 반환합니다.
-template <class InputIterator1, class InputIterator2>  
-bool 
-lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2,
-						typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
-						typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
-{
-	for (; first2 != last2; ++first1, ++first2)
-	{
-		if (first1 == last1 || *first1 < *first2) 
-			return (true);
-		else if (*first2 < *first1) 
-			return (false);
-	}
-	return (false);
-}
-
-// [first1,last1) 범위가 사전순으로 [first2,last2) 범위보다 작으면 true를 반환합니다.
-template <class InputIterator1, class InputIterator2, class Compare>
-bool 
-lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp,
-						typename ft::enable_if<ft::is_iterator<InputIterator1>::value, InputIterator1>::type* = 0,
-						typename ft::enable_if<ft::is_iterator<InputIterator2>::value, InputIterator2>::type* = 0)
-{
-	for (; first2 != last2; ++first1, ++first2)
-	{
-		if (first1 == last1 || comp(*first1, *first2)) 
-			return (true);
-		else if (comp(*first2, *first1)) 
-			return (false);
-	}
-	return (false);
-}
 
 template <class T, class Alloc = std::allocator<T> >
 class vector 
@@ -195,8 +133,8 @@ private:
 	{
 
 	private:
-		_TmpVector(const _TmpVector& x) {}
-		_TmpVector& operator =	(const _TmpVector& x) {}
+		_TmpVector(const _TmpVector&) {}
+		_TmpVector& operator =	(const _TmpVector&) {}
 
 		pointer			__begin;
 		pointer			__end;
@@ -362,7 +300,7 @@ template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::__construct_end(size_type n, const_reference val)
 {
-	for (int i=0; i<n; i++, this->__end++)
+	for (size_type i=0; i<n; i++, this->__end++)
 		__alloc_traits::construct(this->__alloc, this->__end, val);
 }
 
@@ -380,7 +318,7 @@ template<class T, class Alloc>
 void					
 ft::vector<T, Alloc>::__construct_mid(pointer position, size_type n, const_reference val)
 {
-	for (int i=0; i<n; i++, position++)
+	for (size_type i=0; i<n; i++, position++)
 		__alloc_traits::construct(this->__alloc, position, val);
 }
 
@@ -392,9 +330,9 @@ ft::vector<T, Alloc>::__move_end_backward(pointer start, size_type n)
 {
 	size_type	len = __end - start;
 
-	for (int i=0; i<=len; i++)
+	for (size_type i=0; i<=len; i++)
 		*(start + len - i + n) = *(start + len - i);
-	for (int j=0; j<n; j++)
+	for (size_type j=0; j<n; j++)
 		*(start + j) = 0;
 	this->__end += n;
 }

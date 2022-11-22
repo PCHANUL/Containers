@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/21 15:28:50 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 10:08:30 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,8 @@ protected:
 	typedef	__map_compare<value_type, key_compare>					__tree_compare;
 	typedef	__tree<value_type,	__tree_compare, allocator_type>		__tree_type;
 
-	key_compare		__key_comp;
 	allocator_type	__alloc;
+	key_compare		__key_comp;
 
 public:
 	__tree_type		__root;
@@ -401,8 +401,8 @@ ft::map<Key, T, Compare, Alloc>::swap (map& x)
 	
 	this->__alloc = x.__alloc;
 	this->__key_comp = x.__key_comp;
-	x.__alloc = this->__alloc;
-	x.__key_comp = this->__key_comp;
+	x.__alloc = __tmp_alloc;
+	x.__key_comp = __tmp_compare;
 	__root.swap(x.__root);
 }
 
@@ -565,7 +565,7 @@ operator >= (const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, C
 // map에 대한 swap 알고리즘을 전문화합니다. lhs와 rhs의 내용을 바꿉니다. lhs.swap(rhs) 함수 호출
 template< class Key, class T, class Compare, class Alloc >
 void 
-swap(std::map<Key, T, Compare, Alloc>& lhs, std::map<Key, T, Compare, Alloc>& rhs)
+swap(ft::map<Key, T, Compare, Alloc>& lhs, ft::map<Key, T, Compare, Alloc>& rhs)
 {
 	lhs.swap(rhs);
 }

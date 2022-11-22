@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 12:29:39 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/18 14:44:58 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 08:35:24 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,21 +112,21 @@ make_pair(T1 t, T2 u)
     return (ft::pair<T1, T2>(t, u));
 }
 
-template <class T1, class T2>
-std::ostream&	operator << (std::ostream& os, const ft::pair<T1, T2>& origin)
-{
-    T1  first = origin.first;
-    T2  second = origin.second;
+// template <class T1, class T2>
+// std::ostream&	operator << (std::ostream& os, const ft::pair<T1, T2>& origin)
+// {
+//     T1  first = origin.first;
+//     T2  second = origin.second;
 
-    os << "{";
-    if (first != T1()) { os << first; }
-    else { os << "null"; }
-    os << ": ";
-    if (second != T2()) { os << second; }
-    else { os << "null"; }
-    os << "}";
-    return (os);
-}
+//     os << "{";
+//     if (first != T1()) { os << first; }
+//     else { os << "null"; }
+//     os << ": ";
+//     if (second != T2()) { os << second; }
+//     else { os << "null"; }
+//     os << "}";
+//     return (os);
+// }
    
 }
 

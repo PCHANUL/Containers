@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/11 18:41:33 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 09:11:59 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,15 +80,15 @@ template <class TreeIter>
 TreeIter
 ft::m_iter<TreeIter>::base() const
 {
-	return (__i);
+	return (this->__i);
 }
 
 template <class TreeIter>
 ft::m_iter<TreeIter>&		
 ft::m_iter<TreeIter>::operator = (const m_iter& __x)
 {
-	if (__x.__i != __i)
-		__i = __x.__i;
+	if (__x.__i != this->__i)
+		this->__i = __x.__i;
 	return (*this);
 }
 
@@ -96,21 +96,21 @@ template <class TreeIter>
 typename ft::m_iter<TreeIter>::reference
 ft::m_iter<TreeIter>::operator * () const
 {
-	return (*__i);
+	return (*(this->__i));
 }
 
 template <class TreeIter>
 typename ft::m_iter<TreeIter>::pointer		
 ft::m_iter<TreeIter>::operator -> () const
 {
-	return (__i.operator->());
+	return (this->__i.operator->());
 }
 
 template <class TreeIter>
 ft::m_iter<TreeIter>& 	
 ft::m_iter<TreeIter>::operator ++ ()
 {
-	++__i;
+	this->__i++;
 	return (*this);
 }
 
@@ -127,7 +127,7 @@ template <class TreeIter>
 ft::m_iter<TreeIter>& 	
 ft::m_iter<TreeIter>::operator -- ()
 {
-	--__i;
+	this->__i--;
 	return (*this);
 }
 
@@ -207,15 +207,15 @@ template <class T>
 typename ft::v_iter<T>::pointer		
 ft::v_iter<T>::base() const
 {
-	return (__i);
+	return (this->__i);
 }
 
 template <class T>
 ft::v_iter<T>&
 ft::v_iter<T>::operator = (const ft::v_iter<T>& __x)
 {
-	if (__x.__i != __i)
-		__i = __x.__i;
+	if (__x.__i != this->__i)
+		this->__i = __x.__i;
 	return (*this);
 }
 
@@ -223,21 +223,21 @@ template <class T>
 typename ft::v_iter<T>::reference
 ft::v_iter<T>::operator * () const
 {
-	return (*__i);
+	return (*(this->__i));
 }
 
 template <class T>
 typename ft::v_iter<T>::pointer
 ft::v_iter<T>::operator -> () const
 {
-	return (__i);
+	return (this->__i);
 }
 
 template <class T>
 ft::v_iter<T>&
 ft::v_iter<T>::operator ++ () 
 { 
-	++__i; 
+	this->__i++; 
 	return (*this); 
 }
 
@@ -254,7 +254,7 @@ template <class T>
 ft::v_iter<T>&
 ft::v_iter<T>::operator -- () 
 { 
-	--__i; 
+	this->__i--; 
 	return (*this); 
 }
 
@@ -280,7 +280,7 @@ template <class T>
 ft::v_iter<T>&
 ft::v_iter<T>::operator += (difference_type n)
 { 
-	__i += n;
+	this->__i += n;
 	return (*this);
 }
 
@@ -297,7 +297,7 @@ template <class T>
 ft::v_iter<T>&
 ft::v_iter<T>::operator -= (difference_type n)
 { 
-	__i -= n;
+	this->__i -= n;
 	return (*this);
 }
 
@@ -305,7 +305,7 @@ template <class T>
 typename ft::v_iter<T>::reference
 ft::v_iter<T>::operator [] (difference_type n) const
 {
-	return (*(__i + n));
+	return (*(this->__i + n));
 }
 
 template <class T>
@@ -481,7 +481,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>&
 ft::reverse_iterator<Iterator>::operator ++ ()
 {
-	--__iter;
+	this->__iter--;
 	return (*this);
 }
 
@@ -502,7 +502,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>&
 ft::reverse_iterator<Iterator>::operator += (difference_type n)
 {
-	__iter -= n;
+	this->__iter -= n;
 	return (*this);
 }
 
@@ -523,7 +523,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>& 
 ft::reverse_iterator<Iterator>::operator -- ()
 {
-	++__iter;
+	this->__iter++;
 	return (*this);
 }
 
@@ -544,7 +544,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>& 
 ft::reverse_iterator<Iterator>::operator -= (difference_type n)
 {
-	__iter += n;
+	this->__iter += n;
 	return (*this);
 }
 
@@ -564,7 +564,7 @@ template <class Iterator>
 typename ft::reverse_iterator<Iterator>::reference 
 ft::reverse_iterator<Iterator>::operator [] (difference_type n) const
 {
-	return (__iter[(-n) - 1]);
+	return (this->__iter[(-n) - 1]);
 }
 
 // reverse_iterator 개체 lhs와 rhs 간에 적절한 비교 작업을 수행합니다. 

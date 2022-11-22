@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/21 17:57:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/22 14:11:39 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include <time.h>
 
-#include "vector.hpp"
-#include "map.hpp"
+#include "./include/vector.hpp"
+#include "./include/map.hpp"
 
 class Test
 {
@@ -147,6 +148,14 @@ int main(void)
 {
 	Testing	test;
 
+	clock_t start, end;
+    double result;
+    start = clock(); //시간 측정 시작
+
+	end = clock(); //시간 측정 끝
+    result = (double)(end - start);
+	std::cout << result << std::endl;
+
 	std::cout << "\n< vector >" << std::endl;
 	{
 
@@ -177,8 +186,13 @@ int main(void)
 	test.main("Fill constructor (with val)");
 	{
 		int val = 5;
-		int len = 10;
+		int len = 10000000;
+		start = clock();
 		ft::vector<int> ft_filled(len, val);
+		end = clock();
+		std::cout <<  "ft : " << (double)(end - start) << std::endl;
+
+
 		ft::vector<int>::iterator ft_begin = ft_filled.begin();
 		ft::vector<int>::iterator ft_end = ft_filled.end();
 		ft::vector<int>::iterator it = ft_begin;
@@ -188,6 +202,13 @@ int main(void)
 			if (*it != val) 
 				break ;
 		}
+
+		val = 5;
+		len = 10000000;
+		start = clock();
+		std::vector<int> std_filled(len, val);
+		end = clock();
+		std::cout <<  "std : " << (double)(end - start) << std::endl;
 
 		test.main_then(it == ft_end && len == 0);
 		test.main_end();
@@ -202,7 +223,6 @@ int main(void)
 		ft::vector<int> other(10, 7);
 		ft::vector<int>::iterator begin = nums.begin();
 		ft::vector<int>::iterator end = nums.end() - offset;
-		ft::vector<int>::iterator other_end = other.end();
 
 		{
 			ft::vector<int> range_nums(begin, end);
@@ -280,7 +300,7 @@ int main(void)
 
 		b = a;
 
-		test.main_then(b.capacity() == b_size);
+		test.main_then(static_cast<int>(b.capacity()) == b_size);
 		test.main_end();
 	}
 	
@@ -818,6 +838,8 @@ int main(void)
 		test.main_end();
 	}
 
+
+
 	}
 
 	std::cout << "\n< map >" << std::endl;
@@ -889,10 +911,7 @@ int main(void)
 			std_map.insert(std_pair);
 		}
 
-		ft::map<int, int>::iterator	iter = std_map.begin();
 		std_pair.first = 500;
-		ft::map<int, int>::iterator	new_iter = std_map.insert(iter, std_pair);
-
 		ft::map<int, int>::iterator	std_iter = std_map.begin();
 		ft::map<int, int>::iterator	std_end = std_map.end();
 		std_end--;
@@ -1356,6 +1375,7 @@ int main(void)
 
 	// }	// __tree
 
+	
 	return (0);
 }
 

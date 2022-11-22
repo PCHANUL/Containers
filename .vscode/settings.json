@@ -73,6 +73,12 @@
         "__memory": "cpp",
         "__bits": "cpp",
         "clocale": "cpp",
-        "__functional_base_03": "cpp"
+        "__functional_base_03": "cpp",
+        "list": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "filesystem": "cpp"
     }
 }
