@@ -6,19 +6,19 @@
 #    By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/20 04:05:15 by cpak              #+#    #+#              #
-#    Updated: 2022/11/22 14:01:04 by cpak             ###   ########seoul.kr   #
+#    Updated: 2022/11/23 12:52:09 by cpak             ###   ########seoul.kr   #
 #                                                                              #
 # **************************************************************************** #
 
 .SUFFIXES:	.cpp .o
 
-SRCS		= main.cpp
+SRCS		= test.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 
 INC			= -I./include
 
-NAME		= containers
+NAME		= test
 
 CC			= c++
 CFLAGS		= -Wextra -Wall -Werror -std=c++98

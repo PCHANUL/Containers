@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 14:06:22 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/22 14:11:39 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/23 14:16:412:18 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,39 @@
 
 #include "./include/vector.hpp"
 #include "./include/map.hpp"
+#include "./include/stack.hpp"
+
+#include <time.h>
+#include <iomanip>
+
+#define MAX_RAM 4294967296
+#define BUFFER_SIZE 4096
+struct Buffer
+{
+	int idx;
+	char buff[BUFFER_SIZE];
+};
+
+#define COUNT (MAX_RAM / (int)sizeof(Buffer))
+
+template<typename T>
+class MutantStack : public ft::stack<T>
+{
+public:
+	MutantStack() {}
+	MutantStack(const MutantStack<T>& src) { *this = src; }
+	MutantStack<T>& operator=(const MutantStack<T>& rhs) 
+	{
+		this->c = rhs.c;
+		return *this;
+	}
+	~MutantStack() {}
+
+	typedef typename ft::stack<T>::container_type::iterator iterator;
+
+	iterator begin() { return this->c.begin(); }
+	iterator end() { return this->c.end(); }
+};
 
 class Test
 {
@@ -41,6 +74,8 @@ private:
 	bool			__result_sub;
 	std::string		__msg_main;
 	std::string		__msg_sub;
+	clock_t			start;
+	clock_t			end;
 
 	void __print(bool is_succeed) {
 		if (is_succeed)
@@ -89,6 +124,18 @@ public:
 			std::cout << "✕" << ' ';
 		if (__result_sub)
 			__result_sub = is_true;
+	}
+
+	void time_start(std::string s)
+	{
+		std::cout << std::setw(10) << s;
+		start = clock();
+	}
+	
+	void time_end()
+	{
+		end = clock();
+		std::cout << std::setw(10) << (end - start) << "ms" << std::endl;
 	}
 
 	template<class Iterator>
@@ -148,14 +195,6 @@ int main(void)
 {
 	Testing	test;
 
-	clock_t start, end;
-    double result;
-    start = clock(); //시간 측정 시작
-
-	end = clock(); //시간 측정 끝
-    result = (double)(end - start);
-	std::cout << result << std::endl;
-
 	std::cout << "\n< vector >" << std::endl;
 	{
 
@@ -181,38 +220,42 @@ int main(void)
 
 		test.main_then(ft_begin != ft_end && len == 0);
 		test.main_end();
+
+		test.time_start("ft :");
+		ft::vector<int> ft_vec(COUNT);
+		test.time_end();
+		
+		test.time_start("std :");
+		std::vector<int> std_vec(COUNT);
+		test.time_end();
 	}
 
 	test.main("Fill constructor (with val)");
 	{
 		int val = 5;
 		int len = 10000000;
-		start = clock();
+
 		ft::vector<int> ft_filled(len, val);
-		end = clock();
-		std::cout <<  "ft : " << (double)(end - start) << std::endl;
-
-
 		ft::vector<int>::iterator ft_begin = ft_filled.begin();
 		ft::vector<int>::iterator ft_end = ft_filled.end();
-		ft::vector<int>::iterator it = ft_begin;
 
-		for (; it!=ft_end; it++, len--)
+		for (; ft_begin!=ft_end; ft_begin++, len--)
 		{
-			if (*it != val) 
+			if (*ft_begin != val) 
 				break ;
 		}
 
-		val = 5;
-		len = 10000000;
-		start = clock();
-		std::vector<int> std_filled(len, val);
-		end = clock();
-		std::cout <<  "std : " << (double)(end - start) << std::endl;
-
-		test.main_then(it == ft_end && len == 0);
+		test.main_then(ft_begin == ft_end && len == 0);
 		test.main_end();
-	} 
+
+		test.time_start("ft :");
+		ft::vector<int> ft_vec(COUNT, 10);
+		test.time_end();
+		
+		test.time_start("std :");
+		std::vector<int> std_vec(COUNT, 10);
+		test.time_end();
+	}
 	
 	test.main("Range constructor");
 	{
@@ -240,6 +283,17 @@ int main(void)
 			test.main_then(it == range_end && idx == len - offset);
 			test.main_end();
 		}
+
+		ft::vector<int> ft_vec(COUNT, 10);
+		test.time_start("ft :");
+		ft::vector<int>	ft_copy(ft_vec.begin(), ft_vec.end());
+		test.time_end();
+		
+		std::vector<int> std_vec(COUNT, 10);
+		test.time_start("std :");
+		std::vector<int>	std_copy(std_vec.begin(), std_vec.end());
+		test.time_end();
+		
 		{
 			test.sub("Exception : first가 last보다 뒤에 있는 경우(ft::length_error : vector)");
 			try
@@ -275,6 +329,16 @@ int main(void)
 			&& v_copy.capacity() == v.size()
 			&& v_copy.size() == v.size());
 		test.main_end();
+
+		ft::vector<int> 	ft_vec(COUNT, 10);
+		test.time_start("ft :");
+		ft::vector<int>		ft_copy(ft_vec);
+		test.time_end();
+		
+		std::vector<int> 	std_vec(COUNT, 10);
+		test.time_start("std :");
+		std::vector<int>	std_copy(std_vec);
+		test.time_end();
 	}
 
 	test.main("Destructor");
@@ -295,13 +359,25 @@ int main(void)
 	{
 		int					a_size = 10;
 		int 				b_size = 20;
-		ft::vector<int>	a(a_size, 1);
-		ft::vector<int>	b(b_size, 1);
+		ft::vector<int>		a(a_size, 1);
+		ft::vector<int>		b(b_size, 1);
 
 		b = a;
 
 		test.main_then(static_cast<int>(b.capacity()) == b_size);
 		test.main_end();
+
+		ft::vector<int> ft_vec1(COUNT, 10);
+		ft::vector<int> ft_vec2(COUNT, 20);
+		test.time_start("ft :");
+		ft_vec1 = ft_vec2;
+		test.time_end();
+		
+		std::vector<int> std_vec1(COUNT, 10);
+		std::vector<int> std_vec2(COUNT, 20);
+		test.time_start("std :");
+		std_vec1 = std_vec2;
+		test.time_end();
 	}
 	
 	test.main("resize");
@@ -390,7 +466,7 @@ int main(void)
 		std::vector<int>	std_over(33, 7);
 		
 		ft::vector<int>		ft_v(10, 1);
-		std::vector<int>	ft_under(2, 3);
+		ft::vector<int>		ft_under(2, 3);
 		ft::vector<int>		ft_over(33, 7);
 
 		std_v.assign(std_under.begin(), std_under.end());
@@ -403,6 +479,18 @@ int main(void)
 		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
+
+		ft::vector<int>	ft_vec1;
+		ft::vector<int>	ft_vec2(COUNT, 10);
+		test.time_start("ft : ");
+		ft_vec1.assign(ft_vec2.begin(), ft_vec2.end());
+		test.time_end();
+		
+		std::vector<int>	std_vec1;
+		std::vector<int>	std_vec2(COUNT, 10);
+		test.time_start("std : ");
+		std_vec1.assign(std_vec2.begin(), std_vec2.end());
+		test.time_end();
 	}
 
 	test.main("assign(size, value)");
@@ -431,6 +519,16 @@ int main(void)
 		}
 		
 		test.main_end();
+
+		ft::vector<int>	ft_vec1;
+		test.time_start("ft : ");
+		ft_vec1.assign(COUNT, 10);
+		test.time_end();
+		
+		std::vector<int>	std_vec1;
+		test.time_start("std : ");
+		std_vec1.assign(COUNT, 10);
+		test.time_end();
 	}
 
 	test.main("push_back");
@@ -455,6 +553,18 @@ int main(void)
 		test.main_then(vec.size() == 5 && vec.capacity() == 8);
 
 		test.main_end();
+
+		ft::vector<Buffer>	ft_vector_buffer;
+		test.time_start("ft : ");
+		for (int i = 0; i < 1000; i++)
+			ft_vector_buffer.push_back(Buffer());
+		test.time_end();
+		
+		std::vector<Buffer>	std_vector_buffer;
+		test.time_start("std : ");
+		for (int i = 0; i < 1000; i++)
+			std_vector_buffer.push_back(Buffer());
+		test.time_end();
 	}
 
 	test.main("pop_back");
@@ -468,6 +578,18 @@ int main(void)
 		test.main_then(test.compare_iter(std_v.begin(), std_v.end(), ft_v.begin(), ft_v.end()));
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
+
+		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
+		test.time_start("ft : ");
+		for (int i = 0; i < 1000; i++)
+			ft_vector_buffer.pop_back();
+		test.time_end();
+		
+		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
+		test.time_start("std : ");
+		for (int i = 0; i < 1000; i++)
+			std_vector_buffer.pop_back();
+		test.time_end();
 	}
 
 	test.main("insert(a value)");
@@ -490,6 +612,18 @@ int main(void)
 		test.main_then(test.compare_size(std_v, ft_v));
 
 		test.main_end();
+		
+		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
+		test.time_start("ft : ");
+		for (int i = 0; i < 5; i++)
+			ft_vector_buffer.insert(ft_vector_buffer.begin(), Buffer());
+		test.time_end();
+
+		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
+		test.time_start("std : ");
+		for (int i = 0; i < 5; i++)
+			std_vector_buffer.insert(std_vector_buffer.begin(), Buffer());
+		test.time_end();
 	}
 
 	test.main("insert(size, value)");
@@ -563,6 +697,16 @@ int main(void)
 		test.main_then(test.compare_vector(std_v, ft_v));
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
+
+		ft::vector<Buffer>	ft_vector_buffer(COUNT, Buffer());
+		test.time_start("ft : ");
+		ft_vector_buffer.erase(ft_vector_buffer.begin(), ft_vector_buffer.end());
+		test.time_end();
+		
+		std::vector<Buffer>	std_vector_buffer(COUNT, Buffer());
+		test.time_start("std : ");
+		std_vector_buffer.erase(std_vector_buffer.begin(), std_vector_buffer.end());
+		test.time_end();
 	}
 
 	test.main("swap");
@@ -583,6 +727,18 @@ int main(void)
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_then(test.compare_size(std_tmp, ft_tmp));
 		test.main_end();
+
+		ft::vector<Buffer>	ft_vector_buffer1(COUNT, Buffer());
+		ft::vector<Buffer>	ft_vector_buffer2(COUNT, Buffer());
+		test.time_start("ft : ");
+		ft_vector_buffer1.swap(ft_vector_buffer2);
+		test.time_end();
+		
+		std::vector<Buffer>	std_vector_buffer1(COUNT, Buffer());
+		std::vector<Buffer>	std_vector_buffer2(COUNT, Buffer());
+		test.time_start("std : ");
+		std_vector_buffer1.swap(std_vector_buffer2);
+		test.time_end();
 	}
 
 	test.main("clear");
@@ -595,6 +751,16 @@ int main(void)
 		test.main_then(test.compare_vector(std_v, ft_v));
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
+
+		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
+		test.time_start("ft : ");
+		ft_vector_buffer.clear();
+		test.time_end();
+		
+		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
+		test.time_start("std : ");
+		std_vector_buffer.clear();
+		test.time_end();
 	}
 
 	test.main("operator =");
@@ -614,6 +780,18 @@ int main(void)
 		test.main_then(test.compare_vector(std_tmp, ft_tmp));
 		test.main_then(test.compare_size(std_v, ft_v));
 		test.main_end();
+
+		ft::vector<int> ft_vec1(COUNT, 10);
+		ft::vector<int> ft_vec2(COUNT, 20);
+		test.time_start("ft :");
+		ft_vec1 = ft_vec2;
+		test.time_end();
+		
+		std::vector<int> std_vec1(COUNT, 10);
+		std::vector<int> std_vec2(COUNT, 20);
+		test.time_start("std :");
+		std_vec1 = std_vec2;
+		test.time_end();
 	}
 
 	test.main("equal");
@@ -845,6 +1023,49 @@ int main(void)
 	std::cout << "\n< map >" << std::endl;
 	{
 
+	test.main("Constructor");
+	{
+		ft::map<int, int>				ft_map;
+		ft::map<int, int>::iterator		ft_end = ft_map.end();
+		ft::map<int, int>::iterator		ft_begin = ft_map.begin();
+
+		test.main_then(ft_begin == ft_end);
+		ft_map.insert(ft::pair<int, int>(10, 10));
+		ft_begin = ft_map.begin();
+		ft_begin++;
+		test.main_then(ft_begin == ft_end);
+		test.main_end();	
+	}
+
+	test.main("Range Constructor");
+	{
+		ft::map<int, int>				ft_map;
+		ft::map<int, int>::iterator		ft_begin;
+		ft::map<int, int>::iterator		ft_end;
+		size_t len;
+
+		for (int i = 0; i < COUNT; ++i)
+			ft_map.insert(ft::make_pair(rand(), rand()));
+
+		len = 0;
+		ft_begin = ft_map.begin();
+		ft_end = ft_map.end();
+
+		for (; ft_begin != ft_end; ++ft_begin, ++len)
+		{}
+		test.main_then(len == ft_map.size());
+		
+		int sum = 0;
+		for (int i = 0; i < 10000; i++)
+		{
+			int access = rand();
+			sum += ft_map[access];
+		}
+		test.main_then(sum == 0);
+	
+		test.main_end();
+	}
+
 	test.main("pair");
 	{
 		std::pair <std::string, double>	std1;                  
@@ -897,6 +1118,18 @@ int main(void)
 		ft_map.insert(ft::pair<int, int>(6, 10));
 
 		test.main_end();
+
+		ft::map<int, int>	ft_map_int;
+		test.time_start("ft : ");
+		for (int i = 0; i < COUNT; ++i)
+			ft_map_int.insert(ft::make_pair(rand(), rand()));
+		test.time_end();
+		
+		std::map<int, int>	std_map_int;
+		test.time_start("std : ");
+		for (int i = 0; i < COUNT; ++i)
+			std_map_int.insert(std::make_pair(rand(), rand()));
+		test.time_end();
 	}
 
 	test.main("insert(hint)");
@@ -908,7 +1141,7 @@ int main(void)
 		for (int i=0; i<10; i++)
 		{
 			std_pair.first = nums[i];
-			std_map.insert(std_pair);
+			std_map.insert(std_map.begin(), std_pair);
 		}
 
 		std_pair.first = 500;
@@ -921,6 +1154,18 @@ int main(void)
 		}
 		test.main_then((*std_iter).first == (*std_end).first);
 		test.main_end();
+
+		ft::map<int, int>	ft_map_int;
+		test.time_start("ft : ");
+		for (int i = 0; i < COUNT; ++i)
+			ft_map_int.insert(ft::make_pair(rand(), rand()));
+		test.time_end();
+		
+		std::map<int, int>	std_map_int;
+		test.time_start("std : ");
+		for (int i = 0; i < COUNT; ++i)
+			std_map_int.insert(std::make_pair(rand(), rand()));
+		test.time_end();
 	}
 
 	test.main("insert(range)");
@@ -949,6 +1194,17 @@ int main(void)
 		}
 		
 		test.main_end();
+
+		
+		test.time_start("ft : ");
+		ft::map<int, int>	ft_range(void);
+		test.time_end();
+		
+		std::map<int, int>	std_map_int;
+		test.time_start("std : ");
+		for (int i = 0; i < COUNT; ++i)
+			std_map_int.insert(std::make_pair(rand(), rand()));
+		test.time_end();
 	}
 
 	test.main("iterator");
@@ -968,20 +1224,6 @@ int main(void)
 		{
 			test.main_then((*ft_iter).first == nums[i]);
 		}
-		test.main_end();
-	}
-
-	test.main("Constructor");
-	{
-		ft::map<int, int>				std_map;
-		ft::map<int, int>::iterator		std_end = std_map.end();
-		ft::map<int, int>::iterator		std_begin = std_map.begin();
-
-		test.main_then(std_begin == std_end);
-		std_map.insert(ft::pair<int, int>(10, 10));
-		std_begin = std_map.begin();
-		std_begin++;
-		test.main_then(std_begin == std_end);
 		test.main_end();
 	}
 

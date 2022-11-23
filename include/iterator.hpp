@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/22 09:11:59 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/23 18:12:20 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -375,13 +375,9 @@ distance (InputIterator first,
 			typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
 			InputIterator>::type last)
 {
-	typename iterator_traits<InputIterator>::difference_type result = 0;
-
 	if (first.base() > last.base())
 		throw ft::length_error("vector");
-	while (first++ != last)
-		result += 1;
-	return (result);
+	return (last.base() - first.base());
 }
 
 template <class Iterator>

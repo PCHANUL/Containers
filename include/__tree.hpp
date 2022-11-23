@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/22 14:06:27 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/23 15:31:53 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,6 +374,16 @@ __tree<T, Compare, Alloc>::~__tree()
 }
 
 template <class T, class Compare, class Alloc>
+__tree<T, Compare, Alloc>&							
+__tree<T, Compare, Alloc>::operator = (const __tree& __x)
+{
+	__x.__alloc = this->__alloc;
+	__x.__alloc_node = this->__alloc_node;
+	__x.__key_comp = this->__key_comp;
+	__x.insert(this->begin(), this->end());
+}
+
+template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node_pointer
 __tree<T, Compare, Alloc>::__root() const
 {
@@ -720,7 +730,7 @@ __tree<T, Compare, Alloc>::erase(iterator position)
 	if (__c == nullptr)
 		__delete_node(__m);
 
-	__node_alloc_traits::destroy(this->__alloc_node, __m);
+	__alloc_traits::destroy(this->__alloc, &__m->key);
 	__node_alloc_traits::deallocate(this->__alloc_node, __m, 1);
 	this->__size--;
 }
@@ -800,7 +810,7 @@ __tree<T, Compare, Alloc>::destroy_node(__node_pointer& __n)
 		return ;
 	destroy_node(__n->__left);
 	destroy_node(__n->__right);
-	__node_alloc_traits::destroy(this->__alloc_node, &__n->key);
+	__alloc_traits::destroy(this->__alloc, &__n->key);
 	__node_alloc_traits::deallocate(this->__alloc_node, __n, 1);
 	__n = nullptr;
 }
