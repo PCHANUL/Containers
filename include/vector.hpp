@@ -17,10 +17,7 @@
 #include "type_traits.hpp"
 #include "iterator.hpp"
 #include "iterator_traits.hpp"
-#include "ftalgorithm.hpp"
 #include "utility.hpp"
-
-#include <time.h>
 
 namespace ft {
 
@@ -52,13 +49,13 @@ protected:
 	allocator_type											__alloc;
 
 public:
-	vector (const allocator_type& alloc = allocator_type());
-	vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
+	vector(const allocator_type& alloc = allocator_type());
+	vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 			typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
-	vector (const vector& x);
+	vector(const vector& x);
 	~vector();
 	vector&					operator = (const vector& x);
 
@@ -73,15 +70,15 @@ public:
 
 	size_type				size() const;
 	size_type				max_size() const;
-	void					resize (size_type n, value_type val = value_type());
+	void					resize(size_type n, value_type val = value_type());
 	size_type				capacity() const;
 	bool					empty() const;
-	void					reserve (size_type n);
+	void					reserve(size_type n);
 
-	reference 				operator[] (size_type n);
-	const_reference 		operator[] (size_type n) const;
-	reference 				at (size_type n);
-	const_reference 		at (size_type n) const;
+	reference 				operator[](size_type n);
+	const_reference 		operator[](size_type n) const;
+	reference 				at(size_type n);
+	const_reference 		at(size_type n) const;
 	reference 				front();
 	const_reference 		front() const;
 	reference 				back();
@@ -90,19 +87,19 @@ public:
 	const value_type* 		data() const;
 
 	template <class InputIterator> 
-	void					assign (InputIterator first, InputIterator last,
+	void					assign(InputIterator first, InputIterator last,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
-	void					assign (size_type n, const value_type& val);
-	void					push_back (const value_type& val);
+	void					assign(size_type n, const value_type& val);
+	void					push_back(const value_type& val);
 	void					pop_back();
-	iterator				insert (iterator position, const value_type& val);
-    void					insert (iterator position, size_type n, const value_type& val);
+	iterator				insert(iterator position, const value_type& val);
+    void					insert(iterator position, size_type n, const value_type& val);
 	template <class InputIterator> 
-	void					insert (iterator position, InputIterator first, InputIterator last,
+	void					insert(iterator position, InputIterator first, InputIterator last,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
-	iterator				erase (iterator position);
-	iterator				erase (iterator first, iterator last);
-	void					swap (vector& x);
+	iterator				erase(iterator position);
+	iterator				erase(iterator first, iterator last);
+	void					swap(vector& x);
 	void					clear();
 
 	allocator_type			get_allocator() const;
@@ -138,13 +135,28 @@ private:
 	{
 
 	private:
-		_TmpVector(const _TmpVector&) {}
-		_TmpVector& operator =	(const _TmpVector&) {}
-
 		pointer			__begin;
 		pointer			__end;
 		pointer 		__end_mem;
 		allocator_type	__alloc;
+
+		_TmpVector() : __begin(nullptr), __end(nullptr), __end_mem(nullptr), __alloc(allocator_type())
+		{
+		}
+
+		_TmpVector(const _TmpVector& __x) 
+		{
+			*this = __x;
+		}
+		
+		_TmpVector& operator = (const _TmpVector& __x) 
+		{
+			this->__alloc = __x.alloc;
+			this->__begin = __alloc_traits::allocate(this->__alloc, __x.size());
+			this->__end_mem = this->__begin + __x.size();
+			this->__end = this->__begin;
+			return (*this);
+		}
 
 	public:
 		_TmpVector(allocator_type& alloc, size_type n)
@@ -165,8 +177,15 @@ private:
 				__alloc_traits::deallocate(this->__alloc, this->__begin, this->__end - this->__begin);
 		}
 
-		size_type	size() { return (this->__end - this->__begin); }
-		size_type	capacity() { return (this->__end_mem - this->__begin); }
+		size_type	size() 
+		{ 
+			return (this->__end - this->__begin); 
+		}
+
+		size_type	capacity() 
+		{ 
+			return (this->__end_mem - this->__begin); 
+		}
 
 		void	insert_end(value_type val)
 		{
@@ -251,7 +270,7 @@ ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allo
 // 동일한 순서로 x 의 각 요소 복사본을 사용하여 컨테이너를 생성합니다.
 // 인자의 데이터 크기만큼의 메모리 크기를 가집니다.
 template<class T, class Alloc>
-ft::vector<T, Alloc>::vector (const vector& x)
+ft::vector<T, Alloc>::vector(const vector& x)
 {
 	__allocate(x.size(), x.__alloc);
 	__construct_end(x.begin(), x.end(), x.size());
@@ -870,17 +889,12 @@ template<class T, class Alloc>
 ft::vector<T, Alloc>& 
 ft::vector<T, Alloc>::operator = (const vector& x)
 {
+	if (this->__alloc != x.__alloc)
+	{
+		__destroy_end(this->__begin);
+		this->__alloc = x.__alloc;
+	}
 	assign(x.begin(), x.end());
-
-	// __destroy_end(__begin);
-	// if (x.size() > this->capacity())
-	// {
-	// 	_TmpVector	tmp(this->__alloc, x.size());
-	// 	tmp.insert_end(x.begin(), x.end());
-	// 	tmp.move(*this);
-	// }
-	// else
-	// 	__construct_end(x.begin(), x.end());
 	return (*this);
 }
 
@@ -935,7 +949,6 @@ swap(std::vector<T, Alloc>& lhs, std::vector<T,Alloc>& rhs)
 {
 	lhs.swap(rhs);
 }
-
 
 } // namespace ft
 

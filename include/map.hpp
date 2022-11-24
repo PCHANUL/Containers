@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/22 10:08:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 14:08:02 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,18 @@
 #include "utility.hpp"
 #include "__tree.hpp"
 
-
-#include <utility>
-
 namespace ft
 {
 
 template<class Key, class Compare>
-class __map_compare : private Compare
+struct __map_compare : private Compare
 {
-
+private:
 	Compare comp;
 
 public:
 	__map_compare() : Compare()	{}
-	
-public:
+
 	bool operator() (const Key& lhs, const Key& rhs) const
 	{ return comp(lhs.first, rhs.first); }
 };
@@ -66,9 +62,9 @@ protected:
 
 	allocator_type	__alloc;
 	key_compare		__key_comp;
+	__tree_type		__root;
 
 public:
-	__tree_type		__root;
 	typedef ft::m_iter<typename __tree_type::iterator>				iterator;
 	typedef ft::m_iter<typename __tree_type::const_iterator>		const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
@@ -87,8 +83,7 @@ public:
 		bool operator() (const value_type& lhs, const value_type& rhs) const
 		{ return comp(lhs.first, rhs.first); }
 	};
-		
-public:
+
 	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 	template <class InputIterator>
 	map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(),
@@ -235,7 +230,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rbegin()
 {
-	return (reverse_iterator(__root.begin()));
+	return (reverse_iterator(__root.end()));
 }
 
 // 객체가 const로 한정된 경우 const_reverse_iterator를 반환합니다.
@@ -243,7 +238,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rbegin() const
 {
-	return (const_reverse_iterator(__root.begin()));
+	return (const_reverse_iterator(__root.end()));
 }
 
 // 컨테이너의 첫번째 요소를 가리키는 역방향 반복자를 반환합니다.
@@ -252,7 +247,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rend()
 {
-	return (reverse_iterator(__root.end()));
+	return (reverse_iterator(__root.begin()));
 }
 
 // 객체가 const로 한정된 경우 const_reverse_iterator를 반환합니다.
@@ -260,7 +255,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_reverse_iterator
 ft::map<Key, T, Compare, Alloc>::rend() const
 {
-	return (const_reverse_iterator(__root.end()));
+	return (const_reverse_iterator(__root.begin()));
 }
 
 // 컨테이너가 비어있는지 확인하고 bool 값을 반환합니다.

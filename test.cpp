@@ -131,6 +131,16 @@ public:
 		std::cout << std::setw(10) << s;
 		start = clock();
 	}
+
+	void time_start_ft()
+	{
+		time_start("ft : ");
+	}
+	
+	void time_start_std()
+	{
+		time_start("std : ");
+	}
 	
 	void time_end()
 	{
@@ -482,13 +492,13 @@ int main(void)
 
 		ft::vector<int>	ft_vec1;
 		ft::vector<int>	ft_vec2(COUNT, 10);
-		test.time_start("ft : ");
+		test.time_start_ft();
 		ft_vec1.assign(ft_vec2.begin(), ft_vec2.end());
 		test.time_end();
 		
 		std::vector<int>	std_vec1;
 		std::vector<int>	std_vec2(COUNT, 10);
-		test.time_start("std : ");
+		test.time_start_std();
 		std_vec1.assign(std_vec2.begin(), std_vec2.end());
 		test.time_end();
 	}
@@ -521,12 +531,12 @@ int main(void)
 		test.main_end();
 
 		ft::vector<int>	ft_vec1;
-		test.time_start("ft : ");
+		test.time_start_ft();
 		ft_vec1.assign(COUNT, 10);
 		test.time_end();
 		
 		std::vector<int>	std_vec1;
-		test.time_start("std : ");
+		test.time_start_std();
 		std_vec1.assign(COUNT, 10);
 		test.time_end();
 	}
@@ -555,13 +565,13 @@ int main(void)
 		test.main_end();
 
 		ft::vector<Buffer>	ft_vector_buffer;
-		test.time_start("ft : ");
+		test.time_start_ft();
 		for (int i = 0; i < 1000; i++)
 			ft_vector_buffer.push_back(Buffer());
 		test.time_end();
 		
 		std::vector<Buffer>	std_vector_buffer;
-		test.time_start("std : ");
+		test.time_start_std();
 		for (int i = 0; i < 1000; i++)
 			std_vector_buffer.push_back(Buffer());
 		test.time_end();
@@ -580,13 +590,13 @@ int main(void)
 		test.main_end();
 
 		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
-		test.time_start("ft : ");
+		test.time_start_ft();
 		for (int i = 0; i < 1000; i++)
 			ft_vector_buffer.pop_back();
 		test.time_end();
 		
 		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
-		test.time_start("std : ");
+		test.time_start_std();
 		for (int i = 0; i < 1000; i++)
 			std_vector_buffer.pop_back();
 		test.time_end();
@@ -614,13 +624,13 @@ int main(void)
 		test.main_end();
 		
 		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
-		test.time_start("ft : ");
+		test.time_start_ft();
 		for (int i = 0; i < 5; i++)
 			ft_vector_buffer.insert(ft_vector_buffer.begin(), Buffer());
 		test.time_end();
 
 		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
-		test.time_start("std : ");
+		test.time_start_std();
 		for (int i = 0; i < 5; i++)
 			std_vector_buffer.insert(std_vector_buffer.begin(), Buffer());
 		test.time_end();
@@ -699,12 +709,12 @@ int main(void)
 		test.main_end();
 
 		ft::vector<Buffer>	ft_vector_buffer(COUNT, Buffer());
-		test.time_start("ft : ");
+		test.time_start_ft();
 		ft_vector_buffer.erase(ft_vector_buffer.begin(), ft_vector_buffer.end());
 		test.time_end();
 		
 		std::vector<Buffer>	std_vector_buffer(COUNT, Buffer());
-		test.time_start("std : ");
+		test.time_start_std();
 		std_vector_buffer.erase(std_vector_buffer.begin(), std_vector_buffer.end());
 		test.time_end();
 	}
@@ -730,13 +740,13 @@ int main(void)
 
 		ft::vector<Buffer>	ft_vector_buffer1(COUNT, Buffer());
 		ft::vector<Buffer>	ft_vector_buffer2(COUNT, Buffer());
-		test.time_start("ft : ");
+		test.time_start_ft();
 		ft_vector_buffer1.swap(ft_vector_buffer2);
 		test.time_end();
 		
 		std::vector<Buffer>	std_vector_buffer1(COUNT, Buffer());
 		std::vector<Buffer>	std_vector_buffer2(COUNT, Buffer());
-		test.time_start("std : ");
+		test.time_start_std();
 		std_vector_buffer1.swap(std_vector_buffer2);
 		test.time_end();
 	}
@@ -753,12 +763,12 @@ int main(void)
 		test.main_end();
 
 		ft::vector<Buffer>	ft_vector_buffer(1000, Buffer());
-		test.time_start("ft : ");
+		test.time_start_ft();
 		ft_vector_buffer.clear();
 		test.time_end();
 		
 		std::vector<Buffer>	std_vector_buffer(1000, Buffer());
-		test.time_start("std : ");
+		test.time_start_std();
 		std_vector_buffer.clear();
 		test.time_end();
 	}
@@ -1016,9 +1026,8 @@ int main(void)
 		test.main_end();
 	}
 
+	} // vector
 
-
-	}
 
 	std::cout << "\n< map >" << std::endl;
 	{
@@ -1042,10 +1051,14 @@ int main(void)
 		ft::map<int, int>				ft_map;
 		ft::map<int, int>::iterator		ft_begin;
 		ft::map<int, int>::iterator		ft_end;
+		std::map<int, int>				std_map;
 		size_t len;
 
 		for (int i = 0; i < COUNT; ++i)
+		{
 			ft_map.insert(ft::make_pair(rand(), rand()));
+			std_map.insert(std::make_pair(rand(), rand()));
+		}
 
 		len = 0;
 		ft_begin = ft_map.begin();
@@ -1062,8 +1075,82 @@ int main(void)
 			sum += ft_map[access];
 		}
 		test.main_then(sum == 0);
-	
 		test.main_end();
+
+		test.time_start_ft();
+		ft::map<int, int>	ft_test(ft_map.begin(), ft_map.end());
+		test.time_end();
+		
+		test.time_start_std();
+		std::map<int, int>	std_test(std_map.begin(), std_map.end());
+		test.time_end();
+	}
+
+	test.main("Copy constructor");
+	{
+		ft::map<int, int>				ft_map;
+		ft::map<int, int>::iterator		ft_begin;
+		ft::map<int, int>::iterator		ft_end;
+		std::map<int, int>				std_map;
+
+		for (int i = 0; i < COUNT; ++i)
+		{
+			ft_map.insert(ft::make_pair(rand(), rand()));
+			std_map.insert(std::make_pair(rand(), rand()));
+		}
+
+		ft::map<int, int>				ft_copy(ft_map);
+		ft::map<int, int>::iterator		ft_iter = ft_copy.begin();
+
+		for (; ft_begin!=ft_end; ft_begin++, ft_iter++)
+		{
+			if (*ft_begin != *ft_iter)
+				break ;
+		}
+		test.main_then(ft_begin == ft_end);
+		test.main_end();
+
+		test.time_start_ft();
+		ft::map<int, int>	ft_test(ft_map);
+		test.time_end();
+		
+		test.time_start_std();
+		std::map<int, int>	std_test(std_map);
+		test.time_end();
+	}
+
+	test.main("operator = ");
+	{
+		ft::map<int, int>	ft_map;
+		std::map<int, int>	std_map;
+		int key, val;
+
+		for (int i = 0; i < COUNT; ++i)
+		{
+			key = rand();
+			val = rand();
+			ft_map.insert(ft::make_pair(key, val));
+			std_map.insert(std::make_pair(key, val));
+		}
+
+		ft::map<int, int>	ft_copy;
+
+		ft_copy = ft_map;
+		test.main_then(ft_copy.size() == ft_map.size());
+		test.main_then(ft_copy[key] == ft_map[key]);
+		test.main_then((*ft_copy.begin()).first == (*ft_map.begin()).first);
+		test.main_then((*ft_copy.begin()).second == (*ft_map.begin()).second);
+		test.main_end();
+
+		ft::map<int, int>	ft_test;
+		test.time_start_ft();
+		ft_test = ft_map;
+		test.time_end();
+		
+		std::map<int, int>	std_test;
+		test.time_start_std();
+		std_test = std_map;
+		test.time_end();
 	}
 
 	test.main("pair");
@@ -1117,16 +1204,17 @@ int main(void)
 		ft_map.insert(ft::pair<int, int>(1, 10));
 		ft_map.insert(ft::pair<int, int>(6, 10));
 
+		test.main_then(ft_map.size() == 10);
 		test.main_end();
 
 		ft::map<int, int>	ft_map_int;
-		test.time_start("ft : ");
+		test.time_start_ft();
 		for (int i = 0; i < COUNT; ++i)
 			ft_map_int.insert(ft::make_pair(rand(), rand()));
 		test.time_end();
 		
 		std::map<int, int>	std_map_int;
-		test.time_start("std : ");
+		test.time_start_std();
 		for (int i = 0; i < COUNT; ++i)
 			std_map_int.insert(std::make_pair(rand(), rand()));
 		test.time_end();
@@ -1156,110 +1244,264 @@ int main(void)
 		test.main_end();
 
 		ft::map<int, int>	ft_map_int;
-		test.time_start("ft : ");
-		for (int i = 0; i < COUNT; ++i)
-			ft_map_int.insert(ft::make_pair(rand(), rand()));
+		test.time_start_ft();
+		for (int i = 0; i < 1000; ++i)
+			ft_map_int.insert(ft_map_int.begin(), ft::make_pair(rand(), rand()));
 		test.time_end();
 		
 		std::map<int, int>	std_map_int;
-		test.time_start("std : ");
-		for (int i = 0; i < COUNT; ++i)
-			std_map_int.insert(std::make_pair(rand(), rand()));
+		test.time_start_std();
+		for (int i = 0; i < 1000; ++i)
+			std_map_int.insert(std_map_int.begin(), std::make_pair(rand(), rand()));
 		test.time_end();
 	}
 
 	test.main("insert(range)");
 	{
 		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair(10, 10);
+		std::map<int, int>	std_map;
+
+		for (int i = 0; i < 10000; ++i)
+		{
+			ft_map.insert(ft::make_pair(rand(), rand()));
+			std_map.insert(std::make_pair(rand(), rand()));
+		}
+
+		ft::map<int, int>	ft_range;
+		ft_range.insert(ft_map.begin(), ft_map.end());
+
+		test.main_then(*ft_range.begin() == *ft_map.begin());
+		test.main_then(*(--ft_range.end()) == *(--ft_map.end()));
+		test.main_then(ft_range.size() == ft_map.size());
+		test.main_end();
+
+		ft::map<int, int>	ft_test;
+		test.time_start_ft();
+		ft_test.insert(ft_map.begin(), ft_map.end());
+		test.time_end();
+		
+		std::map<int, int>	std_test;
+		test.time_start_std();
+		std_test.insert(std_map.begin(), std_map.end());
+		test.time_end();
+	}
+
+	test.main("erase");
+	{
+		ft::map<int, int>	ft_map;
+		std::map<int, int>	std_map;
+		int key, val;
+
+		for (int i = 0; i < COUNT-10; ++i)
+		{
+			ft_map.insert(ft::make_pair(rand(), rand()));
+			std_map.insert(std::make_pair(rand(), rand()));
+		}
+
+		key = rand();
+		val = rand();
+		ft_map.insert(ft::make_pair(key, val));
+		std_map.insert(std::make_pair(key, val));
+		test.main_then(std_map.size() == ft_map.size());
+		std_map.erase(key);
+		ft_map.erase(key);
+		test.main_then(std_map.size() == ft_map.size());
+		test.main_then(std_map.find(key) == std_map.end()
+						&& ft_map.find(key) == ft_map.end());
+		test.main_end();
+
+		key = rand();
+		val = rand();
+		ft_map.insert(ft::make_pair(key, val));
+		std_map.insert(std::make_pair(key, val));
+
+		test.time_start_ft();
+		ft_map.erase(key);
+		test.time_end();
+
+		test.time_start_std();
+		std_map.erase(key);
+		test.time_end();
+	}
+
+	test.main("erase(iter)");
+	{
+		ft::map<int, int>	ft_map;
+
+		for (int i = 0; i < 100; ++i)
+			ft_map.insert(ft::make_pair(rand(), rand()));
+
+		ft_map.erase(ft_map.begin(), ft_map.end());
+		test.main_then(ft_map.size() == 0);
+		test.main_end();
+
+		ft::map<int, int>	ft_test;
+		std::map<int, int>	std_test;
+
+		for (int i = 0; i < COUNT; ++i)
+		{
+			ft_test.insert(ft::make_pair(rand(), rand()));
+			std_test.insert(std::make_pair(rand(), rand()));
+		}
+
+		test.time_start_ft();
+		ft_test.erase(ft_test.begin(), ft_test.end());
+		test.time_end();
+		
+		test.time_start_std();
+		std_test.erase(std_test.begin(), std_test.end());
+		test.time_end();
+	}
+
+	test.main("swap");
+	{
+		ft::map<int, int>	std_map;
+		ft::pair<int, int>	std_pair(10, 10);
 		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 
 		for (int i=0; i<10; i++)
 		{
-			ft_pair.first = nums[i];
-			ft_map.insert(ft_pair);
+			std_pair.first = nums[i];
+			std_map.insert(std_pair);
 		}
 
-		ft::map<int, int>	range_map(ft_map.begin(), ft_map.end());
-		
-		ft::map<int, int>::iterator	ft_begin = ft_map.begin();
-		ft::map<int, int>::iterator	range_begin = range_map.begin();
-		ft::map<int, int>::iterator	range_end = range_begin;
-		range_end++;
-		range_end++;
-		range_end++;
-		for (; range_begin!=range_end; range_begin++, ft_begin++)
+		ft::map<int, int>	std_map2;
+		std_pair.second = 20;
+		for (int i=0; i<10; i++)
 		{
-			test.main_then((*range_begin).first == (*ft_begin).first);
+			std_pair.first = nums[i];
+			std_map2.insert(std_pair);
 		}
-		
-		test.main_end();
 
-		
-		test.time_start("ft : ");
-		ft::map<int, int>	ft_range(void);
-		test.time_end();
-		
-		std::map<int, int>	std_map_int;
-		test.time_start("std : ");
-		for (int i = 0; i < COUNT; ++i)
-			std_map_int.insert(std::make_pair(rand(), rand()));
-		test.time_end();
+		std_map.swap(std_map2);
+		for (int i=0; i<10; i++)
+		{
+			test.main_then(std_map[nums[i]] == 20 && std_map2[nums[i]] == 10);
+		}
+
+		test.main_end();
 	}
 
 	test.main("iterator");
 	{
 		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair(0, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+		std::map<int, int>	std_map;
+		int	key, val;
 
-		for (int i=0; i<10; i++)
+		for (int i = 0; i < 1000; ++i)
 		{
-			ft_pair.first = nums[i];
-			ft_map.insert(ft_pair);
+			key = rand();
+			val = rand();
+			ft_map.insert(ft::make_pair(key, val));
+			std_map.insert(std::make_pair(key, val));
 		}
 
-		ft::map<int, int>::iterator	ft_iter = ft_map.begin();
-		for (int i=0; i<10; i++, ft_iter++)
+		ft::map<int, int>::iterator		ft_iter = ft_map.begin();
+		std::map<int, int>::iterator	std_iter = std_map.begin();
+		for (; ft_iter!=ft_map.end(); ft_iter++, std_iter++)
 		{
-			test.main_then((*ft_iter).first == nums[i]);
+			if ((*ft_iter).first != (*std_iter).first 
+				|| (*ft_iter).second != (*std_iter).second)
+				break ;
 		}
+		test.main_then(ft_iter == ft_map.end());
+		test.main_end();
+	}
+
+	test.main("reverse_iterator");
+	{
+		ft::map<int, int>	ft_map;
+		std::map<int, int>	std_map;
+		int	key, val;
+
+		for (int i = 0; i < 1000; ++i)
+		{
+			key = rand();
+			val = rand();
+			ft_map.insert(ft::make_pair(key, val));
+			std_map.insert(std::make_pair(key, val));
+		}
+
+		ft::map<int, int>::reverse_iterator		ft_rend = ft_map.rbegin();
+		std::map<int, int>::reverse_iterator	std_rend = std_map.rbegin();
+		ft::map<int, int>::reverse_iterator		ft_rbegin = ft_map.rend();
+		
+		for (; ft_rend!=ft_rbegin; ++ft_rend, ++std_rend)
+		{
+			if ((*ft_rend).first != (*std_rend).first 
+				|| (*ft_rend).second != (*std_rend).second)
+				break ;
+		}
+
+		test.main_then(ft_rend == ft_map.rend());
 		test.main_end();
 	}
 
 	test.main("find");
 	{
-		ft::map<int, int>	ft_map;
-		ft_map.insert(ft::pair<int, int>(10, 1));
-		ft_map.insert(ft::pair<int, int>(20, 1));
+		ft::map<int, int>				ft_map;
+		ft::map<int, int>::iterator		ft_iter;
+		std::map<int, int>				std_map;
+		std::map<int, int>::iterator	std_iter;
+		int	key;
 
-		ft::map<int, int>::iterator	iter;
-		iter = ft_map.find(10);
-		test.main_then((*iter).first == 10);
-		iter = ft_map.find(20);
-		test.main_then((*iter).first == 20);
-		iter = ft_map.find(30);
-		test.main_then((*iter).first == (*ft_map.end()).first);
-		iter = ft_map.find(10000);
-		test.main_then((*iter).first == (*ft_map.end()).first);
+		for (int i = 0; i < COUNT; ++i)
+		{
+			ft_map.insert(ft::make_pair(rand(), rand()));
+			std_map.insert(std::make_pair(rand(), rand()));
+		}
+
+		for (int i=0; i<3; ++i)
+		{
+			key = rand();
+			ft_map.insert(ft::make_pair(key, 0));
+			std_map.insert(std::make_pair(key, 0));
+			ft_iter = ft_map.find(key);
+			std_iter = std_map.find(key);
+			test.main_then((*ft_iter).first == (*std_iter).first);
+			test.main_then((*ft_iter).second == (*std_iter).second);
+		}
 		test.main_end();
+
+		test.time_start_ft();
+		ft_map.find(key);
+		test.time_end();
+		
+		test.time_start_std();
+		std_map.find(key);
+		test.time_end();
 	}
 
 	test.main("operator []");
 	{
-		ft::map<int, int>	ft_map;
+		ft::map<int, int>				ft_map;
+		std::map<int, int>				std_map;
+		int	key;
 
-		ft_map[10];
-		ft_map[20];
-		ft_map[30];
-		test.main_then(ft_map.size() == 3);
-		ft_map[10] = 100;
-		ft_map[20] = 100;
-		ft_map[30] = 100;
-		ft_map[40] = 100;
-		test.main_then(ft_map.size() == 4);
-		test.main_then(ft_map[10] == 100 || ft_map[20] == 100 || ft_map[30] == 100 || ft_map[40] == 100);
+		for (int i = 0; i < 1000; ++i)
+		{
+			ft_map[rand()] = rand();
+			std_map[rand()] = rand();
+		}
+
+		test.main_then(ft_map.size() == std_map.size());
+
+		for (int i = 0; i < 3; i++)
+		{
+			key = rand();
+			ft_map[key] = 0;
+			std_map[key] = 0;
+			test.main_then(ft_map[key] == std_map[key]);
+		}
 		test.main_end();
+
+		test.time_start_ft();
+		ft_map[key];
+		test.time_end();
+
+		test.time_start_std();
+		std_map[key];
+		test.time_end();
 	}
 
 	test.main("at");
@@ -1289,6 +1531,25 @@ int main(void)
 			test.main_then(false);
 		}
 		test.main_end();
+
+		ft::map<int, int>	ft_test;
+		std::map<int, int>	std_test;
+		int	key;
+
+		for (int i = 0; i < 1000; ++i)
+		{
+			key = rand();
+			ft_test[key] = 0;
+			std_test[key] = 0;
+		}
+
+		test.time_start_ft();
+		ft_test.at(key);
+		test.time_end();
+		
+		test.time_start_std();
+		std_test.at(key);
+		test.time_end();
 	}
 
 	test.main("lower_bound");
@@ -1444,179 +1705,8 @@ int main(void)
 		test.main_end();
 	}
 
-	test.main("erase");
-	{
-		std::map<int, int>	std_map;
-		std::pair<int, int>	std_pair(10, 10);
-		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair(10, 10);
-
-		std_map.insert(std_pair);
-		ft_map.insert(ft_pair);
-
-		test.main_then(std_map.size() == ft_map.size());
-		std_map.erase(10);
-		ft_map.erase(10);
-		test.main_then(std_map.size() == ft_map.size());
-		test.main_then(std_map.find(10) == std_map.end()
-						&& ft_map.find(10) == ft_map.end());
-		test.main_end();
-	}
-
-	test.main("erase(iter)");
-	{
-		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-		for (int i=0; i<10; i++)
-		{
-			ft_pair.first = nums[i];
-			ft_map.insert(ft_pair);
-		}
-
-		test.main_then(ft_map.size() == 10);
-		test.main_then(ft_map[1] == 10);
-		test.main_then(ft_map[456] == 10);
-
-		ft_map.erase(ft_map.begin(), ft_map.end());
-		test.main_then(ft_map.size() == 0);
-
-		test.main_end();
-	}
-
-	test.main("swap");
-	{
-		ft::map<int, int>	std_map;
-		ft::pair<int, int>	std_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-
-		for (int i=0; i<10; i++)
-		{
-			std_pair.first = nums[i];
-			std_map.insert(std_pair);
-		}
-
-		ft::map<int, int>	std_map2;
-		std_pair.second = 20;
-		for (int i=0; i<10; i++)
-		{
-			std_pair.first = nums[i];
-			std_map2.insert(std_pair);
-		}
-
-		std_map.swap(std_map2);
-		for (int i=0; i<10; i++)
-		{
-			test.main_then(std_map[nums[i]] == 20 && std_map2[nums[i]] == 10);
-		}
-
-		test.main_end();
-	}
-
-	test.main("operator = ");
-	{
-		ft::map<int, int>	ft_map;
-		ft::pair<int, int>	ft_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-
-		for (int i=0; i<10; i++)
-		{
-			ft_pair.first = nums[i];
-			ft_map.insert(ft_pair);
-		}
-
-		ft::map<int, int>	tmp;
-		tmp[5] = 20;
-
-		tmp = ft_map;
-		test.main_then(tmp.size() == 10);
-		test.main_then(tmp[1] == 10);
-		test.main_then(tmp[2] == 10);
-		test.main_then(tmp[5] != 20);
-		test.main_then(tmp[5] == 0);
-		test.main_end();
-	}
-
 
 	}	// map
-
-	
-	// std::cout << "\n< __tree >" << std::endl;
-	// {
-
-	// typedef ft::pair<const int, int>											__value_type;
-	// typedef	ft::__map_compare<__value_type, ft::less<int> >						__compare;
-	// typedef	ft::__tree<__value_type, __compare, std::allocator<__value_type> >	__tree_type;
-
-	
-	// test.main("__tree_iterator");
-	// {
-	// 	__tree_type			tree;
-
-	// 	ft::pair<int, int>	ft_pair(10, 10);
-	// 	int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
-	// 	for (int i=0; i<10; i++)
-	// 	{
-	// 		ft_pair.first = nums[i];
-	// 		tree.insert(ft_pair);
-	// 	}
-
-	// 	__tree_type::iterator	iter = tree.begin();
-	// 	__tree_type::iterator	iter_end = tree.end();
-	// 	for (int i = 0; iter!=iter_end; iter++, i++)
-	// 	{
-	// 		test.main_then((*iter).first == nums[i]);
-	// 	}
-		
-	// 	test.main_end();
-	// 	std::cout << "\n";
-	// 	tree.print();
-	// 	std::cout << "\n";
-	// }
-
-	// test.main("__tree::erase");
-	// {
-	// 	__tree_type	tree;
-
-	// 	ft::pair<int, int>	ft_pair(10, 10);
-	// 	for (int i=0; i<10; i++)
-	// 	{
-	// 		ft_pair.first = i;
-	// 		tree.insert(ft_pair);
-	// 	}
-	// 	ft_pair.first = 6;
-	// 	tree.erase(ft_pair);
-	// 	ft_pair.first = 4;
-	// 	tree.erase(ft_pair);
-	// 	ft_pair.first = 1;
-	// 	tree.erase(ft_pair);
-		
-	// 	test.main_end();
-	// 	std::cout << std::endl;
-	// 	tree.print();
-	// }
-
-	// test.main("__tree::clear");
-	// {
-	// 	__tree_type	tree;
-
-	// 	ft::pair<int, int>	ft_pair(10, 10);
-	// 	for (int i=0; i<10; i++)
-	// 	{
-	// 		ft_pair.first = i;
-	// 		tree.insert(ft_pair);
-	// 	}
-	// 	std::cout << std::endl;
-	// 	tree.print();
-	// 	tree.clear();
-	// 	std::cout << std::endl;
-	// 	tree.print();
-	// 	test.main_then(tree.size() == 0);
-	// 	test.main_end();
-	// }
-
-	// }	// __tree
-
 	
 	return (0);
 }

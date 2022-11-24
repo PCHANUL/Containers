@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 15:39:29 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/22 11:27:34 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 13:28:32 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,20 @@ namespace ft
 {
 
 template <class Arg1, class Arg2, class Result>
-struct binary_function {
-  typedef Arg1 first_argument_type;
-  typedef Arg2 second_argument_type;
-  typedef Result result_type;
+struct binary_function 
+{
+	typedef Arg1 first_argument_type;
+	typedef Arg2 second_argument_type;
+	typedef Result result_type;
 };
 
 template <class T> 
-struct less : binary_function <T, T, bool> {
+struct less : binary_function <T, T, bool> 
+{
 	bool operator() (const T& x, const T& y) const {
 		return (x < y);
 	}
 };
-
 
 // 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
 // 범위 안의 요소가 모두 같은 경우에 true를 반환합니다.
@@ -93,8 +94,6 @@ lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputItera
 	}
 	return (false);
 }
-
-
 
 } // ft
 

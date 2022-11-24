@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/23 18:12:20 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 14:07:14 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,10 @@ public:
 	m_iter();
 	m_iter(TreeIter __x);
 	m_iter(const m_iter& __x);
+	~m_iter();
+	m_iter&		operator =	(const m_iter& __x);
 
 	TreeIter	base() const;
-	m_iter&		operator =	(const m_iter& __x);
 	reference	operator *	() const;
 	pointer		operator ->	() const;
 	m_iter& 	operator ++	();
@@ -73,6 +74,11 @@ ft::m_iter<TreeIter>::m_iter(TreeIter __x) : __i(__x)
 
 template <class TreeIter>
 ft::m_iter<TreeIter>::m_iter(const m_iter& __x) : __i(__x.__i)
+{
+}
+
+template <class TreeIter>
+ft::m_iter<TreeIter>::~m_iter()
 {
 }
 
@@ -172,6 +178,7 @@ public:
 	v_iter();
 	v_iter(pointer __x);
 	v_iter(const v_iter& __x);
+	~v_iter();
 
 	pointer		base() const;
 	v_iter&		operator =	(const v_iter& __x);
@@ -200,6 +207,11 @@ ft::v_iter<T>::v_iter(pointer __x) : __i(__x)
 
 template <class T>
 ft::v_iter<T>::v_iter(const ft::v_iter<T>& __x) : __i(__x.__i)
+{
+}
+
+template <class T>
+ft::v_iter<T>::~v_iter()
 {
 }
 
@@ -416,7 +428,6 @@ public:
 
 };
 
-
 // 객체를 가리키지 않는 역방향 반복기를 생성합니다.
 // 내부 base iterator는 값으로 초기화됩니다.
 template <class Iterator>
@@ -456,9 +467,9 @@ template <class Iterator>
 typename ft::reverse_iterator<Iterator>::reference 
 ft::reverse_iterator<Iterator>::operator * () const
 {
-	return (*(__iter - 1));
+	reverse_iterator tmp(__iter);
+	return (*(--tmp.__iter));
 }
-
 
 // 현재 반복자가 가리키는 요소에서 n 위치 떨어진 요소를 가리키는 역방향 반복자를 반환합니다.
 // 내부적으로 이 함수는 기본 반복기에 연산자 - 를 적용하고 결과 반복기 값으로 구성된 역방향 반복기를 반환합니다.
@@ -477,7 +488,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>&
 ft::reverse_iterator<Iterator>::operator ++ ()
 {
-	this->__iter--;
+	--(this->__iter);
 	return (*this);
 }
 
@@ -519,7 +530,7 @@ template <class Iterator>
 ft::reverse_iterator<Iterator>& 
 ft::reverse_iterator<Iterator>::operator -- ()
 {
-	this->__iter++;
+	++(this->__iter);
 	return (*this);
 }
 
@@ -627,7 +638,6 @@ operator - (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterato
 	return (&(*rhs) - &(*lhs));
 }
 
-
-}
+} // ft
 
 #endif // __ITERATOR_HPP__

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/23 15:31:53 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 13:47:47 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ enum color_t {
 	RED
 };
 
-// #define LEFT						0
-// #define RIGHT						1
 #define __left						child[LEFT]
 #define __right						child[RIGHT]
 #define __rotate_left(node)		__rotate_dir(node, LEFT)
@@ -119,7 +117,6 @@ __tree_transplant(_NodePtr __u, _NodePtr __v)
 	return (__v);
 }
 
-
 template <class T>
 struct __tree_node 
 {	 
@@ -152,9 +149,10 @@ public:
 	__tree_iter();
 	__tree_iter(const __node_pointer __x);
 	__tree_iter(const __tree_iter& __x);
+	~__tree_iter();
+	__tree_iter&	operator =	(const __tree_iter& __x);
 
 	__node_pointer	base() const;
-	__tree_iter&	operator =	(const __tree_iter& __x);
 	reference		operator *	() const;
 	pointer			operator ->	() const;
 	__tree_iter& 	operator ++	();
@@ -175,6 +173,11 @@ ft::__tree_iter<T>::__tree_iter(const __node_pointer __x) : __n(__x)
 
 template <class T>
 ft::__tree_iter<T>::__tree_iter(const __tree_iter& __x) : __n(__x.__n)
+{
+}
+
+template <class T>
+ft::__tree_iter<T>::~__tree_iter()
 {
 }
 
@@ -255,7 +258,6 @@ operator != (const ft::__tree_iter<T>& lhs, const ft::__tree_iter<T>& rhs)
 {
 	return (lhs.base() != rhs.base());
 }
-
 
 template <class T, class Compare, class Alloc>
 class __tree
@@ -368,6 +370,13 @@ __tree<T, Compare, Alloc>::__tree(const key_compare& comp, const allocator_type&
 }
 
 template <class T, class Compare, class Alloc>
+__tree<T, Compare, Alloc>::__tree(const __tree& __x) 
+	: __alloc(__x.alloc), __alloc_node(__x.__alloc_node), __key_comp(__x.comp), __size(0)
+{
+	*this = __x;
+}
+
+template <class T, class Compare, class Alloc>
 __tree<T, Compare, Alloc>::~__tree() 
 {
 	destroy_node(__end_node);
@@ -377,10 +386,11 @@ template <class T, class Compare, class Alloc>
 __tree<T, Compare, Alloc>&							
 __tree<T, Compare, Alloc>::operator = (const __tree& __x)
 {
-	__x.__alloc = this->__alloc;
-	__x.__alloc_node = this->__alloc_node;
-	__x.__key_comp = this->__key_comp;
-	__x.insert(this->begin(), this->end());
+	this->__alloc = __x.__alloc;
+	this->__alloc_node = __x.__alloc_node;
+	this->__key_comp = __x.__key_comp;
+	clear();
+	insert(__x.begin(), __x.end());
 }
 
 template <class T, class Compare, class Alloc>
@@ -815,6 +825,7 @@ __tree<T, Compare, Alloc>::destroy_node(__node_pointer& __n)
 	__n = nullptr;
 }
 
+// // 이진 트리를 출력합니다.
 // template <class T, class Compare, class Alloc>
 // void
 // __tree<T, Compare, Alloc>::__print_tree(const std::string& prefix, const __node* node, bool isLeft) const
@@ -835,12 +846,12 @@ __tree<T, Compare, Alloc>::destroy_node(__node_pointer& __n)
 // 	}
 // }
 
-template <class T, class Compare, class Alloc>
-void
-__tree<T, Compare, Alloc>::__print_tree(const __node* node) const
-{
-	__print_tree("", node, false);
-}
+// template <class T, class Compare, class Alloc>
+// void
+// __tree<T, Compare, Alloc>::__print_tree(const __node* node) const
+// {
+// 	__print_tree("", node, false);
+// }
 
 template <class T, class Compare, class Alloc>
 typename __tree<T, Compare, Alloc>::__node*

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 15:12:08 by cpak              #+#    #+#             */
-/*   Updated: 2022/10/24 18:37:01 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 13:22:49 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,12 @@ private:
 	struct __two { char c[2]; };
 	template <class __T> static __two __test(...);
 	template <class __T> static char __test(typename __T::iterator_category* = 0);
+	
 public:
 	static const bool value = sizeof(__test<T>(0)) == 1;
 
 };
 
-
 } // namespace ft
+
 #endif // __ITERATOR_TRAITS_HPP__
