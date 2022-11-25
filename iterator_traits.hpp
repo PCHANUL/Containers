@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 15:12:08 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 13:22:49 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 23:33:00 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,6 @@
 
 namespace ft
 {
-
-struct input_iterator_tag {};
-struct output_iterator_tag {};
-struct forward_iterator_tag       : public input_iterator_tag {};
-struct bidirectional_iterator_tag : public forward_iterator_tag {};
-struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 template <class _Iter> 
 struct iterator_traits
@@ -40,7 +34,7 @@ struct iterator_traits<T*>
 	typedef T								value_type;
 	typedef T*								pointer;
 	typedef T&								reference;
-	typedef	ft::random_access_iterator_tag	iterator_category;
+	typedef	std::random_access_iterator_tag	iterator_category;
 };
 
 template <class T> 
@@ -50,15 +44,15 @@ struct iterator_traits<const T*>
 	typedef T								value_type;
 	typedef const T*						pointer;
 	typedef const T&						reference;
-	typedef	ft::random_access_iterator_tag	iterator_category;
+	typedef	std::random_access_iterator_tag	iterator_category;
 };
 
-template <class T>	struct __ft_is_iterator									: public false_type {};
-template <>			struct __ft_is_iterator<input_iterator_tag>				: public true_type {};
-template <>			struct __ft_is_iterator<output_iterator_tag>			: public true_type {};
-template <>			struct __ft_is_iterator<forward_iterator_tag>			: public true_type {};
-template <>			struct __ft_is_iterator<bidirectional_iterator_tag>		: public true_type {};
-template <>			struct __ft_is_iterator<random_access_iterator_tag>		: public true_type {};
+template <class T>	struct __ft_is_iterator										: public false_type {};
+template <>			struct __ft_is_iterator<std::input_iterator_tag>			: public true_type {};
+template <>			struct __ft_is_iterator<std::output_iterator_tag>			: public true_type {};
+template <>			struct __ft_is_iterator<std::forward_iterator_tag>			: public true_type {};
+template <>			struct __ft_is_iterator<std::bidirectional_iterator_tag>	: public true_type {};
+template <>			struct __ft_is_iterator<std::random_access_iterator_tag>	: public true_type {};
 
 
 template <class T>

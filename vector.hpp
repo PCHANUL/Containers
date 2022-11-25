@@ -35,8 +35,8 @@ public:
 	typedef const value_type&								const_reference;
 	typedef typename __alloc_traits::pointer				pointer;
 	typedef typename __alloc_traits::const_pointer			const_pointer;
-	typedef ft::v_iter<T>									iterator;
-	typedef ft::v_iter<T>									const_iterator;
+	typedef ft::v_iter<pointer>								iterator;
+	typedef ft::v_iter<const_pointer>						const_iterator;
 	typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	typedef typename __alloc_traits::difference_type		difference_type;
@@ -120,12 +120,12 @@ private:
 	template <class InputIterator>
 	void					__construct_end(InputIterator first, InputIterator last, size_type n,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
-	void					__construct_mid(pointer position, size_type n, const_reference val);
+	void					__construct_mid(iterator position, size_type n, const_reference val);
 	template <class InputIterator>
-	void					__construct_mid(pointer position, InputIterator first, InputIterator last,
+	void					__construct_mid(iterator position, InputIterator first, InputIterator last,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0);
-	void					__move_end_forward(pointer start, size_type n);
-	void					__move_end_backward(pointer start, size_type n);
+	void					__move_end_forward(iterator start, size_type n);
+	void					__move_end_backward(iterator start, size_type n);
 	void					__swap_ptr(pointer& p1, pointer& p2);
 	template<class Iter1, class Iter2>
 	bool 					__compare_vector(Iter1 a_begin, Iter1 a_end, Iter2 b_begin, Iter2 b_end,
@@ -203,7 +203,7 @@ private:
 				__alloc_traits::construct(this->__alloc, this->__end, val);
 		}
 
-		template<class InputIterator>
+		template <class InputIterator>
 		void	insert_end(InputIterator first, InputIterator last,
 							typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type* = 0)
 		{
@@ -212,6 +212,16 @@ private:
 			if (size() + n > capacity())
 				return ;
 			for (InputIterator iter=first; iter!=last; iter++, this->__end++)
+				__alloc_traits::construct(this->__alloc, this->__end, *iter);
+		}
+
+		void	insert_end(iterator first, iterator last)
+		{
+			size_type	n = ft::distance(first, last);
+
+			if (size() + n > capacity())
+				return ;
+			for (iterator iter=first; iter!=last; iter++, this->__end++)
 				__alloc_traits::construct(this->__alloc, this->__end, *iter);
 		}
 
@@ -280,8 +290,8 @@ template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::__allocate(size_type n, const allocator_type& alloc)
 {
-	if (n > max_size())
-		throw ft::length_error("vector");
+	if (n > max_size() || n < 0)
+		throw std::length_error("vector");
 	this->__alloc = alloc;
 	this->__begin = __alloc_traits::allocate(this->__alloc, n);
 	this->__end = this->__begin;
@@ -295,6 +305,7 @@ ft::vector<T, Alloc>::__destroy_end(pointer new_end)
 {	
 	while (this->__end != new_end && this->__end != this->__begin && this->__end--)
 		__alloc_traits::destroy(this->__alloc, this->__end);
+	this->__end = new_end;
 }
 
 // first에서 last까지의 개체를 제거한다.
@@ -305,7 +316,7 @@ ft::vector<T, Alloc>::__destroy_mid(InputIterator first, InputIterator last,
 									typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {	
 	for (; first!=last; first++)
-		__alloc_traits::destroy(this->__alloc, first.base());
+		__alloc_traits::destroy(this->__alloc, &(*first));
 }
 
 // 새로운 공간에 first부터 last까지 객체를 복사
@@ -348,33 +359,33 @@ ft::vector<T, Alloc>::__construct_end(InputIterator first, InputIterator last, s
 										typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	(void)n;
-	__construct_range(first.base(), last.base(), this->__end);
+	__construct_range(&(*first), &(*last), this->__end);
 }
 
 template<class T, class Alloc>
 template<class InputIterator>
 void
-ft::vector<T, Alloc>::__construct_mid(pointer position, InputIterator first, InputIterator last,
+ft::vector<T, Alloc>::__construct_mid(iterator position, InputIterator first, InputIterator last,
 										typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	for (InputIterator	iter=first; iter!=last; iter++, position++)
-		__alloc_traits::construct(this->__alloc, position, *iter);
+		__alloc_traits::construct(this->__alloc, &(*position), *iter);
 }
 
 template<class T, class Alloc>
 void					
-ft::vector<T, Alloc>::__construct_mid(pointer position, size_type n, const_reference val)
+ft::vector<T, Alloc>::__construct_mid(iterator position, size_type n, const_reference val)
 {
 	for (size_type i=0; i<n; i++, position++)
-		__alloc_traits::construct(this->__alloc, position, val);
+		__alloc_traits::construct(this->__alloc, &(*position), val);
 }
 
 // 뒤에서 시작하여 position까지의 요소를 뒤로 움직인다.
 template<class T, class Alloc>
 void
-ft::vector<T, Alloc>::__move_end_backward(pointer start, size_type n)
+ft::vector<T, Alloc>::__move_end_backward(iterator start, size_type n)
 {
-	size_type	len = __end - start;
+	size_type	len = iterator(__end) - start;
 
 	for (size_type i=0; i<=len; i++)
 		*(start + len - i + n) = *(start + len - i);
@@ -384,13 +395,12 @@ ft::vector<T, Alloc>::__move_end_backward(pointer start, size_type n)
 // 뒤에서 시작하여 position까지의 요소를 앞으로 움직인다.
 template<class T, class Alloc>
 void
-ft::vector<T, Alloc>::__move_end_forward(pointer start, size_type n)
+ft::vector<T, Alloc>::__move_end_forward(iterator start, size_type n)
 {
-	pointer	last = __end - n;
+	iterator	last = iterator(__end) - n;
 
-	for (; start!=last; start++)
+	for (; start != last; start++)
 		*(start) = *(start + n);
-
 	this->__end -= n;
 }
 
@@ -505,7 +515,7 @@ typename ft::vector<T, Alloc>::size_type
 {
 	size_type	max = max_size();
 	if (new_size > max)
-		throw ft::length_error("vector");
+		throw std::length_error("vector");
 	size_type	cap = capacity();
 	if (cap >= max / 2)
 		return (max);
@@ -516,11 +526,12 @@ typename ft::vector<T, Alloc>::size_type
 // n이 현재 컨테이너의 크기보다 작다면 초과되는 요소를 제거하고 파괴한다. 
 // n이 현재 컨테이너의 크기보다 크다면 n 크기까지 필요한 요소를 채운다.
 // val이 명시된다면, val의 복사본이 빈 공간을 채운다.
+// 예외 : n이 max_size보다 크다면 length_error (strong guarantee)
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::resize (size_type n, value_type val)
 {
-	if (capacity() < n)
+	if (n > capacity())
 	{
 		_TmpVector	tmp(this->__alloc, __calc_new_size(n));
 
@@ -552,12 +563,15 @@ ft::vector<T, Alloc>::empty() const
 // vector 용량이 최소한 n개의 요소를 포함할 수 있도록 한다.
 // 만약에 n이 현재 vector 용량보다 크다면 저장공간을 재할당하여 용량을 n또는 그 이상으로 늘린다.
 // 아니라면 재할당을 하지 않으며 vector 용량에 영향을 주지 않는다. 
+// 예외 : n이 max_size보다 크다면 length_error가 발생됩니다. (strong guarantee)
 template<class T, class Alloc>
 void
 ft::vector<T, Alloc>::reserve (size_type n)
 {
 	if (n > capacity())
 	{
+		if (n > max_size())
+			throw length_error("allocator<T>::allocate(size_t n) 'n' exceeds maximum supported size");
 		_TmpVector	tmp(this->__alloc, n);
 
 		tmp.insert_end(begin(), end());
@@ -588,7 +602,7 @@ typename ft::vector<T, Alloc>::reference
 ft::vector<T, Alloc>::at (size_type n)
 {
 	if (n >= size())
-		throw ft::out_of_range("vector");
+		throw std::out_of_range("vector");
 	return (*(this->__begin + n));
 }
 
@@ -598,7 +612,7 @@ typename ft::vector<T, Alloc>::const_reference
 ft::vector<T, Alloc>::at (size_type n) const
 {
 	if (n >= size())
-		throw ft::out_of_range("vector");
+		throw std::out_of_range("vector");
 	return (*(this->__begin + n));
 }
 
@@ -625,14 +639,14 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::reference 
 ft::vector<T, Alloc>::back()
 {
-	return (*(this->__end));
+	return (*(this->__end - 1));
 }
 
 template<class T, class Alloc>
 typename ft::vector<T, Alloc>::const_reference 
 ft::vector<T, Alloc>::back() const
 {
-	return (*(this->__end));
+	return (*(this->__end - 1));
 }
 
 // vector가 소유한 요소를 저장하기 위해 내부적으로 사용하는 메모리 배열에 대한 직접 포인터를 반환한다.
@@ -652,25 +666,6 @@ ft::vector<T, Alloc>::data() const
 	return (this->__begin);
 }
 
-template <class InputIterator>
-InputIterator
-copy(InputIterator first1, InputIterator last1, InputIterator first2)
-{
-	std::cout << "iterator" << std::endl;
-	for (; first1!=last1; ++first1, ++first2)
-		(*first1) = (*first2);
-	return (first1);
-}
-
-template <class T>
-T*
-copy(T* first1, T* last1, T* first2)
-{
-	size_t __n = last1 - first1;
-	std::memmove(first2, first1, __n * sizeof(T));
-	return (first2 + __n);
-}
-
 // vector에 새 내용을 할당하고 현재 내용을 바꾸고 그에 따라 크기를 수정한다.
 // 재할당이 발생되면 내부 할당자를 사용하여 필요한 저장공간이 할당된다.
 // first와 last 사이의 범위에 있는 각 요소에서 동일한 순서로 구성된 요소이다.
@@ -681,6 +676,7 @@ ft::vector<T, Alloc>::assign (InputIterator first, InputIterator last,
 								typename ft::enable_if<ft::is_iterator<InputIterator>::value, InputIterator>::type*)
 {
 	size_type	n = ft::distance(first, last);
+
 	if (n <= capacity())
 	{
 		InputIterator	iter = last;
@@ -689,15 +685,18 @@ ft::vector<T, Alloc>::assign (InputIterator first, InputIterator last,
 		if (n > size())
 		{
 			is_growing = true;
-			iter = first + size();
+			iter = first;
+			ft::advance(iter, size());
 		}
 
-		pointer __p = ft::copy(first.base(), iter.base(), this->begin().base());
+		iterator	__p = this->begin();
+		for (; first!=iter; first++, __p++)
+			*__p = *first;
 
 		if (is_growing)
 			__construct_end(iter, last);
 		else
-			this->__destroy_end(__p);
+			__destroy_end(&(*__p));
 	}
 	else 
 	{
@@ -711,7 +710,7 @@ ft::vector<T, Alloc>::assign (InputIterator first, InputIterator last,
 // 재할당이 발생되면 내부 할당자를 사용하여 필요한 저장공간이 할당된다.
 // n개의 요소가 val의 복사본으로 초기화된다. 
 template<class T, class Alloc>
-void 
+void
 ft::vector<T, Alloc>::assign (size_type n, const value_type& val)
 {
 	if (capacity() < n)
@@ -727,6 +726,8 @@ ft::vector<T, Alloc>::assign (size_type n, const value_type& val)
 // vector의 마지막 요소 다음에 요소를 추가한다.
 // val의 내용이 새 요소로 복사 또는 이동된다.
 // 현재 벡터 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
+// 예외 : 요소 복사/이동, 생성자/할당으로 인해 발생할 수 있다. (strong guarantee)
+// push_back에서 재할당하는 경우에 max_size를 넘어가는 경우 length_error가 발생됩니다.
 template<class T, class Alloc>
 void 
 ft::vector<T, Alloc>::push_back (const value_type& val)
@@ -752,11 +753,12 @@ ft::vector<T, Alloc>::pop_back()
 // 지정된 위치의 요소 앞에 새 요소를 삽입하여 확장한다.
 // 새 vector의 크기가 현재 vector의 용량을 초과하는 경우에는 저장 공간이 자동으로 재할당된다.
 // val은 복사 또는 이동되어 삽입될 요소이다. 
+// 예외 : end에 요소가 삽입될 경우에 발생되고, 
 template<class T, class Alloc>
 typename ft::vector<T, Alloc>::iterator 
 ft::vector<T, Alloc>::insert (iterator position, const value_type& val)
 {
-	size_type n = position.base() - __begin;
+	size_type n = position - iterator(__begin);
 	if (size() + 1 > capacity())
 	{
 		_TmpVector	tmp(this->__alloc, __calc_new_size(size() + 1));
@@ -766,7 +768,7 @@ ft::vector<T, Alloc>::insert (iterator position, const value_type& val)
 		tmp.move(*this);
 		return (__begin + n);
 	}
-	__move_end_backward(position.base(), 1);
+	__move_end_backward(position, 1);
 	*position = val;
 	return (position);
 }
@@ -780,14 +782,15 @@ ft::vector<T, Alloc>::insert (iterator position, size_type n, const value_type& 
 	if (size() + n > capacity())
 	{
 		_TmpVector	tmp(this->__alloc, __calc_new_size(size() + n));
+
 		tmp.insert_end(begin(), position);
 		tmp.insert_end(n, val);
 		tmp.insert_end(position, end());
 		tmp.move(*this);
 		return ;
 	}
-	__move_end_backward(position.base(), n);
-	__construct_mid(position.base(), n, val);
+	__move_end_backward(position, n);
+	__construct_mid(position, n, val);
 }
 
 // first와 last 범위에 있는 요소의 복사본이 동일한 순서로 position에 삽입된다. 
@@ -802,14 +805,15 @@ ft::vector<T, Alloc>::insert (iterator position, InputIterator first, InputItera
 	if (size() + n > capacity())
 	{
 		_TmpVector	tmp(this->__alloc, __calc_new_size(size() + n));
+
 		tmp.insert_end(begin(), position);
 		tmp.insert_end(first, last);
 		tmp.insert_end(position, end());
 		tmp.move(*this);
 		return ;
 	}
-	__move_end_backward(position.base(), n);
-	__construct_mid(position.base(), first, last);
+	__move_end_backward(position, n);
+	__construct_mid(position, first, last);
 }
 
 // vector에서 position에 있는 요소를 제거한다.
@@ -819,8 +823,8 @@ template<class T, class Alloc>
 typename ft::vector<T, Alloc>::iterator 
 ft::vector<T, Alloc>::erase (iterator position)
 {
-	__alloc_traits::destroy(this->__alloc, position.base());
-	__move_end_forward(position.base(), 1);
+	__alloc_traits::destroy(this->__alloc, &(*position));
+	__move_end_forward(position, 1);
 	return (position);
 }
 
@@ -834,7 +838,7 @@ ft::vector<T, Alloc>::erase (iterator first, iterator last)
 	size_type	n = ft::distance(first, last);
 
 	__destroy_mid(first, last);
-	__move_end_forward(first.base(), n);
+	__move_end_forward(first, n);
 	return (first);
 }
 

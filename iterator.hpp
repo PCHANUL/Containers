@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/10 15:03:31 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 14:07:14 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/25 06:00:35 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class m_iter
 	typedef typename TreeIter::value_type		__node_type;
 
 public:
-	typedef ft::bidirectional_iterator_tag		iterator_category;
+	typedef std::bidirectional_iterator_tag		iterator_category;
 	typedef typename TreeIter::difference_type	difference_type;
 	typedef typename TreeIter::value_type		value_type;
 	typedef value_type*							pointer;
@@ -160,27 +160,27 @@ operator != (const ft::m_iter<T>& lhs, const ft::m_iter<T>& rhs)
 	return (lhs.base() != rhs.base());
 }
 
-template <class T>
+template <class Iter>
 class v_iter
 {
 
 public:
-	typedef ptrdiff_t						difference_type;
-	typedef T								value_type;
-	typedef T*								pointer;
-	typedef T&								reference;
-	typedef ft::random_access_iterator_tag	iterator_category;
+	typedef Iter														iterator_type;
+	typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
+	typedef typename iterator_traits<iterator_type>::value_type			value_type;
+	typedef typename iterator_traits<iterator_type>::pointer			pointer;
+	typedef typename iterator_traits<iterator_type>::reference			reference;
+	typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
 
 protected:
-	pointer	__i;
+	iterator_type	__i;
 
 public:
 	v_iter();
-	v_iter(pointer __x);
+	v_iter(iterator_type __x);
 	v_iter(const v_iter& __x);
 	~v_iter();
 
-	pointer		base() const;
 	v_iter&		operator =	(const v_iter& __x);
 	reference	operator *	() const;
 	pointer		operator ->	() const;
@@ -195,201 +195,213 @@ public:
 	reference	operator []	(difference_type n) const;
 };
 
-template <class T>
-ft::v_iter<T>::v_iter() : __i(nullptr)
+template <class Iter>
+ft::v_iter<Iter>::v_iter() : __i(nullptr)
 {
 }
 
-template <class T>
-ft::v_iter<T>::v_iter(pointer __x) : __i(__x)
+template <class Iter>
+ft::v_iter<Iter>::v_iter(iterator_type __x) : __i(__x)
 {
 }
 
-template <class T>
-ft::v_iter<T>::v_iter(const ft::v_iter<T>& __x) : __i(__x.__i)
+template <class Iter>
+ft::v_iter<Iter>::v_iter(const ft::v_iter<Iter>& __x) : __i(__x.__i)
 {
 }
 
-template <class T>
-ft::v_iter<T>::~v_iter()
+template <class Iter>
+ft::v_iter<Iter>::~v_iter()
 {
 }
 
-template <class T>
-typename ft::v_iter<T>::pointer		
-ft::v_iter<T>::base() const
-{
-	return (this->__i);
-}
-
-template <class T>
-ft::v_iter<T>&
-ft::v_iter<T>::operator = (const ft::v_iter<T>& __x)
+template <class Iter>
+ft::v_iter<Iter>&
+ft::v_iter<Iter>::operator = (const ft::v_iter<Iter>& __x)
 {
 	if (__x.__i != this->__i)
 		this->__i = __x.__i;
 	return (*this);
 }
 
-template <class T>
-typename ft::v_iter<T>::reference
-ft::v_iter<T>::operator * () const
+template <class Iter>
+typename ft::v_iter<Iter>::reference
+ft::v_iter<Iter>::operator * () const
 {
 	return (*(this->__i));
 }
 
-template <class T>
-typename ft::v_iter<T>::pointer
-ft::v_iter<T>::operator -> () const
+template <class Iter>
+typename ft::v_iter<Iter>::pointer
+ft::v_iter<Iter>::operator -> () const
 {
 	return (this->__i);
 }
 
-template <class T>
-ft::v_iter<T>&
-ft::v_iter<T>::operator ++ () 
+template <class Iter>
+ft::v_iter<Iter>&
+ft::v_iter<Iter>::operator ++ () 
 { 
-	this->__i++; 
+	++this->__i; 
 	return (*this); 
 }
 
-template <class T>
-ft::v_iter<T>
-ft::v_iter<T>::operator ++ (int) 
+template <class Iter>
+ft::v_iter<Iter>
+ft::v_iter<Iter>::operator ++ (int) 
 { 
 	v_iter tmp(*this);
 	++(*this);
 	return (tmp);
 }
 
-template <class T>
-ft::v_iter<T>&
-ft::v_iter<T>::operator -- () 
+template <class Iter>
+ft::v_iter<Iter>&
+ft::v_iter<Iter>::operator -- () 
 { 
 	this->__i--; 
 	return (*this); 
 }
 
-template <class T>
-ft::v_iter<T>
-ft::v_iter<T>::operator -- (int) 
+template <class Iter>
+ft::v_iter<Iter>
+ft::v_iter<Iter>::operator -- (int) 
 { 
 	v_iter tmp(*this);
 	--(*this);
 	return (tmp);
 }
 
-template <class T>
-ft::v_iter<T>
-ft::v_iter<T>::operator + (difference_type n) const
+template <class Iter>
+ft::v_iter<Iter>
+ft::v_iter<Iter>::operator + (difference_type n) const
 { 
 	v_iter tmp(*this);
 	tmp += n;
 	return (tmp);
 }
 
-template <class T>
-ft::v_iter<T>&
-ft::v_iter<T>::operator += (difference_type n)
+template <class Iter>
+ft::v_iter<Iter>&
+ft::v_iter<Iter>::operator += (difference_type n)
 { 
 	this->__i += n;
 	return (*this);
 }
 
-template <class T>
-ft::v_iter<T>
-ft::v_iter<T>::operator - (difference_type n) const
+template <class Iter>
+ft::v_iter<Iter>
+ft::v_iter<Iter>::operator - (difference_type n) const
 { 
 	v_iter tmp(*this);
 	tmp -= n;
 	return (tmp);
 }
 
-template <class T>
-ft::v_iter<T>&
-ft::v_iter<T>::operator -= (difference_type n)
+template <class Iter>
+ft::v_iter<Iter>&
+ft::v_iter<Iter>::operator -= (difference_type n)
 { 
 	this->__i -= n;
 	return (*this);
 }
 
-template <class T>
-typename ft::v_iter<T>::reference
-ft::v_iter<T>::operator [] (difference_type n) const
+template <class Iter>
+typename ft::v_iter<Iter>::reference
+ft::v_iter<Iter>::operator [] (difference_type n) const
 {
 	return (*(this->__i + n));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator == (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator == (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() == rhs.base());
+	return (&(*lhs) == &(*rhs));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator != (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator != (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() != rhs.base());
+	return (&(*lhs) != &(*rhs));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator < (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator < (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() < rhs.base());
+	return (&(*lhs) < &(*rhs));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator <= (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator <= (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() <= rhs.base());
+	return (&(*lhs) <= &(*rhs));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator > (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator > (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() > rhs.base());
+	return (&(*lhs) > &(*rhs));
 }
 
-template <class T>
+template <class Iter>
 bool
-operator >= (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+operator >= (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (lhs.base() >= rhs.base());
+	return (&(*lhs) >= &(*rhs));
 }
 
-template <class T>  
-ft::v_iter<T> 
-operator + (typename ft::v_iter<T>::difference_type n, const ft::v_iter<T>& it)
+template <class Iter>  
+ft::v_iter<Iter> 
+operator + (typename ft::v_iter<Iter>::difference_type n, const ft::v_iter<Iter>& it)
 {
-	ft::v_iter<T>	tmp(it.base());
+	ft::v_iter<Iter>	tmp(&(*it));
 	tmp += n;
 	return (tmp);
 }
 
 // lhs와 rhs 사이의 거리를 반환합니다. 이 함수는 rhs의 기본 반복기에서 lhs의 기본 반복기를 빼는 것과 동일한 값을 반환합니다.
-template <class T>  
-typename ft::v_iter<T>::difference_type 
-operator - (const ft::v_iter<T>& lhs, const ft::v_iter<T>& rhs)
+template <class Iter>  
+typename ft::v_iter<Iter>::difference_type 
+operator - (const ft::v_iter<Iter>& lhs, const ft::v_iter<Iter>& rhs)
 {
-	return (&(*rhs) - &(*lhs));
+	return (&(*lhs) - &(*rhs));
+}
+
+template <class It>
+typename iterator_traits<It>::difference_type
+__distance (It first, It last, std::random_access_iterator_tag)
+{
+	return (&(*last) - &(*first));
+}
+
+template <class It>
+typename iterator_traits<It>::difference_type
+__distance (It first, It last, std::input_iterator_tag)
+{
+	typename ft::iterator_traits<It>::difference_type result = 0;
+
+    while (first != last) 
+	{
+        ++first;
+        ++result;
+    }
+
+    return result;
 }
 
 // first와 last의 거리를 반환
 // - Exception : first 메모리 주소가 last보다 크다면 ft::lenth_error: vector
-template <class InputIterator>  
-typename iterator_traits<InputIterator>::difference_type    
-distance (InputIterator first, 
-			typename ft::enable_if<ft::is_iterator<InputIterator>::value, 
-			InputIterator>::type last)
+template <class It>  
+typename iterator_traits<It>::difference_type    
+distance (It first, It last,
+			typename ft::enable_if<ft::is_iterator<It>::value, It>::type* = 0)
 {
-	if (first.base() > last.base())
-		throw ft::length_error("vector");
-	return (last.base() - first.base());
+	return (ft::__distance(first, last, typename ft::iterator_traits<It>::iterator_category()));
 }
 
 template <class Iterator>
@@ -580,42 +592,42 @@ template <class Iterator>
 bool 
 operator == (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() == rhs.base());
+	return (&(*lhs) == &(*rhs));
 }
 
 template <class Iterator>  
 bool 
 operator != (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() != rhs.base());
+	return (&(*lhs) != &(*rhs));
 }
 
 template <class Iterator>  
 bool 
 operator <  (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() < rhs.base());
+	return (&(*lhs) < &(*rhs));
 }
 
 template <class Iterator>  
 bool 
 operator <= (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() <= rhs.base());
+	return (&(*lhs) <= &(*rhs));
 }
 
 template <class Iterator>  
 bool 
 operator >  (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() > rhs.base());
+	return (&(*lhs) > &(*rhs));
 }
 
 template <class Iterator>  
 bool 
 operator >= (const ft::reverse_iterator<Iterator>& lhs, const ft::reverse_iterator<Iterator>& rhs)
 {
-	return (lhs.base() >= rhs.base());
+	return (&(*lhs) >= &(*rhs));
 }
 
 // rev_it가 가리키는 요소에서 n 위치 떨어진 요소를 가리키는 역방향 반복자를 반환합니다. 

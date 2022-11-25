@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 15:39:29 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 13:28:32 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/25 04:31:30 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,54 @@ lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputItera
 			return (false);
 	}
 	return (false);
+}
+
+template <class It>
+void
+__advance(It& it, typename ft::iterator_traits<It>::difference_type n, std::random_access_iterator_tag)
+{
+	it += n;
+}
+
+template <class It>
+void
+__advance(It& it, typename ft::iterator_traits<It>::difference_type n, std::bidirectional_iterator_tag)
+{
+	while (n > 0) {
+        --n;
+        ++it;
+    }
+    while (n < 0) {
+        ++n;
+        --it;
+    }
+}
+
+template <class It>
+void
+__advance(It& it, typename ft::iterator_traits<It>::difference_type n, std::input_iterator_tag)
+{
+	while (n > 0) {
+        --n;
+        ++it;
+    }
+}
+
+template <class It, class Dist>
+void
+advance(It& it, Dist n)
+{
+	ft::__advance(it, typename ft::iterator_traits<It>::difference_type(n), 
+					typename ft::iterator_traits<It>::iterator_category());
+}
+
+template <class _Input, class _Output>
+_Output&
+copy(_Input& first1, _Input&, _Output& first2, size_t __n)
+{
+	if (__n > 0)
+        std::memmove(*first2, *first1, __n * sizeof(_Output));
+    return first2 + __n;
 }
 
 } // ft

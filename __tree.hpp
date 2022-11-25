@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 13:47:47 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/24 23:34:38 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ public:
 	typedef T&								reference;
 	typedef T*								pointer;
 	typedef ptrdiff_t						difference_type;
-	typedef ft::bidirectional_iterator_tag	iterator_category;
+	typedef std::bidirectional_iterator_tag	iterator_category;
 
 protected:
 	__node_pointer	__n;
