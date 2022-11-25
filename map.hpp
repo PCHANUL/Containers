@@ -6,13 +6,12 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 14:08:02 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/25 19:35:11 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __MAP_HPP__
 #define __MAP_HPP__
-
 #include <memory>
 #include "type_traits.hpp"
 #include "iterator.hpp"
@@ -24,7 +23,7 @@ namespace ft
 {
 
 template<class Key, class Compare>
-struct __map_compare : private Compare
+struct __map_compare : public Compare
 {
 private:
 	Compare comp;
@@ -58,15 +57,15 @@ public:
 
 protected:
 	typedef	__map_compare<value_type, key_compare>					__tree_compare;
-	typedef	__tree<value_type,	__tree_compare, allocator_type>		__tree_type;
+	typedef	__tree<value_type, __tree_compare, allocator_type>		__tree_type;
 
 	allocator_type	__alloc;
 	key_compare		__key_comp;
 	__tree_type		__root;
 
 public:
-	typedef ft::m_iter<typename __tree_type::iterator>				iterator;
-	typedef ft::m_iter<typename __tree_type::const_iterator>		const_iterator;
+	typedef typename __tree_type::iterator							iterator;
+	typedef typename __tree_type::const_iterator					const_iterator;
 	typedef ft::reverse_iterator<iterator>							reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 
@@ -279,10 +278,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::size_type
 ft::map<Key, T, Compare, Alloc>::max_size() const
 {
-	size_type	max = __alloc_traits::max_size(this->__alloc);
-	size_type	diff_max = std::numeric_limits<difference_type>::max();
-
-	return (max < diff_max ? max : diff_max);
+	return (__root.max_size());
 }
 
 // k가 컨테이너에 있는 요소의 키와 일치하면 함수는 매핑된 값에 대한 참조를 반환합니다.
@@ -381,7 +377,7 @@ template <class Key, class T, class Compare, class Alloc>
 void 
 ft::map<Key, T, Compare, Alloc>::erase (iterator first, iterator last)
 {
-	__root.erase(first.base(), last.base());
+	__root.erase(first, last);
 }
 
 // 같은 유형의 다른 맵인 x의 내용으로 컨테이너의 내용을 교환합니다. 크기가 다를 수 있습니다. 
@@ -434,14 +430,14 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k)
 {
-	return (__root.find(value_type(k, 0)));
+	return (iterator(__root.find(value_type(k, 0))));
 }
 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k) const
 {
-	return (__root.find(value_type(k, 0)));
+	return (const_iterator(__root.find(value_type(k, 0))));
 }
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 일치 항목 수를 반환합니다.
@@ -461,7 +457,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator 
 ft::map<Key, T, Compare, Alloc>::lower_bound (const key_type& k)
 {
-	return (__root.lower_bound(value_type(k, 0)));
+	return (iterator(__root.lower_bound(value_type(k, 0))));
 }
 
 // 지도 개체가 const로 한정된 경우 함수는 const_iterator를 반환합니다. 그렇지 않으면 반복자를 반환합니다.
@@ -469,7 +465,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator 
 ft::map<Key, T, Compare, Alloc>::lower_bound (const key_type& k) const
 {
-	return (__root.lower_bound(value_type(k, 0)));
+	return (const_iterator(__root.lower_bound(value_type(k, 0))));
 }
 
 // 키가 k 다음에 오는 것으로 간주되는 컨테이너의 첫 번째 요소를 가리키는 반복자를 반환합니다.
@@ -488,7 +484,7 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator 
 ft::map<Key, T, Compare, Alloc>::upper_bound (const key_type& k) const
 {
-	return (__root.upper_bound(value_type(k, 0)));
+	return (const_iterator(__root.upper_bound(value_type(k, 0))));
 }
 
 // k에 해당하는 키가 있는 컨테이너의 모든 요소를 ​​포함하는 범위의 경계를 반환합니다.

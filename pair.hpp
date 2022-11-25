@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 12:29:39 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 14:10:15 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/25 19:05:15 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ public:
 
     pair();
     pair(const first_type& a, const second_type& b);
+    ~pair();
     template<class U, class V> pair(const pair<U,V>& pr);
     pair& operator = (const pair& pr);
     
@@ -42,14 +43,19 @@ ft::pair<T1, T2>::pair() : first(), second()
 
 // first 맴버는 a로 구성되고, second 맴버는 b로 구성됩니다.
 template <class T1, class T2>
-ft::pair<T1, T2>::pair(const first_type& a, const second_type& b) : first(a), second(b)
+ft::pair<T1, T2>::pair(const T1& __t1, const T2& __t2) : first(__t1), second(__t2)
 {
 }
 
 // 개체는 pr 개체의 내용으로 초기화됩니다.
 template <class T1, class T2>
-template<class U, class V> 
-ft::pair<T1, T2>::pair(const pair<U,V>& pr) : first(pr.first), second(pr.second)
+template<class U1, class U2> 
+ft::pair<T1, T2>::pair(const pair<U1, U2>&) : first(), second()
+{
+}
+
+template <class T1, class T2>
+ft::pair<T1, T2>::~pair()
 {
 }
 

@@ -35,8 +35,8 @@ public:
 	typedef const value_type&								const_reference;
 	typedef typename __alloc_traits::pointer				pointer;
 	typedef typename __alloc_traits::const_pointer			const_pointer;
-	typedef ft::v_iter<pointer>								iterator;
-	typedef ft::v_iter<const_pointer>						const_iterator;
+	typedef ft::v_iter<T, false>							iterator;
+	typedef ft::v_iter<T, true>								const_iterator;
 	typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	typedef typename __alloc_traits::difference_type		difference_type;
@@ -339,9 +339,9 @@ ft::vector<T, Alloc>::__construct_end(size_type n, const_reference val)
 		__alloc_traits::construct(this->__alloc, this->__end, val);
 }
 
-template <class T>
+template <class T, class P>
 void
-__construct_range(T* __begin_s, T* __end_s, T*& __begin_d)
+__construct_range(T* __begin_s, T* __end_s, P*& __begin_d)
 {
 	ptrdiff_t n = __end_s - __begin_s;
 	if (n > 0)

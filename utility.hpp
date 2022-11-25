@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 15:39:29 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/25 04:31:30 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/25 16:10:52 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,19 @@ struct less : binary_function <T, T, bool>
 	bool operator() (const T& x, const T& y) const {
 		return (x < y);
 	}
+};
+
+template <bool flag, class IsTrue, class IsFalse>
+struct choose {};
+
+template <class IsTrue, class IsFalse>
+struct choose<true, IsTrue, IsFalse> {
+   typedef IsTrue type;
+};
+
+template <class IsTrue, class IsFalse>
+struct choose<false, IsTrue, IsFalse> {
+   typedef IsFalse type;
 };
 
 // 범위 [first1, last1)의 요소를 first2에서 시작하는 범위의 요소와 비교합니다.
