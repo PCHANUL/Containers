@@ -1890,6 +1890,8 @@ int main(void)
 
 
 	}	// map
+
+	system("leaks test");
 	
 	return (0);
 }

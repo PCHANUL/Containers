@@ -3,3 +3,4 @@ FT_CONTAINERS_42_tester
 a.out
 *.o
 test
+containers_test

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 13:39:02 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/25 20:51:25 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/26 19:31:39 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -772,7 +772,7 @@ __tree<T, Compare, Alloc>::erase(iterator first, iterator last)
 	while (iter != last)
 	{
 		iter++;
-		erase(first, first);
+		erase(first);
 		first = iter;
 	}
 }
@@ -1033,14 +1033,14 @@ template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::iterator
 __tree<T, Compare, Alloc>::begin()
 {
-	return (iterator(__begin_node));
+	return (iterator(__get_min()));
 }
 
 template <class T, class Compare, class Alloc>
 typename  __tree<T, Compare, Alloc>::const_iterator
 __tree<T, Compare, Alloc>::begin() const
 {
-	return (const_iterator((__begin_node)));
+	return (const_iterator((__get_min())));
 }
 
 template <class T, class Compare, class Alloc>

@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:42:13 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/25 19:35:11 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/26 19:40:36 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,7 +369,9 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::size_type 
 ft::map<Key, T, Compare, Alloc>::erase (const key_type& k)
 {
-	return (__root.erase(value_type(k, 0)));
+	value_type	pair(k, mapped_type());
+	
+	return (__root.erase(pair));
 }
 
 // 제거할 맵 컨테이너 내 범위를 지정하는 반복자. first와 last 사이의 모든 요소가 포함되며 first가 가리키는 요소는 포함되지만 last가 가리키는 요소는 포함되지 않습니다. 
@@ -430,14 +432,18 @@ template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k)
 {
-	return (iterator(__root.find(value_type(k, 0))));
+	value_type	pair(k, mapped_type());
+	
+	return (iterator(__root.find(pair)));
 }
 
 template <class Key, class T, class Compare, class Alloc>
 typename ft::map<Key, T, Compare, Alloc>::const_iterator
 ft::map<Key, T, Compare, Alloc>::find (const key_type& k) const
 {
-	return (const_iterator(__root.find(value_type(k, 0))));
+	value_type	pair(k, mapped_type());
+	
+	return (const_iterator(__root.find(pair)));
 }
 
 // 컨테이너에서 k에 해당하는 키가 있는 요소를 검색하고 일치 항목 수를 반환합니다.

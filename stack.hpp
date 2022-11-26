@@ -6,7 +6,7 @@
 /*   By: cpak <cpak@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 17:58:11 by cpak              #+#    #+#             */
-/*   Updated: 2022/11/24 14:13:53 by cpak             ###   ########seoul.kr  */
+/*   Updated: 2022/11/26 20:06:55 by cpak             ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ namespace ft
 template<class T, class Container = ft::vector<T> >
 class stack
 {
+protected:
+    Container   c;
 
 public:
     typedef Container                       container_type;
@@ -38,9 +40,19 @@ public:
     void                push (const value_type& val);
     void                pop();
 
-protected:
-    Container   c;
-
+    
+    template <class _T, class _C>
+    friend bool operator == (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
+    template <class _T, class _C>
+    friend bool operator != (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
+    template <class _T, class _C>
+    friend bool operator <  (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
+    template <class _T, class _C>
+    friend bool operator >  (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
+    template <class _T, class _C>
+    friend bool operator <= (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
+    template <class _T, class _C>
+    friend bool operator >= (const ft::stack<_T, _C>& lhs, const ft::stack<_T, _C>& rhs);
 };
 
 template <class T, class Container>  
@@ -81,10 +93,17 @@ ft::stack<T, Container>::size() const
 }
 
 template <class T, class Container>  
+typename ft::stack<T, Container>::value_type&
+ft::stack<T, Container>::top()
+{
+    return (this->c.back());
+}
+
+template <class T, class Container>  
 const typename ft::stack<T, Container>::value_type&
 ft::stack<T, Container>::top() const
 {
-    return (this->c.top());
+    return (this->c.back());
 }
 
 template <class T, class Container>  

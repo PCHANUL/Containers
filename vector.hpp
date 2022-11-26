@@ -104,7 +104,6 @@ public:
 
 	allocator_type			get_allocator() const;
 
-	
 
 private:
 	size_type				__calc_new_size(size_type new_size) const;
