@@ -335,10 +335,6 @@ public:
 
 
 
-
-
-
-
 int main(void) 
 {
 	Testing	test;
@@ -1212,686 +1208,685 @@ int main(void)
 	} // vector
 
 
-	std::cout << "\n< map >" << std::endl;
-	{
+	// std::cout << "\n< map >" << std::endl;
+	// {
 
-	test.main("Constructor");
-	{
-		ft::map<int, int>				ft_map;
-		ft::map<int, int>::iterator		ft_end = ft_map.end();
-		ft::map<int, int>::iterator		ft_begin = ft_map.begin();
+	// test.main("Constructor");
+	// {
+	// 	ft::map<int, int>				ft_map;
+	// 	ft::map<int, int>::iterator		ft_end = ft_map.end();
+	// 	ft::map<int, int>::iterator		ft_begin = ft_map.begin();
 
-		test.main_then(ft_begin == ft_end);
-		ft_map.insert(ft::pair<int, int>(10, 10));
-		ft_begin = ft_map.begin();
-		ft_begin++;
-		test.main_then(ft_begin == ft_end);
-		test.main_end();	
-	}
+	// 	test.main_then(ft_begin == ft_end);
+	// 	ft_map.insert(ft::pair<int, int>(10, 10));
+	// 	ft_begin = ft_map.begin();
+	// 	ft_begin++;
+	// 	test.main_then(ft_begin == ft_end);
+	// 	test.main_end();	
+	// }
 
-	test.main("Range Constructor");
-	{
-		ft::map<int, int>				ft_map;
-		ft::map<int, int>::iterator		ft_begin;
-		ft::map<int, int>::iterator		ft_end;
-		std::map<int, int>				std_map;
-		size_t len;
+	// test.main("Range Constructor");
+	// {
+	// 	ft::map<int, int>				ft_map;
+	// 	ft::map<int, int>::iterator		ft_begin;
+	// 	ft::map<int, int>::iterator		ft_end;
+	// 	std::map<int, int>				std_map;
+	// 	size_t len;
 
-		for (int i = 0; i < COUNT; ++i)
-		{
-			ft_map.insert(ft::make_pair(rand(), rand()));
-			std_map.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 	{
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
+	// 		std_map.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		len = 0;
-		ft_begin = ft_map.begin();
-		ft_end = ft_map.end();
+	// 	len = 0;
+	// 	ft_begin = ft_map.begin();
+	// 	ft_end = ft_map.end();
 
-		for (; ft_begin != ft_end; ++ft_begin, ++len)
-		{}
-		test.main_then(len == ft_map.size());
+	// 	for (; ft_begin != ft_end; ++ft_begin, ++len)
+	// 	{}
+	// 	test.main_then(len == ft_map.size());
 		
-		int sum = 0;
-		for (int i = 0; i < 10000; i++)
-		{
-			int access = rand();
-			sum += ft_map[access];
-		}
-		test.main_then(sum == 0);
-		test.main_end();
+	// 	int sum = 0;
+	// 	for (int i = 0; i < 10000; i++)
+	// 	{
+	// 		int access = rand();
+	// 		sum += ft_map[access];
+	// 	}
+	// 	test.main_then(sum == 0);
+	// 	test.main_end();
 
-		test.time_start_ft();
-		ft::map<int, int>	ft_test(ft_map.begin(), ft_map.end());
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft::map<int, int>	ft_test(ft_map.begin(), ft_map.end());
+	// 	test.time_end();
 		
-		test.time_start_std();
-		std::map<int, int>	std_test(std_map.begin(), std_map.end());
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std::map<int, int>	std_test(std_map.begin(), std_map.end());
+	// 	test.time_end();
+	// }
 
-	test.main("Copy constructor");
-	{
-		ft::map<int, int>				ft_map;
-		ft::map<int, int>::iterator		ft_begin;
-		ft::map<int, int>::iterator		ft_end;
-		std::map<int, int>				std_map;
+	// test.main("Copy constructor");
+	// {
+	// 	ft::map<int, int>				ft_map;
+	// 	ft::map<int, int>::iterator		ft_begin;
+	// 	ft::map<int, int>::iterator		ft_end;
+	// 	std::map<int, int>				std_map;
 
-		for (int i = 0; i < COUNT; ++i)
-		{
-			ft_map.insert(ft::make_pair(rand(), rand()));
-			std_map.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 	{
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
+	// 		std_map.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		ft::map<int, int>				ft_copy(ft_map);
-		ft::map<int, int>::iterator		ft_iter = ft_copy.begin();
+	// 	ft::map<int, int>				ft_copy(ft_map);
+	// 	ft::map<int, int>::iterator		ft_iter = ft_copy.begin();
 
-		for (; ft_begin!=ft_end; ft_begin++, ft_iter++)
-		{
-			if (*ft_begin != *ft_iter)
-				break ;
-		}
-		test.main_then(ft_begin == ft_end);
-		test.main_end();
+	// 	for (; ft_begin!=ft_end; ft_begin++, ft_iter++)
+	// 	{
+	// 		if (*ft_begin != *ft_iter)
+	// 			break ;
+	// 	}
+	// 	test.main_then(ft_begin == ft_end);
+	// 	test.main_end();
 
-		test.time_start_ft();
-		ft::map<int, int>	ft_test(ft_map);
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft::map<int, int>	ft_test(ft_map);
+	// 	test.time_end();
 		
-		test.time_start_std();
-		std::map<int, int>	std_test(std_map);
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std::map<int, int>	std_test(std_map);
+	// 	test.time_end();
+	// }
 
-	test.main("operator = ");
-	{
-		ft::map<int, int>	ft_map;
-		std::map<int, int>	std_map;
-		int key, val;
+	// test.main("operator = ");
+	// {
+	// 	ft::map<int, int>	ft_map;
+	// 	std::map<int, int>	std_map;
+	// 	int key, val;
 
-		for (int i = 0; i < COUNT; ++i)
-		{
-			key = rand();
-			val = rand();
-			ft_map.insert(ft::make_pair(key, val));
-			std_map.insert(std::make_pair(key, val));
-		}
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 	{
+	// 		key = rand();
+	// 		val = rand();
+	// 		ft_map.insert(ft::make_pair(key, val));
+	// 		std_map.insert(std::make_pair(key, val));
+	// 	}
 
-		ft::map<int, int>	ft_copy;
+	// 	ft::map<int, int>	ft_copy;
 
-		ft_copy = ft_map;
-		test.main_then(ft_copy.size() == ft_map.size());
-		test.main_then(ft_copy[key] == ft_map[key]);
-		test.main_then((*ft_copy.begin()).first == (*ft_map.begin()).first);
-		test.main_then((*ft_copy.begin()).second == (*ft_map.begin()).second);
-		test.main_end();
+	// 	ft_copy = ft_map;
+	// 	test.main_then(ft_copy.size() == ft_map.size());
+	// 	test.main_then(ft_copy[key] == ft_map[key]);
+	// 	test.main_then((*ft_copy.begin()).first == (*ft_map.begin()).first);
+	// 	test.main_then((*ft_copy.begin()).second == (*ft_map.begin()).second);
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_test;
-		test.time_start_ft();
-		ft_test = ft_map;
-		test.time_end();
+	// 	ft::map<int, int>	ft_test;
+	// 	test.time_start_ft();
+	// 	ft_test = ft_map;
+	// 	test.time_end();
 		
-		std::map<int, int>	std_test;
-		test.time_start_std();
-		std_test = std_map;
-		test.time_end();
-	}
+	// 	std::map<int, int>	std_test;
+	// 	test.time_start_std();
+	// 	std_test = std_map;
+	// 	test.time_end();
+	// }
 
-	test.main("pair");
-	{
-		std::pair <std::string, double>	std1;                  
-		std::pair <std::string, double>	std2 ("tomatoes", 2.30);
-		std::pair <std::string, double>	std3 (std2);
+	// test.main("pair");
+	// {
+	// 	std::pair <std::string, double>	std1;                  
+	// 	std::pair <std::string, double>	std2 ("tomatoes", 2.30);
+	// 	std::pair <std::string, double>	std3 (std2);
 
-		ft::pair <std::string, double>	ft1;                  
-		ft::pair <std::string, double>	ft2 ("tomatoes", 2.30);
-		ft::pair <std::string, double>	ft3 (ft2);       
+	// 	ft::pair <std::string, double>	ft1;                  
+	// 	ft::pair <std::string, double>	ft2 ("tomatoes", 2.30);
+	// 	ft::pair <std::string, double>	ft3 (ft2);       
 
-		std2.first = "shoes";
-		std2.second = 39.90;
-		ft2.first = "shoes";
-		ft2.second = 39.90;
+	// 	std2.first = "shoes";
+	// 	std2.second = 39.90;
+	// 	ft2.first = "shoes";
+	// 	ft2.second = 39.90;
 
-		test.main_then(std1.first == ft1.first);
-		test.main_then(std1.second == ft1.second);
-		test.main_then(std2.first == ft2.first);
-		test.main_then(std2.second == ft2.second);
-		test.main_then(std3.first == ft3.first);
-		test.main_then(std3.second == ft3.second);
+	// 	test.main_then(std1.first == ft1.first);
+	// 	test.main_then(std1.second == ft1.second);
+	// 	test.main_then(std2.first == ft2.first);
+	// 	test.main_then(std2.second == ft2.second);
+	// 	test.main_then(std3.first == ft3.first);
+	// 	test.main_then(std3.second == ft3.second);
 
-		ft::pair<int, int>	ft_a;
-		ft::pair<int, int>	ft_b;
+	// 	ft::pair<int, int>	ft_a;
+	// 	ft::pair<int, int>	ft_b;
 
-		ft_a = ft::make_pair(10, 11);
-		ft_b = ft::make_pair(10, 10);
+	// 	ft_a = ft::make_pair(10, 11);
+	// 	ft_b = ft::make_pair(10, 10);
 
-		test.main_then((ft_a < ft_b) == false);
+	// 	test.main_then((ft_a < ft_b) == false);
 
-		ft_a.first = 9;
-		test.main_then((ft_a < ft_b) == true);
+	// 	ft_a.first = 9;
+	// 	test.main_then((ft_a < ft_b) == true);
 
-		test.main_end();
-	}
+	// 	test.main_end();
+	// }
 
-	test.main("insert(val)");
-	{
-		ft::map<int, int>	ft_map;
+	// test.main("insert(val)");
+	// {
+	// 	ft::map<int, int>	ft_map;
 	
-		ft_map.insert(ft::pair<int, int>(10, 10));
-		ft_map.insert(ft::pair<int, int>(20, 10));
-		ft_map.insert(ft::pair<int, int>(30, 10));
-		ft_map.insert(ft::pair<int, int>(5, 10));
-		ft_map.insert(ft::pair<int, int>(15, 10));
-		ft_map.insert(ft::pair<int, int>(8, 10));
-		ft_map.insert(ft::pair<int, int>(7, 10));
-		ft_map.insert(ft::pair<int, int>(2, 10));
-		ft_map.insert(ft::pair<int, int>(1, 10));
-		ft_map.insert(ft::pair<int, int>(6, 10));
+	// 	ft_map.insert(ft::pair<int, int>(10, 10));
+	// 	ft_map.insert(ft::pair<int, int>(20, 10));
+	// 	ft_map.insert(ft::pair<int, int>(30, 10));
+	// 	ft_map.insert(ft::pair<int, int>(5, 10));
+	// 	ft_map.insert(ft::pair<int, int>(15, 10));
+	// 	ft_map.insert(ft::pair<int, int>(8, 10));
+	// 	ft_map.insert(ft::pair<int, int>(7, 10));
+	// 	ft_map.insert(ft::pair<int, int>(2, 10));
+	// 	ft_map.insert(ft::pair<int, int>(1, 10));
+	// 	ft_map.insert(ft::pair<int, int>(6, 10));
 
-		test.main_then(ft_map.size() == 10);
-		test.main_end();
+	// 	test.main_then(ft_map.size() == 10);
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_map_int;
-		test.time_start_ft();
-		for (int i = 0; i < COUNT; ++i)
-			ft_map_int.insert(ft::make_pair(rand(), rand()));
-		test.time_end();
+	// 	ft::map<int, int>	ft_map_int;
+	// 	test.time_start_ft();
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 		ft_map_int.insert(ft::make_pair(rand(), rand()));
+	// 	test.time_end();
 		
-		std::map<int, int>	std_map_int;
-		test.time_start_std();
-		for (int i = 0; i < COUNT; ++i)
-			std_map_int.insert(std::make_pair(rand(), rand()));
-		test.time_end();
-	}
+	// 	std::map<int, int>	std_map_int;
+	// 	test.time_start_std();
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 		std_map_int.insert(std::make_pair(rand(), rand()));
+	// 	test.time_end();
+	// }
 
-	test.main("insert(hint)");
-	{
-		ft::map<int, int>	std_map;
-		ft::pair<int, int>	std_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+	// test.main("insert(hint)");
+	// {
+	// 	ft::map<int, int>	std_map;
+	// 	ft::pair<int, int>	std_pair(10, 10);
+	// 	int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 
-		for (int i=0; i<10; i++)
-		{
-			std_pair.first = nums[i];
-			std_map.insert(std_map.begin(), std_pair);
-		}
+	// 	for (int i=0; i<10; i++)
+	// 	{
+	// 		std_pair.first = nums[i];
+	// 		std_map.insert(std_map.begin(), std_pair);
+	// 	}
 
-		std_pair.first = 500;
-		ft::map<int, int>::iterator	std_iter = std_map.begin();
-		ft::map<int, int>::iterator	std_end = std_map.end();
-		std_end--;
-		for (int i=0; std_iter!=std_end; std_iter++, i++)
-		{
-			test.main_then((*std_iter).first == nums[i]);
-		}
-		test.main_then((*std_iter).first == (*std_end).first);
-		test.main_end();
+	// 	std_pair.first = 500;
+	// 	ft::map<int, int>::iterator	std_iter = std_map.begin();
+	// 	ft::map<int, int>::iterator	std_end = std_map.end();
+	// 	std_end--;
+	// 	for (int i=0; std_iter!=std_end; std_iter++, i++)
+	// 	{
+	// 		test.main_then((*std_iter).first == nums[i]);
+	// 	}
+	// 	test.main_then((*std_iter).first == (*std_end).first);
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_map_int;
-		test.time_start_ft();
-		for (int i = 0; i < 1000; ++i)
-			ft_map_int.insert(ft_map_int.begin(), ft::make_pair(rand(), rand()));
-		test.time_end();
+	// 	ft::map<int, int>	ft_map_int;
+	// 	test.time_start_ft();
+	// 	for (int i = 0; i < 1000; ++i)
+	// 		ft_map_int.insert(ft_map_int.begin(), ft::make_pair(rand(), rand()));
+	// 	test.time_end();
 		
-		std::map<int, int>	std_map_int;
-		test.time_start_std();
-		for (int i = 0; i < 1000; ++i)
-			std_map_int.insert(std_map_int.begin(), std::make_pair(rand(), rand()));
-		test.time_end();
-	}
+	// 	std::map<int, int>	std_map_int;
+	// 	test.time_start_std();
+	// 	for (int i = 0; i < 1000; ++i)
+	// 		std_map_int.insert(std_map_int.begin(), std::make_pair(rand(), rand()));
+	// 	test.time_end();
+	// }
 
-	test.main("insert(range)");
-	{
-		ft::map<int, int>	ft_map;
-		std::map<int, int>	std_map;
+	// test.main("insert(range)");
+	// {
+	// 	ft::map<int, int>	ft_map;
+	// 	std::map<int, int>	std_map;
 
-		for (int i = 0; i < 10000; ++i)
-		{
-			ft_map.insert(ft::make_pair(rand(), rand()));
-			std_map.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < 10000; ++i)
+	// 	{
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
+	// 		std_map.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		ft::map<int, int>	ft_range;
-		ft_range.insert(ft_map.begin(), ft_map.end());
+	// 	ft::map<int, int>	ft_range;
+	// 	ft_range.insert(ft_map.begin(), ft_map.end());
 
-		test.main_then(*ft_range.begin() == *ft_map.begin());
-		test.main_then(*(--ft_range.end()) == *(--ft_map.end()));
-		test.main_then(ft_range.size() == ft_map.size());
-		test.main_end();
+	// 	test.main_then(*ft_range.begin() == *ft_map.begin());
+	// 	test.main_then(*(--ft_range.end()) == *(--ft_map.end()));
+	// 	test.main_then(ft_range.size() == ft_map.size());
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_test;
-		test.time_start_ft();
-		ft_test.insert(ft_map.begin(), ft_map.end());
-		test.time_end();
+	// 	ft::map<int, int>	ft_test;
+	// 	test.time_start_ft();
+	// 	ft_test.insert(ft_map.begin(), ft_map.end());
+	// 	test.time_end();
 		
-		std::map<int, int>	std_test;
-		test.time_start_std();
-		std_test.insert(std_map.begin(), std_map.end());
-		test.time_end();
-	}
+	// 	std::map<int, int>	std_test;
+	// 	test.time_start_std();
+	// 	std_test.insert(std_map.begin(), std_map.end());
+	// 	test.time_end();
+	// }
 
-	test.main("erase");
-	{
-		ft::map<int, int>	ft_map;
-		std::map<int, int>	std_map;
-		int key, val;
+	// test.main("erase");
+	// {
+	// 	ft::map<int, int>	ft_map;
+	// 	std::map<int, int>	std_map;
+	// 	int key, val;
 
-		for (int i = 0; i < COUNT-10; ++i)
-		{
-			ft_map.insert(ft::make_pair(rand(), rand()));
-			std_map.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < COUNT-10; ++i)
+	// 	{
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
+	// 		std_map.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		key = rand();
-		val = rand();
-		ft_map.insert(ft::make_pair(key, val));
-		std_map.insert(std::make_pair(key, val));
-		test.main_then(std_map.size() == ft_map.size());
-		std_map.erase(key);
-		ft_map.erase(key);
-		test.main_then(std_map.size() == ft_map.size());
-		test.main_then(std_map.find(key) == std_map.end()
-						&& ft_map.find(key) == ft_map.end());
-		test.main_end();
+	// 	key = rand();
+	// 	val = rand();
+	// 	ft_map.insert(ft::make_pair(key, val));
+	// 	std_map.insert(std::make_pair(key, val));
+	// 	test.main_then(std_map.size() == ft_map.size());
+	// 	std_map.erase(key);
+	// 	ft_map.erase(key);
+	// 	test.main_then(std_map.size() == ft_map.size());
+	// 	test.main_then(std_map.find(key) == std_map.end()
+	// 					&& ft_map.find(key) == ft_map.end());
+	// 	test.main_end();
 
-		key = rand();
-		val = rand();
-		ft_map.insert(ft::make_pair(key, val));
-		std_map.insert(std::make_pair(key, val));
+	// 	key = rand();
+	// 	val = rand();
+	// 	ft_map.insert(ft::make_pair(key, val));
+	// 	std_map.insert(std::make_pair(key, val));
 
-		test.time_start_ft();
-		ft_map.erase(key);
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft_map.erase(key);
+	// 	test.time_end();
 
-		test.time_start_std();
-		std_map.erase(key);
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std_map.erase(key);
+	// 	test.time_end();
+	// }
 
-	test.main("erase(iter)");
-	{
-		ft::map<int, int>	ft_map;
+	// test.main("erase(iter)");
+	// {
+	// 	ft::map<int, int>	ft_map;
 
-		for (int i = 0; i < 100; ++i)
-			ft_map.insert(ft::make_pair(rand(), rand()));
+	// 	for (int i = 0; i < 100; ++i)
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
 
-		ft_map.erase(ft_map.begin(), ft_map.end());
-		test.main_then(ft_map.size() == 0);
-		test.main_end();
+	// 	ft_map.erase(ft_map.begin(), ft_map.end());
+	// 	test.main_then(ft_map.size() == 0);
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_test;
-		std::map<int, int>	std_test;
+	// 	ft::map<int, int>	ft_test;
+	// 	std::map<int, int>	std_test;
 
-		for (int i = 0; i < COUNT; ++i)
-		{
-			ft_test.insert(ft::make_pair(rand(), rand()));
-			std_test.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 	{
+	// 		ft_test.insert(ft::make_pair(rand(), rand()));
+	// 		std_test.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		test.time_start_ft();
-		ft_test.erase(ft_test.begin(), ft_test.end());
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft_test.erase(ft_test.begin(), ft_test.end());
+	// 	test.time_end();
 		
-		test.time_start_std();
-		std_test.erase(std_test.begin(), std_test.end());
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std_test.erase(std_test.begin(), std_test.end());
+	// 	test.time_end();
+	// }
 
-	test.main("swap");
-	{
-		ft::map<int, int>	std_map;
-		ft::pair<int, int>	std_pair(10, 10);
-		int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
+	// test.main("swap");
+	// {
+	// 	ft::map<int, int>	std_map;
+	// 	ft::pair<int, int>	std_pair(10, 10);
+	// 	int					nums[] = {1, 2, 4, 7, 10, 30, 55, 71, 200, 456};
 
-		for (int i=0; i<10; i++)
-		{
-			std_pair.first = nums[i];
-			std_map.insert(std_pair);
-		}
+	// 	for (int i=0; i<10; i++)
+	// 	{
+	// 		std_pair.first = nums[i];
+	// 		std_map.insert(std_pair);
+	// 	}
 
-		ft::map<int, int>	std_map2;
-		std_pair.second = 20;
-		for (int i=0; i<10; i++)
-		{
-			std_pair.first = nums[i];
-			std_map2.insert(std_pair);
-		}
+	// 	ft::map<int, int>	std_map2;
+	// 	std_pair.second = 20;
+	// 	for (int i=0; i<10; i++)
+	// 	{
+	// 		std_pair.first = nums[i];
+	// 		std_map2.insert(std_pair);
+	// 	}
 
-		std_map.swap(std_map2);
-		for (int i=0; i<10; i++)
-		{
-			test.main_then(std_map[nums[i]] == 20 && std_map2[nums[i]] == 10);
-		}
+	// 	std_map.swap(std_map2);
+	// 	for (int i=0; i<10; i++)
+	// 	{
+	// 		test.main_then(std_map[nums[i]] == 20 && std_map2[nums[i]] == 10);
+	// 	}
 
-		test.main_end();
-	}
+	// 	test.main_end();
+	// }
 
-	test.main("iterator");
-	{
-		ft::map<int, int>	ft_map;
-		std::map<int, int>	std_map;
-		int	key, val;
+	// test.main("iterator");
+	// {
+	// 	ft::map<int, int>	ft_map;
+	// 	std::map<int, int>	std_map;
+	// 	int	key, val;
 
-		for (int i = 0; i < 1000; ++i)
-		{
-			key = rand();
-			val = rand();
-			ft_map.insert(ft::make_pair(key, val));
-			std_map.insert(std::make_pair(key, val));
-		}
+	// 	for (int i = 0; i < 1000; ++i)
+	// 	{
+	// 		key = rand();
+	// 		val = rand();
+	// 		ft_map.insert(ft::make_pair(key, val));
+	// 		std_map.insert(std::make_pair(key, val));
+	// 	}
 
-		ft::map<int, int>::iterator		ft_iter = ft_map.begin();
-		std::map<int, int>::iterator	std_iter = std_map.begin();
-		for (; ft_iter!=ft_map.end(); ft_iter++, std_iter++)
-		{
-			if ((*ft_iter).first != (*std_iter).first 
-				|| (*ft_iter).second != (*std_iter).second)
-				break ;
-		}
-		test.main_then(ft_iter == ft_map.end());
-		test.main_end();
-	}
+	// 	ft::map<int, int>::iterator		ft_iter = ft_map.begin();
+	// 	std::map<int, int>::iterator	std_iter = std_map.begin();
+	// 	for (; ft_iter!=ft_map.end(); ft_iter++, std_iter++)
+	// 	{
+	// 		if ((*ft_iter).first != (*std_iter).first 
+	// 			|| (*ft_iter).second != (*std_iter).second)
+	// 			break ;
+	// 	}
+	// 	test.main_then(ft_iter == ft_map.end());
+	// 	test.main_end();
+	// }
 
-	test.main("reverse_iterator");
-	{
-		ft::map<int, int>	ft_map;
-		std::map<int, int>	std_map;
-		int	key, val;
+	// test.main("reverse_iterator");
+	// {
+	// 	ft::map<int, int>	ft_map;
+	// 	std::map<int, int>	std_map;
+	// 	int	key, val;
 
-		for (int i = 0; i < 1000; ++i)
-		{
-			key = rand();
-			val = rand();
-			ft_map.insert(ft::make_pair(key, val));
-			std_map.insert(std::make_pair(key, val));
-		}
+	// 	for (int i = 0; i < 1000; ++i)
+	// 	{
+	// 		key = rand();
+	// 		val = rand();
+	// 		ft_map.insert(ft::make_pair(key, val));
+	// 		std_map.insert(std::make_pair(key, val));
+	// 	}
 
-		ft::map<int, int>::reverse_iterator		ft_rend = ft_map.rbegin();
-		std::map<int, int>::reverse_iterator	std_rend = std_map.rbegin();
-		ft::map<int, int>::reverse_iterator		ft_rbegin = ft_map.rend();
+	// 	ft::map<int, int>::reverse_iterator		ft_rend = ft_map.rbegin();
+	// 	std::map<int, int>::reverse_iterator	std_rend = std_map.rbegin();
+	// 	ft::map<int, int>::reverse_iterator		ft_rbegin = ft_map.rend();
 		
-		for (; ft_rend!=ft_rbegin; ++ft_rend, ++std_rend)
-		{
-			if ((*ft_rend).first != (*std_rend).first 
-				|| (*ft_rend).second != (*std_rend).second)
-				break ;
-		}
+	// 	for (; ft_rend!=ft_rbegin; ++ft_rend, ++std_rend)
+	// 	{
+	// 		if ((*ft_rend).first != (*std_rend).first 
+	// 			|| (*ft_rend).second != (*std_rend).second)
+	// 			break ;
+	// 	}
 
-		test.main_then(ft_rend == ft_map.rend());
-		test.main_end();
-	}
+	// 	test.main_then(ft_rend == ft_map.rend());
+	// 	test.main_end();
+	// }
 
-	test.main("find");
-	{
-		ft::map<int, int>				ft_map;
-		ft::map<int, int>::iterator		ft_iter;
-		std::map<int, int>				std_map;
-		std::map<int, int>::iterator	std_iter;
-		int	key;
+	// test.main("find");
+	// {
+	// 	ft::map<int, int>				ft_map;
+	// 	ft::map<int, int>::iterator		ft_iter;
+	// 	std::map<int, int>				std_map;
+	// 	std::map<int, int>::iterator	std_iter;
+	// 	int	key;
 
-		for (int i = 0; i < COUNT; ++i)
-		{
-			ft_map.insert(ft::make_pair(rand(), rand()));
-			std_map.insert(std::make_pair(rand(), rand()));
-		}
+	// 	for (int i = 0; i < COUNT; ++i)
+	// 	{
+	// 		ft_map.insert(ft::make_pair(rand(), rand()));
+	// 		std_map.insert(std::make_pair(rand(), rand()));
+	// 	}
 
-		for (int i=0; i<3; ++i)
-		{
-			key = rand();
-			ft_map.insert(ft::make_pair(key, 0));
-			std_map.insert(std::make_pair(key, 0));
-			ft_iter = ft_map.find(key);
-			std_iter = std_map.find(key);
-			test.main_then((*ft_iter).first == (*std_iter).first);
-			test.main_then((*ft_iter).second == (*std_iter).second);
-		}
-		test.main_end();
+	// 	for (int i=0; i<3; ++i)
+	// 	{
+	// 		key = rand();
+	// 		ft_map.insert(ft::make_pair(key, 0));
+	// 		std_map.insert(std::make_pair(key, 0));
+	// 		ft_iter = ft_map.find(key);
+	// 		std_iter = std_map.find(key);
+	// 		test.main_then((*ft_iter).first == (*std_iter).first);
+	// 		test.main_then((*ft_iter).second == (*std_iter).second);
+	// 	}
+	// 	test.main_end();
 
-		test.time_start_ft();
-		ft_map.find(key);
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft_map.find(key);
+	// 	test.time_end();
 		
-		test.time_start_std();
-		std_map.find(key);
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std_map.find(key);
+	// 	test.time_end();
+	// }
 
-	test.main("operator []");
-	{
-		ft::map<int, int>				ft_map;
-		std::map<int, int>				std_map;
-		int	key;
+	// test.main("operator []");
+	// {
+	// 	ft::map<int, int>				ft_map;
+	// 	std::map<int, int>				std_map;
+	// 	int	key;
 
-		for (int i = 0; i < 1000; ++i)
-		{
-			ft_map[rand()] = rand();
-			std_map[rand()] = rand();
-		}
+	// 	for (int i = 0; i < 1000; ++i)
+	// 	{
+	// 		ft_map[rand()] = rand();
+	// 		std_map[rand()] = rand();
+	// 	}
 
-		test.main_then(ft_map.size() == std_map.size());
+	// 	test.main_then(ft_map.size() == std_map.size());
 
-		for (int i = 0; i < 3; i++)
-		{
-			key = rand();
-			ft_map[key] = 0;
-			std_map[key] = 0;
-			test.main_then(ft_map[key] == std_map[key]);
-		}
-		test.main_end();
+	// 	for (int i = 0; i < 3; i++)
+	// 	{
+	// 		key = rand();
+	// 		ft_map[key] = 0;
+	// 		std_map[key] = 0;
+	// 		test.main_then(ft_map[key] == std_map[key]);
+	// 	}
+	// 	test.main_end();
 
-		test.time_start_ft();
-		ft_map[key];
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft_map[key];
+	// 	test.time_end();
 
-		test.time_start_std();
-		std_map[key];
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std_map[key];
+	// 	test.time_end();
+	// }
 
-	test.main("at");
-	{
-		ft::map<int, int>	ft_map;
+	// test.main("at");
+	// {
+	// 	ft::map<int, int>	ft_map;
 
-		try
-		{
-			ft_map.at(10);
-			test.main_then(false);
-		}
-		catch(const std::exception& e)
-		{
-			test.main_then(std::string(e.what()) == "map::at:  key not found");
-			test.main_then(true);
-		}
+	// 	try
+	// 	{
+	// 		ft_map.at(10);
+	// 		test.main_then(false);
+	// 	}
+	// 	catch(const std::exception& e)
+	// 	{
+	// 		test.main_then(std::string(e.what()) == "map::at:  key not found");
+	// 		test.main_then(true);
+	// 	}
 
-		ft_map[10] = 10;
+	// 	ft_map[10] = 10;
 
-		try
-		{
-			test.main_then(ft_map.at(10) == 10);
-			test.main_then(true);
-		}
-		catch(const std::exception& e)
-		{
-			test.main_then(false);
-		}
-		test.main_end();
+	// 	try
+	// 	{
+	// 		test.main_then(ft_map.at(10) == 10);
+	// 		test.main_then(true);
+	// 	}
+	// 	catch(const std::exception& e)
+	// 	{
+	// 		test.main_then(false);
+	// 	}
+	// 	test.main_end();
 
-		ft::map<int, int>	ft_test;
-		std::map<int, int>	std_test;
-		int	key;
+	// 	ft::map<int, int>	ft_test;
+	// 	std::map<int, int>	std_test;
+	// 	int	key;
 
-		for (int i = 0; i < 1000; ++i)
-		{
-			key = rand();
-			ft_test[key] = 0;
-			std_test[key] = 0;
-		}
+	// 	for (int i = 0; i < 1000; ++i)
+	// 	{
+	// 		key = rand();
+	// 		ft_test[key] = 0;
+	// 		std_test[key] = 0;
+	// 	}
 
-		test.time_start_ft();
-		ft_test.at(key);
-		test.time_end();
+	// 	test.time_start_ft();
+	// 	ft_test.at(key);
+	// 	test.time_end();
 		
-		test.time_start_std();
-		std_test.at(key);
-		test.time_end();
-	}
+	// 	test.time_start_std();
+	// 	std_test.at(key);
+	// 	test.time_end();
+	// }
 
-	test.main("lower_bound");
-	{
-		std::map<int, int>	std_map;
-		ft::map<int, int>	ft_map;
+	// test.main("lower_bound");
+	// {
+	// 	std::map<int, int>	std_map;
+	// 	ft::map<int, int>	ft_map;
 
-		std_map[10] = 10;
-		std_map[20] = 20;
-		std_map[30] = 30;
-		ft_map[10] = 10;
-		ft_map[20] = 20;
-		ft_map[30] = 30;
-		test.main_then((*std_map.lower_bound(8)).first == (*ft_map.lower_bound(8)).first);
-		test.main_then((*std_map.lower_bound(13)).first == (*ft_map.lower_bound(13)).first);
-		test.main_then((*std_map.lower_bound(20)).first == (*ft_map.lower_bound(20)).first);
-		test.main_then((*std_map.lower_bound(21)).first == (*ft_map.lower_bound(21)).first);
-		test.main_then(std_map.lower_bound(35) == std_map.end());
-		test.main_then(ft_map.lower_bound(35) == ft_map.end());
-		test.main_end();
-	}
+	// 	std_map[10] = 10;
+	// 	std_map[20] = 20;
+	// 	std_map[30] = 30;
+	// 	ft_map[10] = 10;
+	// 	ft_map[20] = 20;
+	// 	ft_map[30] = 30;
+	// 	test.main_then((*std_map.lower_bound(8)).first == (*ft_map.lower_bound(8)).first);
+	// 	test.main_then((*std_map.lower_bound(13)).first == (*ft_map.lower_bound(13)).first);
+	// 	test.main_then((*std_map.lower_bound(20)).first == (*ft_map.lower_bound(20)).first);
+	// 	test.main_then((*std_map.lower_bound(21)).first == (*ft_map.lower_bound(21)).first);
+	// 	test.main_then(std_map.lower_bound(35) == std_map.end());
+	// 	test.main_then(ft_map.lower_bound(35) == ft_map.end());
+	// 	test.main_end();
+	// }
 	
-	test.main("upper_bound");
-	{
-		std::map<int, int>	std_map;
-		ft::map<int, int>	ft_map;
+	// test.main("upper_bound");
+	// {
+	// 	std::map<int, int>	std_map;
+	// 	ft::map<int, int>	ft_map;
 
-		std_map[10] = 10;
-		std_map[20] = 20;
-		std_map[30] = 30;
-		ft_map[10] = 10;
-		ft_map[20] = 20;
-		ft_map[30] = 30;
-		test.main_then((*std_map.upper_bound(8)).first == (*ft_map.upper_bound(8)).first);
-		test.main_then((*std_map.upper_bound(13)).first == (*ft_map.upper_bound(13)).first);
-		test.main_then((*std_map.upper_bound(20)).first == (*ft_map.upper_bound(20)).first);
-		test.main_then((*std_map.upper_bound(21)).first == (*ft_map.upper_bound(21)).first);
-		test.main_then(std_map.upper_bound(35) == std_map.end());
-		test.main_then(ft_map.upper_bound(35) == ft_map.end());
-		test.main_end();
-	}
+	// 	std_map[10] = 10;
+	// 	std_map[20] = 20;
+	// 	std_map[30] = 30;
+	// 	ft_map[10] = 10;
+	// 	ft_map[20] = 20;
+	// 	ft_map[30] = 30;
+	// 	test.main_then((*std_map.upper_bound(8)).first == (*ft_map.upper_bound(8)).first);
+	// 	test.main_then((*std_map.upper_bound(13)).first == (*ft_map.upper_bound(13)).first);
+	// 	test.main_then((*std_map.upper_bound(20)).first == (*ft_map.upper_bound(20)).first);
+	// 	test.main_then((*std_map.upper_bound(21)).first == (*ft_map.upper_bound(21)).first);
+	// 	test.main_then(std_map.upper_bound(35) == std_map.end());
+	// 	test.main_then(ft_map.upper_bound(35) == ft_map.end());
+	// 	test.main_end();
+	// }
 
-	test.main("equal_range");
-	{
-		typedef std::map<int, int>::iterator	std_iterator;
-		typedef ft::map<int, int>::iterator		ft_iterator;
+	// test.main("equal_range");
+	// {
+	// 	typedef std::map<int, int>::iterator	std_iterator;
+	// 	typedef ft::map<int, int>::iterator		ft_iterator;
 
-		std::map<int, int>						std_map;
-		std::pair<std_iterator, std_iterator>	std_p;
-		ft::map<int, int>						ft_map;
-		ft::pair<ft_iterator, ft_iterator>		ft_p;
+	// 	std::map<int, int>						std_map;
+	// 	std::pair<std_iterator, std_iterator>	std_p;
+	// 	ft::map<int, int>						ft_map;
+	// 	ft::pair<ft_iterator, ft_iterator>		ft_p;
 
-		std_map.insert(std::pair<int, int>(10, 10));
-		std_map.insert(std::pair<int, int>(20, 10));
-		std_map.insert(std::pair<int, int>(30, 10));
+	// 	std_map.insert(std::pair<int, int>(10, 10));
+	// 	std_map.insert(std::pair<int, int>(20, 10));
+	// 	std_map.insert(std::pair<int, int>(30, 10));
 
-		ft_map.insert(ft::pair<int, int>(10, 10));
-		ft_map.insert(ft::pair<int, int>(20, 10));
-		ft_map.insert(ft::pair<int, int>(30, 10));
+	// 	ft_map.insert(ft::pair<int, int>(10, 10));
+	// 	ft_map.insert(ft::pair<int, int>(20, 10));
+	// 	ft_map.insert(ft::pair<int, int>(30, 10));
 
-		std_p = std_map.equal_range(9);
-		ft_p = ft_map.equal_range(9);
-		test.main_then((*std_p.first).first == (*ft_p.first).first);
-		test.main_then((*std_p.second).first == (*ft_p.second).first);
+	// 	std_p = std_map.equal_range(9);
+	// 	ft_p = ft_map.equal_range(9);
+	// 	test.main_then((*std_p.first).first == (*ft_p.first).first);
+	// 	test.main_then((*std_p.second).first == (*ft_p.second).first);
 
 
-		std_p = std_map.equal_range(10);
-		ft_p = ft_map.equal_range(10);
-		test.main_then((*std_p.first).first == (*ft_p.first).first);
-		test.main_then((*std_p.second).first == (*ft_p.second).first);
+	// 	std_p = std_map.equal_range(10);
+	// 	ft_p = ft_map.equal_range(10);
+	// 	test.main_then((*std_p.first).first == (*ft_p.first).first);
+	// 	test.main_then((*std_p.second).first == (*ft_p.second).first);
 
-		std_p = std_map.equal_range(11);
-		ft_p = ft_map.equal_range(11);
-		test.main_then((*std_p.first).first == (*ft_p.first).first);
-		test.main_then((*std_p.second).first == (*ft_p.second).first);
+	// 	std_p = std_map.equal_range(11);
+	// 	ft_p = ft_map.equal_range(11);
+	// 	test.main_then((*std_p.first).first == (*ft_p.first).first);
+	// 	test.main_then((*std_p.second).first == (*ft_p.second).first);
 
-		std_p = std_map.equal_range(30);
-		ft_p = ft_map.equal_range(30);
-		test.main_then((*std_p.first).first == (*ft_p.first).first);
-		test.main_then((*std_p.second) == *std_map.end());
-		test.main_then((*ft_p.second) == *ft_map.end());
+	// 	std_p = std_map.equal_range(30);
+	// 	ft_p = ft_map.equal_range(30);
+	// 	test.main_then((*std_p.first).first == (*ft_p.first).first);
+	// 	test.main_then((*std_p.second) == *std_map.end());
+	// 	test.main_then((*ft_p.second) == *ft_map.end());
 		
-		test.main_end();
-	}
+	// 	test.main_end();
+	// }
 
-	test.main("operator ==");
-	{
-		std::map<int, int>	std_map1;
-		std::map<int, int>	std_map2;
-		bool				std_result;
-		std_map1[10] = 10;
-		std_map1[20] = 20;
-		std_map2[10] = 10;
-		std_map2[20] = 20;
+	// test.main("operator ==");
+	// {
+	// 	std::map<int, int>	std_map1;
+	// 	std::map<int, int>	std_map2;
+	// 	bool				std_result;
+	// 	std_map1[10] = 10;
+	// 	std_map1[20] = 20;
+	// 	std_map2[10] = 10;
+	// 	std_map2[20] = 20;
 	
-		ft::map<int, int>	ft_map1;
-		ft::map<int, int>	ft_map2;
-		bool				ft_result;
-		ft_map1[10] = 10;
-		ft_map1[20] = 20;
-		ft_map2[10] = 10;
-		ft_map2[20] = 20;
+	// 	ft::map<int, int>	ft_map1;
+	// 	ft::map<int, int>	ft_map2;
+	// 	bool				ft_result;
+	// 	ft_map1[10] = 10;
+	// 	ft_map1[20] = 20;
+	// 	ft_map2[10] = 10;
+	// 	ft_map2[20] = 20;
 
-		std_result = (std_map1 == std_map2);
-		ft_result = (ft_map1 == ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_result = (std_map1 == std_map2);
+	// 	ft_result = (ft_map1 == ft_map2);
+	// 	test.main_then(std_result == ft_result);
 
-		std_map1[20] = 10;
-		ft_map1[20] = 10;
-		std_result = (std_map1 == std_map2);
-		ft_result = (ft_map1 == ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_map1[20] = 10;
+	// 	ft_map1[20] = 10;
+	// 	std_result = (std_map1 == std_map2);
+	// 	ft_result = (ft_map1 == ft_map2);
+	// 	test.main_then(std_result == ft_result);
 		
-		std_result = (std_map1 != std_map2);
-		ft_result = (ft_map1 != ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_result = (std_map1 != std_map2);
+	// 	ft_result = (ft_map1 != ft_map2);
+	// 	test.main_then(std_result == ft_result);
 
-		test.main_end();
-	}
+	// 	test.main_end();
+	// }
 
-	test.main("operator <, >");
-	{
-		std::map<int, int>	std_map1;
-		std::map<int, int>	std_map2;
-		bool				std_result;
-		std_map1[10] = 10;
-		std_map1[20] = 20;
-		std_map2[10] = 10;
-		std_map2[20] = 20;
+	// test.main("operator <, >");
+	// {
+	// 	std::map<int, int>	std_map1;
+	// 	std::map<int, int>	std_map2;
+	// 	bool				std_result;
+	// 	std_map1[10] = 10;
+	// 	std_map1[20] = 20;
+	// 	std_map2[10] = 10;
+	// 	std_map2[20] = 20;
 	
-		ft::map<int, int>	ft_map1;
-		ft::map<int, int>	ft_map2;
-		bool				ft_result;
-		ft_map1[10] = 10;
-		ft_map1[20] = 20;
-		ft_map2[10] = 10;
-		ft_map2[20] = 20;
+	// 	ft::map<int, int>	ft_map1;
+	// 	ft::map<int, int>	ft_map2;
+	// 	bool				ft_result;
+	// 	ft_map1[10] = 10;
+	// 	ft_map1[20] = 20;
+	// 	ft_map2[10] = 10;
+	// 	ft_map2[20] = 20;
 
-		std_result = (std_map1 < std_map2);
-		ft_result = (ft_map1 < ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_result = (std_map1 < std_map2);
+	// 	ft_result = (ft_map1 < ft_map2);
+	// 	test.main_then(std_result == ft_result);
 
-		std_map1[20] = 10;
-		ft_map1[20] = 10;
-		std_result = (std_map1 < std_map2);
-		ft_result = (ft_map1 < ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_map1[20] = 10;
+	// 	ft_map1[20] = 10;
+	// 	std_result = (std_map1 < std_map2);
+	// 	ft_result = (ft_map1 < ft_map2);
+	// 	test.main_then(std_result == ft_result);
 		
-		std_result = (std_map1 > std_map2);
-		ft_result = (ft_map1 > ft_map2);
-		test.main_then(std_result == ft_result);
+	// 	std_result = (std_map1 > std_map2);
+	// 	ft_result = (ft_map1 > ft_map2);
+	// 	test.main_then(std_result == ft_result);
 
-		test.main_end();
-	}
+	// 	test.main_end();
+	// }
 
 
-	}	// map
+	// }	// map
 
-	system("leaks test");
 	
 	return (0);
 }
